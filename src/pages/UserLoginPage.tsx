@@ -7,7 +7,7 @@ import SplitAuthLayout from '../components/SplitAuthLayout';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth, googleProvider } from '../config/firebase';
 import { loginWithGoogle, sendAspirantOtp, verifyAspirantLoginOtp, resendAspirantOtp } from '../services/authService';
 import * as yup from 'yup';
@@ -43,6 +43,34 @@ const UserLoginPage = () => {
   const [otpTimer, setOtpTimer] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasCheckedRedirect = useRef(false);
+
+  useEffect(() => {
+    if (hasCheckedRedirect.current) return;
+    hasCheckedRedirect.current = true;
+
+    const checkRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setGoogleLoading(true);
+          const idToken = await result.user.getIdToken();
+          const { token, user } = await loginWithGoogle(idToken);
+          logout();
+          setRedirecting(true);
+          setAuth(token, user);
+          navigate('/user/voters', { replace: true });
+        }
+      } catch (err: any) {
+        console.error('Redirect result error:', err);
+        const apiMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message;
+        setError(apiMessage || t('common.error') || 'Google sign-in failed');
+      } finally {
+        setGoogleLoading(false);
+      }
+    };
+    checkRedirect();
+  }, [auth, navigate, setAuth, logout, t]);
 
   useEffect(() => {
     if (otpTimer > 0) {
@@ -133,16 +161,29 @@ const UserLoginPage = () => {
     }
   };
 
-  const isInWebView = typeof window !== 'undefined' && /ReactNative/i.test(navigator.userAgent || '');
+  const isInWebView = typeof window !== 'undefined' && (/ReactNative/i.test(navigator.userAgent || '') || /PrajaakeeyaWV/i.test(navigator.userAgent || ''));
 
   const onGoogleSignIn = async () => {
     setError('');
     setGoogleLoading(true);
     try {
       if (isInWebView) {
-        // In WebView: ask React Native to handle Google Sign-In via InAppBrowser
-        (window as any).ReactNativeWebView?.postMessage(JSON.stringify({ type: 'GOOGLE_SIGN_IN' }));
-        setGoogleLoading(false);
+        if (/ReactNative/i.test(navigator.userAgent || '')) {
+          // In React Native WebView: ask RN to handle Google Sign-In via InAppBrowser
+          (window as any).ReactNativeWebView?.postMessage(JSON.stringify({ type: 'GOOGLE_SIGN_IN' }));
+          setGoogleLoading(false);
+          return;
+        }
+        // In Native iOS WebView (PrajaakeeyaWV): use popup now that native supports real windows
+        await setPersistence(auth, browserLocalPersistence);
+        const result = await signInWithPopup(auth, googleProvider);
+        const idToken = await result.user.getIdToken();
+        const { token, user } = await loginWithGoogle(idToken);
+
+        logout();
+        setRedirecting(true);
+        setAuth(token, user);
+        navigate('/user/voters', { replace: true });
         return;
       }
       // Normal browser: popup works fine
@@ -153,8 +194,7 @@ const UserLoginPage = () => {
       logout();
       setRedirecting(true);
       setAuth(token, user);
-      navigate('/user/dashboard', { replace: true });
-      navigate('/user/voters');
+      navigate('/user/voters', { replace: true });
     } catch (err: any) {
       const apiMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message;
       setError(apiMessage || t('common.error') || 'Google sign-in failed');
