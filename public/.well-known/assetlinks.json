@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.app.prajaakeeya",
+      "sha256_cert_fingerprints": [
+        "1C:2D:A9:32:89:1F:60:13:94:4B:47:18:3E:82:C9:F7:D1:E4:62:A8:E9:A6:A3:6B:CE:91:A5:A4:67:C3:39:7D"
+      ]
+    }
+  }
+]
