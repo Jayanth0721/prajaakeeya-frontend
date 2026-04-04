@@ -1,0 +1,246 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Box, Typography, CircularProgress, Table, TableHead, TableBody, TableRow, TableCell,
+    TextField, Avatar, Card, CardContent, Stack, useTheme, useMediaQuery, Chip
+} from '@mui/material';
+import { Person as PersonIcon, ChevronRight as ChevronRightIcon } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '../services/apiClient';
+
+const RegisteredAspirantsPage: React.FC = () => {
+    const { i18n } = useTranslation();
+    const FF = "'Baloo 2', sans-serif";
+    const isKannada = (i18n.language || '').startsWith('kn');
+
+    const [aspirants, setAspirants] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [query, setQuery] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+    const border = theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(17,24,39,0.14)';
+    const panelBg = theme.palette.mode === 'dark'
+        ? 'linear-gradient(155deg, rgba(20,24,34,0.95) 0%, rgba(13,17,28,0.96) 100%)'
+        : 'linear-gradient(155deg, #FFFFFF 0%, #F8FAFC 100%)';
+    const textPrimary = theme.palette.text.primary;
+    const textSecondary = theme.palette.text.secondary;
+
+    const fetchAspirants = useCallback(async (searchQuery: string, pageNum: number, append: boolean) => {
+        if (append) setLoadingMore(true);
+        else setLoading(true);
+        setError(null);
+        try {
+            const params: Record<string, any> = searchQuery.trim()
+                ? { search: searchQuery.trim() }
+                : { page: pageNum, limit: 20 };
+            const resp = await apiClient.get('/aspirants/all', { params });
+            const raw = Array.isArray(resp?.data?.data) ? resp.data.data : [];
+            const tp = searchQuery.trim() ? 1 : (resp?.data?.totalPages ?? 1);
+            setTotalPages(tp);
+            setTotal(resp?.data?.total ?? raw.length);
+            if (append) {
+                setAspirants((prev) => [...prev, ...raw]);
+            } else {
+                setAspirants(raw);
+            }
+            setHasMore(pageNum < tp);
+        } catch (err: any) {
+            console.error('Failed to fetch aspirants', err);
+            setError(err?.response?.data?.message || err?.message || 'Failed to load aspirants');
+        } finally {
+            setLoading(false);
+            setLoadingMore(false);
+        }
+    }, []);
+
+    // Initial fetch
+    useEffect(() => {
+        fetchAspirants('', 1, false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Debounced search — reset to page 1 when query changes
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPage(1);
+            setHasMore(true);
+            fetchAspirants(query, 1, false);
+        }, 400);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query]);
+
+    // Infinite scroll — IntersectionObserver on sentinel
+    useEffect(() => {
+        const el = sentinelRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+                    setPage((prev) => {
+                        const next = prev + 1;
+                        fetchAspirants(query, next, true);
+                        return next;
+                    });
+                }
+            },
+            { threshold: 0.1 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [hasMore, loading, loadingMore, query, fetchAspirants]);
+
+    return (
+        <Box sx={{ p: { xs: 1.25, sm: 2.5 } }}>
+            {/* Header card */}
+            <Card sx={{ mb: 2.2, borderRadius: 2.5, background: panelBg, border: `1px solid ${border}`, boxShadow: theme.palette.mode === 'dark' ? '0 18px 40px rgba(0,0,0,0.35)' : '0 10px 24px rgba(17,24,39,0.08)' }}>
+                <Box sx={{ display: 'flex', height: 4 }}>
+                    {['#C8180A', '#253A9A', '#6B3A00'].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
+                </Box>
+                <CardContent sx={{ p: { xs: 1.5, sm: 2.2 }, '&:last-child': { pb: { xs: 1.5, sm: 2.2 } } }}>
+                    <Stack spacing={1.35}>
+                        <Box>
+                            <Typography variant="h4" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2rem' }, color: textPrimary }}>
+                                {isKannada ? 'ನೋಂದಾಯಿತ ಆಕಾಂಕ್ಷಿಗಳು' : 'Registered Aspirants'}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mt: 0.4, color: textSecondary, fontFamily: FF }}>
+                                {isKannada ? 'ಒಟ್ಟು ಆಕಾಂಕ್ಷಿಗಳು' : 'Total Aspirants'} — {total || aspirants.length}
+                            </Typography>
+                        </Box>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder={isKannada ? 'ಹೆಸರಿನ ಮೂಲಕ ಹುಡುಕಿ' : 'Search by name'}
+                            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                        />
+                    </Stack>
+                </CardContent>
+            </Card>
+
+            {loading ? (
+                <Box sx={{ textAlign: 'center', py: 3 }}>
+                    <CircularProgress />
+                </Box>
+            ) : error ? (
+                <Typography color="error">{error}</Typography>
+            ) : (
+                <>
+                    {isMobile ? (
+                        <Stack spacing={1.4}>
+                            {aspirants.map((a: any, idx: number) => (
+                                <Card
+                                    key={a.id ?? idx}
+                                    onClick={() => a.id && navigate(`/user/aspirants/${a.id}/view`)}
+                                    sx={{
+                                        borderRadius: 2,
+                                        border: `1px solid ${border}`,
+                                        borderLeft: '4px solid #253A9A',
+                                        boxShadow: theme.palette.mode === 'dark' ? '0 8px 20px rgba(0,0,0,0.3)' : '0 4px 14px rgba(17,24,39,0.06)',
+                                        cursor: 'pointer',
+                                        transition: 'box-shadow 0.2s, transform 0.15s',
+                                        '&:hover': { boxShadow: theme.palette.mode === 'dark' ? '0 12px 30px rgba(0,0,0,0.5)' : '0 8px 24px rgba(17,24,39,0.14)', transform: 'translateY(-1px)' },
+                                    }}
+                                >
+                                    <CardContent sx={{ p: 1.25 }}>
+                                        <Stack direction="row" spacing={1.5} alignItems="center">
+                                            <Avatar
+                                                src={a.selfieUrl || undefined}
+                                                alt={a.name || ''}
+                                                sx={{ width: 48, height: 48, bgcolor: 'primary.100' }}
+                                            >
+                                                {!a.selfieUrl && (a.name ? a.name.charAt(0).toUpperCase() : <PersonIcon />)}
+                                            </Avatar>
+                                            <Box sx={{ flex: 1, minWidth: 0 }}>
+                                                <Typography variant="subtitle2" sx={{ fontWeight: 700, fontFamily: FF, fontSize: '0.95rem' }}>
+                                                    {a.name || ''}
+                                                </Typography>
+                                                <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ mt: 0.4 }}>
+                                                    <Chip label={a.party || 'Independent'} size="small" sx={{ fontSize: '0.7rem', height: 20 }} />
+                                                </Stack>
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontFamily: FF, display: 'block', mt: 0.3 }}>
+                                                    {a.electionName || ''}{a.constituencyName ? ` · ${a.constituencyName}` : ''}
+                                                </Typography>
+                                            </Box>
+                                            <ChevronRightIcon sx={{ color: 'text.disabled', fontSize: '1.2rem' }} />
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </Stack>
+                    ) : (
+                        <Card sx={{ borderRadius: 2.2, border: `1px solid ${border}`, overflow: 'hidden', background: panelBg }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.03)' }}>
+                                        <TableCell sx={{ fontWeight: 800, fontFamily: FF, fontSize: '0.9rem' }}>#</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, fontFamily: FF, fontSize: '0.9rem' }}>{isKannada ? 'ಹೆಸರು' : 'Name'}</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, fontFamily: FF, fontSize: '0.9rem' }}>{isKannada ? 'ಪಕ್ಷ' : 'Party'}</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, fontFamily: FF, fontSize: '0.9rem' }}>{isKannada ? 'ಚುನಾವಣೆ' : 'Election'}</TableCell>
+                                        <TableCell sx={{ fontWeight: 800, fontFamily: FF, fontSize: '0.9rem' }}>{isKannada ? 'ಕ್ಷೇತ್ರ' : 'Constituency'}</TableCell>
+                                        <TableCell />
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {aspirants.map((a: any, idx: number) => (
+                                        <TableRow
+                                            key={a.id ?? idx}
+                                            onClick={() => a.id && navigate(`/user/aspirants/${a.id}/view`)}
+                                            sx={{ cursor: 'pointer', '&:hover': { bgcolor: theme.palette.mode === 'dark' ? 'rgba(37,58,154,0.12)' : 'rgba(37,58,154,0.04)' } }}
+                                        >
+                                            <TableCell sx={{ color: textSecondary, fontFamily: FF, fontSize: '0.82rem' }}>
+                                                {idx + 1}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Stack direction="row" alignItems="center" spacing={1.5}>
+                                                    <Avatar
+                                                        src={a.selfieUrl || undefined}
+                                                        alt={a.name || ''}
+                                                        sx={{ width: 36, height: 36 }}
+                                                    >
+                                                        {!a.selfieUrl && (a.name ? a.name.charAt(0).toUpperCase() : <PersonIcon fontSize="small" />)}
+                                                    </Avatar>
+                                                    <Typography sx={{ fontFamily: FF, fontWeight: 700, fontSize: '0.9rem' }}>{a.name || ''}</Typography>
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell sx={{ fontFamily: FF, fontSize: '0.88rem' }}>{a.party || 'Independent'}</TableCell>
+                                            <TableCell sx={{ fontFamily: FF, fontSize: '0.88rem' }}>{a.electionName || ''}</TableCell>
+                                            <TableCell sx={{ fontFamily: FF, fontSize: '0.88rem' }}>{a.constituencyName || ''}</TableCell>
+                                            <TableCell sx={{ width: 32, p: 0.5 }}><ChevronRightIcon sx={{ color: 'text.disabled', fontSize: '1.1rem' }} /></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Card>
+                    )}
+
+                    {/* Infinite scroll sentinel */}
+                    <Box ref={sentinelRef} sx={{ height: 1 }} />
+                    {loadingMore && (
+                        <Box sx={{ textAlign: 'center', py: 2 }}>
+                            <CircularProgress size={28} />
+                        </Box>
+                    )}
+                    {!hasMore && aspirants.length > 0 && (
+                        <Typography variant="body2" sx={{ textAlign: 'center', py: 2, color: textSecondary, fontFamily: FF }}>
+                            {isKannada ? 'ಇನ್ನಷ್ಟು ಆಕಾಂಕ್ಷಿಗಳು ಇಲ್ಲ' : 'No more aspirants to load'}
+                        </Typography>
+                    )}
+                </>
+            )}
+        </Box>
+    );
+};
+
+export default RegisteredAspirantsPage;

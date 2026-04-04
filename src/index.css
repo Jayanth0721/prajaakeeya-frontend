@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+/* Global base styles */
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', sans-serif;
+    /* Background and colour are controlled by MUI CssBaseline via the active theme */
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Small helper to ensure pseudo-element gradients show outside overflow-hidden cards */
+.card-gradient-allow-overflow {
+    overflow: visible !important;
+}
+
+/* Position aspirant chat button at top-right aligned with candidate row only on small screens for this page */
+.ward-candidates-page {
+    position: relative;
+}
+
+.ward-candidates-page .aspirant-chat-btn {
+    /* On small screens, make the button full-width container; layout handled in-component */
+    width: 100%;
+}
+
+/* Desktop uses the component's static layout by default */

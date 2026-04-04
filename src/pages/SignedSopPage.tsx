@@ -1,0 +1,109 @@
+import React, { useEffect, useState } from 'react';
+import { Box, Container, Typography, useTheme, Card, CardContent, CircularProgress, Stack } from '@mui/material';
+import { motion } from 'framer-motion';
+import useAuthStore from '../store/useAuthStore';
+import { BRAND } from '../theme';
+import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { getAspirantById } from '../services/aspirantService';
+
+const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+const Viewer = ({ url }: { url?: string | null }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+    if (!url) return <Typography variant="body2">No document available</Typography>;
+
+    // Mobile browsers can't render PDFs inline — use Google Docs viewer as fallback
+    const viewerSrc = isMobile()
+        ? `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`
+        : url;
+
+    return (
+        <Box sx={{ height: { xs: '85vh', md: '90vh' }, borderRadius: 2, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
+            <iframe
+                title="pdf-viewer"
+                src={viewerSrc}
+                width="100%"
+                height="100%"
+                style={{ border: 'none' }}
+            />
+        </Box>
+    );
+};
+
+const SignedSopPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const { t, i18n } = useTranslation();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+    const GOLD = isDark ? BRAND.yellow : BRAND.yellowLight;
+    const { user } = useAuthStore();
+    const textPrimary = theme.palette.text.primary;
+    const textHigh = isDark ? 'rgba(255,255,255,0.66)' : 'rgba(17,24,39,0.72)';
+    const textFaint = isDark ? 'rgba(255,255,255,0.38)' : 'rgba(17,24,39,0.42)';
+    const BORDER = isDark ? 'rgba(245,168,0,0.20)' : 'rgba(245,168,0,0.35)';
+    const FF = "'Baloo 2', sans-serif";
+
+    // page uses layout header; no hero background here
+
+    const [loading, setLoading] = useState(true);
+    const [aspirant, setAspirant] = useState<any>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                if (!id) return;
+                setLoading(true);
+                const resp = await getAspirantById(Number(id));
+                if (!mounted) return;
+                setAspirant(resp.data);
+            } catch (e) {
+                // ignore
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, [id]);
+
+    return (
+        <Box sx={{ bgcolor: isDark ? theme.palette.background.default : '#0b0b0b', color: '#fff', minHeight: '100vh' }}>
+            <Stack spacing={3} sx={{ fontFamily: FF, pb: { xs: 2, md: 4 } }}>
+                {/* Header removed — page uses the layout's header for consistency */}
+
+                {/* ── Content Container (full width) ────────────────────────────── */}
+                <Container maxWidth={false} disableGutters>
+                    <Card sx={{ borderRadius: 2, border: `1px solid ${BORDER}`, width: '100%' }}>
+                        <CardContent>
+                            {aspirant && (
+                                <Box sx={{ mb: 1 }}>
+                                    <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 700, color: textPrimary }}>
+                                        {aspirant.name || aspirant.fullName || `${aspirant.firstName || ''} ${aspirant.lastName || ''}`.trim()}
+                                    </Typography>
+                                    {aspirant.party && <Typography variant="body2" sx={{ color: textFaint }}>{aspirant.party}</Typography>}
+                                </Box>
+                            )}
+
+                            {loading ? (
+                                <Box display="flex" justifyContent="center" alignItems="center" minHeight="240px">
+                                    <CircularProgress />
+                                </Box>
+                            ) : (
+                                <Box>
+                                    <Typography variant="subtitle1" sx={{ fontFamily: FF, fontWeight: 600, mb: 1, color: textPrimary }}>
+                                        {t('userDashboard.aspirant.signedSOP') || 'Signed SOP'}
+                                    </Typography>
+                                    <Viewer url={aspirant?.sopUrl} />
+                                </Box>
+                            )}
+                        </CardContent>
+                    </Card>
+                </Container>
+            </Stack>
+        </Box>
+    );
+};
+
+export default SignedSopPage;

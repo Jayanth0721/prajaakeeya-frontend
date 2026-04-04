@@ -1,0 +1,2386 @@
+{
+  "common": {
+    "logout": "Logout",
+    "status": "Status",
+    "action": "Action",
+    "loading": "Loading...",
+    "upload": "Upload",
+    "uploaded": "Uploaded",
+    "uploading": "Uploading...",
+    "submitting": "Submitting...",
+    "creating": "Creating...",
+    "reset": "Reset",
+    "submit": "Submit",
+    "complete": "complete",
+    "navigation": "Navigation",
+    "back": "Back",
+    "refresh": "Refresh",
+    "error": "An error occurred",
+    "cancel": "Cancel",
+    "home": "Home",
+    "proceed": "Proceed",
+    "skipForNow": "Skip for Now →",
+    "save": "Save",
+    "create": "Create",
+    "update": "Update",
+    "empty": "No data available",
+    "follow": "Follow us on",
+    "statusLabels": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "thankYou": "Thank you",
+    "ok": "OK",
+    "search": "Search",
+    "fullName": "Enter your name",
+    "deleteMyAccount": "Delete My Account",
+    "deleteAccountTitle": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to permanently delete your account? This action cannot be undone. All your data will be removed.",
+    "deletePermanently": "Delete Permanently",
+    "deleting": "Deleting...",
+    "withdrawAspirantTitle": "Withdraw Aspirant Registration",
+    "withdrawAspirantMessage": "Please withdraw your aspirant registration before deleting your account. You can withdraw from your aspirant dashboard.",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "profile": {
+    "completeProfile": "Complete Your Profile",
+    "subtitle": "View and update your profile information",
+    "profilePhoto": "Profile Photo",
+    "takePhoto": "Take Photo",
+    "uploadPhoto": "Upload Photo",
+    "photoSelected": "Photo selected",
+    "email": "Email",
+    "fullName": "Full Name",
+    "age": "Age",
+    "gender": "Gender",
+    "mobileNumber": "Mobile Number",
+    "mobileNumberPlaceholder": "Enter your Phone number",
+    "mobileNumberOptional": "Phone Number (Optional)",
+    "whatsappPlaceholder": "Enter your WhatsApp number",
+    "saveProfile": "Save Profile & Continue",
+    "saving": "Saving...",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "photoRequired": "Please upload or capture a photo",
+    "profileIncomplete": "Please complete your profile to continue",
+    "deletePhoto": "Delete Photo",
+    "nameReadOnly": "Name cannot be changed for aspirants",
+    "contactPreferences": "Contact Preferences",
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "Show your number to citizens",
+    "phoneCall": "Phone Call",
+    "phoneCallDesc": "Allow citizens to call you directly",
+    "chat": "Chat",
+    "chatDesc": "Allow citizens to chat with you"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "invalidPhone": "Please enter a valid 10-digit phone number",
+    "otp": "Please enter a valid 4-digit OTP",
+    "otpLength": "OTP must be 6 digits",
+    "epicid": "Please enter a valid VOTER ID",
+    "ageRange": "You must be at least 18 years old to register as an aspirant",
+    "ageInteger": "Please enter a valid age",
+    "ageMinElection": "You must be at least {{minAge}} years old for this election type",
+    "instagramLink": "Please enter a valid Instagram URL (e.g. https://instagram.com/yourprofile)",
+    "facebookLink": "Please enter a valid Facebook URL (e.g. https://facebook.com/yourprofile)",
+    "linkedinLink": "Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/yourprofile)",
+    "twitterLink": "Please enter a valid Twitter/X URL (e.g. https://twitter.com/yourprofile)",
+    "whatsappNumber": "Please enter a valid 10-digit WhatsApp number"
+  },
+  "menu": {
+    "dashboard": "Home",
+    "profile": "Profile",
+    "myProfile": "My Profile",
+    "myMeetingLinks": "My Meetings",
+    "chatWithCitizens": "Chat with Citizens",
+    "post": "Meet Citizens",
+    "directMeetRequests": "Direct Meet Requests"
+  },
+  "adminLogin": {
+    "title": "Admin Access",
+    "phoneLabel": "Phone Number",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "login": "Login",
+    "requestOtp": "Request OTP",
+    "otpLabel": "Enter OTP",
+    "verify": "Verify",
+    "error": "Unable to authenticate"
+  },
+  "userLogin": {
+    "title": "Voter Login"
+  },
+  "userRegister": {
+    "title": "Voter Registration",
+    "epicId": "VOTER ID",
+    "wardName": "Ward Name",
+    "captureTitle": "Take a Selfie for Verification",
+    "retake": "Retake",
+    "uploadComplete": "Upload & Complete"
+  },
+  "discussion": {
+    "title": "Aspirant Chat Room",
+    "subtitle": "Chat with citizens in your ward about local issues and solutions.",
+    "roomLabel": "Community Discussion",
+    "online": "online",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "sent": "Message posted",
+    "onlyAspirant": "Only the aspirant may post messages here. You can view the conversation.",
+    "readOnly": "Read-only",
+    "sample1": "We need better street lighting near the main road.",
+    "sample2": "Water supply has been irregular in the last two weeks.",
+    "sample3": "Agree. We should raise this with the ward office.",
+    "labels": {
+      "aspirant": "Aspirant"
+    }
+  },
+  "adminDashboard": {
+    "title": "Prajaakeeya Admin Portal",
+    "yes": "Yes",
+    "no": "No",
+    "subtitle": "Overview of your ward management system",
+    "nav": {
+      "dashboard": "Overview",
+      "createWard": "Create Ward",
+      "upload": "Upload Booth PDFs",
+      "extraction": "Extraction Status",
+      "voterCount": "Voter Counts",
+      "users": "Users Lists",
+      "approvals": "Aspirant Approved",
+      "reports": "Reported List",
+      "results": "Voting Results",
+      "elections": "Elections"
+    },
+    "cards": {
+      "wards": "Total Wards",
+      "voters": "Registered Citizens",
+      "aspirants": "Aspirants",
+      "votes": "Votes Cast"
+    }
+  },
+  "adminElections": {
+    "title": "Elections",
+    "addElection": "Add Election",
+    "editElection": "Edit Election",
+    "edit": "Edit",
+    "delete": "Delete",
+    "noElections": "No elections found",
+    "createSuccess": "Election created successfully",
+    "updateSuccess": "Election updated successfully",
+    "deleteSuccess": "Election deleted successfully",
+    "deleteConfirmTitle": "Delete Election",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "validation": {
+      "required": "Both type and name are required"
+    },
+    "form": {
+      "type": "Election Type",
+      "name": "Election Name"
+    },
+    "table": {
+      "id": "ID",
+      "type": "Type",
+      "name": "Name",
+      "scope": "Scope",
+      "actions": "Actions"
+    }
+  },
+  "forms": {
+    "ward": {
+      "title": "Ward Information",
+      "subtitle": "Enter the ward details below",
+      "description": "Create a new ward with its details",
+      "number": "Ward Number",
+      "name": "Ward Name",
+      "wardLabel": "Ward",
+      "state": "State",
+      "parliamentary": "Parliamentary",
+      "assembly": "Assembly",
+      "zone": "Zone",
+      "category": "Category",
+      "municipality": "Municipality"
+    },
+    "upload": {
+      "title": "PDF Upload",
+      "subtitle": "Select ward and upload PDF files",
+      "description": "Upload booth-wise electoral roll PDFs for a ward",
+      "ward": "Ward",
+      "files": "Select Booth PDFs",
+      "selectedFiles": "Selected files"
+    },
+    "userSignup": {
+      "title": "Citizen Signup",
+      "phone": "Phone Number",
+      "otp": "One Time Password"
+    },
+    "aspirant": {
+      "electionInfoMessage": "This platform will be opened for aspirants to submit applications for the respective election only when the Election Commission announces the elections.",
+      "defaults": {
+        "name": "Voter User",
+        "party": "Independent"
+      },
+      "messages": {
+        "failedLoadWards": "Failed to load wards",
+        "fileSize2mb": "Upload failed. Please upload a smaller image (max 2 MB).",
+        "fileSize10mb": "File size exceeds 10MB limit",
+        "resumePdfOnly": "Resume must be a PDF file",
+        "epicImageOnly": "EPIC Card must be a JPG or PNG image",
+        "addressProofImageOnly": "Address Proof must be a JPG or PNG image",
+        "photoImageOnly": "Photo must be a JPG or PNG image",
+        "pdfOnly": "This document must be a PDF file",
+        "missingAspirantRecord": "Unable to upload document. Please ensure you have an aspirant record.",
+        "uploadFailed": "Upload failed",
+        "networkError": "Network error. Please check your connection and try again.",
+        "uploadTimeout": "Upload timed out. Please try with a smaller image.",
+        "uploadFailedMaybeLarge": "Upload failed - file may be too large",
+        "cameraNotReady": "Camera element not ready",
+        "cameraStartError": "Unable to start camera. Please reload and try again.",
+        "galleryImageOnly": "Please select a JPG or PNG image",
+        "noPhotoCaptured": "No photo captured",
+        "profilePictureUploadFailed": "Failed to upload profile picture",
+        "invalidWard": "Please select a valid ward",
+        "submitFailed": "Failed to submit",
+        "applicationSubmitted": "Application submitted successfully!"
+      },
+      "successDialog": {
+        "title": "Application submitted for Aspirant selection",
+        "message": "Your application has been recorded. Citizens will vote to decide your eligibility to contest in the real election.",
+        "thanks": "Thank you for stepping forward to work for the public."
+      },
+      "title": "Aspirant Registration",
+      "subtitle": "Register to become a candidate for your ward",
+      "formTitle": "Aspirant Information",
+      "WardReservation": "Ward Reservation:",
+      "formSubtitle": "Fill in your details below",
+      "oneWardOnly": "One aspirant can register for only one ward",
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "gender": "Gender",
+      "address": "Address",
+      "party": "Affiliation / Party",
+      "manifesto": "Manifesto",
+      "instagramLink": "Instagram Profile Link (Optional)",
+      "facebookLink": "Facebook Profile Link (Optional)",
+      "whatsappNumber": "WhatsApp Number (Optional)",
+      "twitterLink": "Twitter/X Profile Link (Optional)",
+      "steps": {
+        "candidateInfo": "Aspirant Information",
+        "sopAgreement": "SOP",
+        "valuesQuestions": "Questions & Answers",
+        "documents": "Resume & Documents",
+        "livePhoto": "Live Photo Capture",
+        "declaration": "Declaration & Agreement"
+      },
+      "sop": {
+        "title": "People's Representative (PR) SOP Flow Chart",
+        "subtitle": "Please read the complete SOP flow chart carefully",
+        "disclaimer": "People Representative(PR) should not take any decision without people's verdict received through polling. If any decision is made without people's verdict or variation to this verdict, it shall be appropriately justified with proper documentation.",
+        "agreeCheckbox": "I have read and understood the People's Representative SOP Flow Chart and agree to follow it",
+        "agreeButton": "I Agree & Continue",
+        "flowChart": {
+          "connectingWithPeople": "Connecting with people",
+          "channels": {
+            "technology": "Using Technology & Media",
+            "government": "Government Structure & Volunteers",
+            "publicContact": "Public Contact Centre",
+            "complaintBoxes": "Complaint Boxes",
+            "personalMeetings": "Personal Meetings (Gram & Ward Sabha)"
+          },
+          "pooling": "Pooling / collecting details on problems, needs and demands from the people with urgent, moderate and low priority and collect the ideas and suggestions of Subject Matters Expert separately.",
+          "segregation": "Segregation of issues / ideas with the expert's advice",
+          "actions": {
+            "administration": "Working with Administration",
+            "localBodies": "Discuss with People",
+            "rewards": "Rewards & Recognitions for good and implementable ideas"
+          },
+          "projects": {
+            "ongoing": "Ongoing Projects",
+            "new": "New Projects"
+          },
+          "planning": "PLANNING — Project (Budget with Activity Based Costing) & Work completion - Time schedules",
+          "plans": {
+            "a": "Plan A",
+            "b": "Plan B",
+            "c": "Plan C",
+            "d": "Plan D"
+          },
+          "publicOpinion": "Polling for Public Opinion",
+          "publicVerdict": "Public Verdict — Plan B",
+          "execution": "Execution of Work by PR with complete transparency authenticated by visual documentary evidence for presenting final report to the people",
+          "performanceAppraisal": "Polling will be conducted every six months to evaluate the people's representative",
+          "positiveResult": "Satisfactory",
+          "negativeResult": "Unsatisfactory",
+          "continue": "CONTINUE",
+          "corrections": "CORRECTIONS",
+          "positiveAction": "Continue the good work and prepare for the next evaluation poll after six months.",
+          "negativeAction": "If more than 50% of citizens reject the work, improvements must be made and re-evaluation conducted within 3 months. If rejected again, resignation from the position",
+          "blockchainNote": "Ultimate aim is to bring AI and Blockchain technology in all stages of Governance for complete transparency.",
+          "electionNote": "If the aspirant you selected gets elected in the actual election, this SOP will become live through the app and they will function according to it."
+        },
+        "legend": {
+          "people": "People Involvement",
+          "prOthers": "PR & Others Involvement",
+          "pr": "People Representative's Involvement"
+        },
+        "downloadTitle": "Download SOP",
+        "downloadEn": "Download SOP (English)",
+        "downloadKn": "Download SOP (Kannada)",
+        "uploadTitle": "Upload Signed SOP",
+        "uploadEn": "Upload SOP (English)",
+        "uploadKn": "Upload SOP (Kannada)"
+      },
+      "interview": {
+        "title": "The Service Worker's Interview (Aspirant Questionnaire)",
+        "subtitle": "Please provide clear written responses to the following 9 questions. Your answers will be stored permanently on the portal as a record of your commitment.",
+        "languageToggle": "Switch to Kannada",
+        "answerPlaceholder": "Type your answer here...",
+        "characterCount": "characters",
+        "questions": {
+          "q1": "Identity & Background: Who are you, what is your educational/professional background, and what specific skills do you bring to manage our ward?",
+          "q2": "The Resignation Pledge: Are you ready to sign a legal affidavit stating you will resign within 24 hours if the 6-month voter satisfaction poll falls below 50%?",
+          "q3": "No High Command: If your party (if any) gives an order that contradicts the digital vote of the ward citizens, which one will you follow?",
+          "q4": "Technical Competence: How will you ensure that every project budget (ABC Costing) is verified by the Expert Portal before it reaches the citizens for a poll?",
+          "q5": "Transparency: Do you agree to upload every single bill, receipt, and work-progress photo to the 'Live Ledger' within 24 hours of payment?",
+          "q6": "Emergency Protocol: How will you prove to the citizens that an 'emergency decision' was truly unavoidable and not a way to bypass our voting system?",
+          "q7": "Expert Consultation: Will you commit to consulting at least three registered experts from our portal for projects exceeding a budget of ₹1 Lakh?",
+          "q8": "Voter Feedback: How will you handle a situation where the citizens 'Correct' or 'Reject' a plan you have proposed?",
+          "q9": "The Primary Rule: If you lose in our internal 'Voter Primary Poll,' will you immediately withdraw your nomination and support the person we have chosen?"
+        }
+      },
+      "documents": {
+        "title": "Upload Required Documents",
+        "subtitle": "Please download the SOP of The Real Prajaakeeya, sign it in both language sections, and upload the signed document below.",
+        "agreementsTitle": "Please download and read the following documents before proceeding",
+        "agreements": {
+          "terms": "Agreement: Candidate Terms",
+          "property": "Property Declaration",
+          "conduct": "Code of Conduct"
+        },
+        "agreementChecks": {
+          "terms": "I have read Candidate Terms",
+          "property": "I have read Property Declaration",
+          "conduct": "I have read Code of Condu ct"
+        },
+        "resume": {
+          "title": "Resume (PDF)",
+          "description": "Upload your professional resume",
+          "button": "Upload Resume",
+          "format": "Max size: 5MB • Format: PDF"
+        },
+        "epic": {
+          "title": "EPIC / Voter ID (Front)",
+          "description": "Upload the front side of your voter ID card",
+          "button": "Upload Front",
+          "format": "Max size: 2MB • Format: JPG, PNG"
+        },
+        "epicBack": {
+          "title": "EPIC / Voter ID (Back)",
+          "description": "Upload the back side of your voter ID card",
+          "button": "Upload Back",
+          "format": "Max size: 2MB • Format: JPG, PNG"
+        },
+        "signedAgreement": {
+          "title": "Signed Agreement (PDF)",
+          "format": "Please upload the signed agreement PDF.",
+          "button": "Upload Signed Agreement"
+        },
+        "propertyDeclaration": {
+          "title": "Property Declaration (PDF)",
+          "format": "Please upload the signed property declaration PDF.",
+          "button": "Upload Property Declaration"
+        },
+        "codeOfConduct": {
+          "title": "Code of Conduct (PDF)",
+          "format": "Please upload the signed code of conduct PDF.",
+          "button": "Upload Code of Conduct"
+        },
+        "downloadSop": "Download the SOP → Print it → Sign in both English and regional language sections → Convert it to PDF → Upload it.",
+        "signAndUploadSop": "Upload signed SOP below.",
+        "signAndUpload": "Sign and Upload",
+        "addressProof": {
+          "title": "Address Proof",
+          "description": "Upload address verification document",
+          "button": "Upload Address Proof",
+          "format": "Max size: 2MB • Format: JPG, PNG"
+        },
+        "photo": {
+          "title": "Recent Photo",
+          "description": "Upload a recent passport-size photo",
+          "button": "Upload Photo",
+          "format": "Max size: 1MB • Format: JPG, PNG"
+        },
+        "uploaded": "Uploaded",
+        "uploading": "Uploading..."
+      },
+      "livePhoto": {
+        "title": "Live Photo Capture",
+        "subtitle": "Capture your live photo for verification",
+        "instructions": "Position your face within the frame and click Capture",
+        "description": "We need a live photo for identity verification",
+        "alignFace": "Align your face within the oval guide",
+        "startCamera": "Start Camera",
+        "uploadFromGallery": "Upload from Gallery",
+        "capture": "Capture Photo",
+        "takePhoto": "Take Photo",
+        "retake": "Retake Photo",
+        "confirm": "Continue",
+        "cameraError": "Unable to access camera",
+        "uploadFromFile": "Upload From File",
+        "backCamera": "Back Camera",
+        "frontCamera": "Front Camera",
+        "captureSelfie": "Capture Selfie",
+        "capturing": "Capturing…"
+      },
+      "declaration": {
+        "title": "Declaration & Agreement",
+        "subtitle": "Please read and agree to the following declaration",
+        "footer": "✓ Declaration confirmed — ready to proceed",
+        "instruction": "Agree to the declaration, provide signature & place to continue",
+        "place": "Place",
+        "checkbox": {
+          "agreed": "The Citizens who elected me are my employers who pay my salary and have appointed me to work.As per this SOP (Standard Operating Procedure), I will work according to the wishes of the citizens and will undergo an evaluation (polling) of my performance every 6 months throughout the 5-year term through this site/app.If more than 50% of the citizens express dissatisfaction with my work and I fail the evaluation, I will improve my performance within the next 3 months and undergo another evaluation through this site/app.If again more than 50% of the citizens reject my performance, I will resign from my position.",
+          "agreed1": "I voluntarily declare that if I receive fewer votes than another aspirant, I will support the aspirant who receives the highest votes and will not contest in the real election. I understand that this platform does not restrict anyone from contesting elections.",
+           "agreed2":"I register as an aspirant with my consent. I agree to share my contact details and be responsible for all my interactions.",
+          "agreeLabel": "I have read all the above details and I agree to them."
+        },
+        "signature": {
+          "label": "Name",
+          "placeholder": "Type your full name as signature",
+          "date": "Date"
+        }
+      },
+      "navigation": {
+        "back": "Back",
+        "next": "Next",
+        "submit": "Submit"
+      },
+      "validation": {
+        "allAnswersRequired": "Please answer all 9 questions before proceeding",
+        "allDocumentsRequired": "Please upload all required documents",
+        "photoRequired": "Please capture your live photo",
+        "allCheckboxesRequired": "Please confirm all declarations",
+        "signatureRequired": "Please provide your signature"
+      },
+      "linkedinLink": "LinkedIn Profile Link (Optional)",
+      "twitterLink": "Twitter/X Profile Link (Optional)"
+    },
+    "voting": {
+      "ward": "Ward",
+      "aspirant": "Preferred Aspirant"
+    }
+  },
+  "voter": {
+    "name": "Name",
+    "role": "Role",
+    "corporation": "Corporation",
+    "ward": "Ward",
+    "booth": "Booth Name"
+  },
+  "userDashboard": {
+    "aspirantBanner": "Through this application, you can connect with people across multiple channels—direct meetings, video interactions, live sessions on Facebook and Instagram, and chat—while continuously evaluating yourself",
+     "title": "Prajaakeeya Portal",
+    "welcome": "Welcome",
+    "subtitle": "Manage your participation in the ward selection process",
+    "numberOfVotes": "Number of Votes",
+    "addPhotoFrame": "Add Photo Frame",
+    "noPosts": "No posts yet.",
+    "detailsTitle": "Voter Details",
+    "details": {
+      "name": "Name",
+      "relativeName": "Father / Husband Name",
+      "epicId": "VOTER ID",
+      "wardNumber": "Ward Number",
+      "corporation": "Corporation",
+      "booth": "Booth Name",
+      "assembly": "Assembly",
+      "parliamentary": "Parliament",
+      "state": "State",
+      "constituency": "Constituency"
+    },
+    "upcomingElection": "Upcoming Election",
+    "electionDate": "Date",
+    "votingWindow": "Election Voting Window",
+    "votingPeriod": "Voting Period",
+    "votingOpen": "🟢 Voting Open",
+    "votingClosed": "🔴 Voting Closed",
+    "votingNotYetStarted": "Voting Not Yet Started",
+    "noVotingWindow": "Voting Not Yet Started",
+    "epic": "EPIC Verification",
+    "actions": {
+      "register": "Register as Aspirant",
+      "registerDesc": "Register as an aspirant for your ward",
+      "vote": "Vote Now",
+      "voteDesc": "Cast your vote for your preferred candidate",
+      "candidates": "My Area Aspirants",
+      "candidatesDesc": "View All Aspirants from Your Ward",
+      "voters": "Registered Citizens",
+      "votersDesc": "See all registered citizens",
+      "discussions": "Ward Discussions",
+      "discussionsDesc": "Discuss issues with citizens in your ward",
+      "civicIssues": "Public Issues",
+      "civicIssuesDesc": "Report Your Public Issues",
+      "registerAspirant": "Register as Aspirant",
+      "registerAspirantDesc": "Apply to become an aspirant in your ward",
+      "clickHere": "Click Here",
+      "howUPPWorks": "SOP Prajaakeeya",
+      "howPrajakeeyaWorks": "How Prajaakeeya Works",
+      "howWorksTitle": "Check the SOP to understand how the Prajakeeya system works.",
+      "continue": "Continue",
+      "registrationComplete": "Registration Complete",
+      "myProfile": "My Profile",
+      "videoMeetings": "Video Meetings",
+      "meetCitizens": "Meet Citizens",
+      "chatWithCitizens": "Chat with Citizens",
+      "chatWithAspirants": "Chat with Aspirants",
+      "continueAspirantRegistration": "Continue Registration",
+      "pendingAspirantAlert": "Your aspirant registration is incomplete. Please complete the document uploads to proceed with your application.",
+      "registeredAspirants": "All Aspirants",
+      "registeredAspirantsDesc": "See all registered aspirants"
+    },
+    "frame": {
+      "brandName": "Prajaakeeya",
+      "responsibleVoter": "I am a responsible voter"
+    },
+    "framePrompt": {
+      "title": "Add Frame",
+      "tapToUpload": "Tap photo to upload from gallery or camera",
+      "download": "Download",
+      "share": "Share Now"
+    },
+    "aspirant": {
+      "title": "Aspirant Profile & Submissions",
+      "subtitle": "Manage your aspirant application, documents, and public interaction links.",
+      "role": "Aspirant",
+      "roleLabel": "Role: {{role}}",
+      "tabs": {
+        "profile": "My Profile",
+        "meetings": "My Meetings",
+        "chat": "Chat with Citizens",
+        "posts": "Meet Citizens",
+        "requests": "Direct Meet Requests"
+      },
+      "requests": "Direct Meet Requests",
+      "profileTitle": "Aspirant Profile",
+      "documentsTitle": "Documents Uploaded",
+      "publicInteractionTitle": "Video Chat Link",
+      "publicInteractionDesc": "This link will be visible to citizens for public interaction and interviews.",
+      "meetTitleLabel": "Meeting Title",
+      "meetTitlePlaceholder": "e.g., Ward Discussion Meeting",
+      "meetDescriptionLabel": "Description",
+      "meetDescriptionPlaceholder": "Brief description of the meeting",
+      "meetLinkLabel": "Meeting Link",
+      "meetLinkPlaceholder": "https://meet.google.com/...",
+      "meetPlatformLabel": "Platform",
+      "meetDateLabel": "Meeting Date",
+      "meetTimeLabel": "Meeting Time",
+      "meetStartTimeLabel": "Start Time",
+      "meetEndTimeLabel": "End Time",
+      "declarationsTitle": "Declarations & Confirmation",
+      "declarationsAccepted": "✅ You have read and accepted the People’s Representative SOP and Code of Conduct. These submissions are binding and subject to public accountability.",
+      "declarationPrompt": "Please accept the declaration.",
+      "statusTitle": "Application Status & Next Steps",
+      "statusMessages": {
+        "underReview": "Your application is under review by the committee.",
+        "pending": "Your application has been submitted and will be reviewed shortly.",
+        "submitted": "Your application has been submitted and is awaiting review.",
+        "approved": "Your aspirant profile is now visible to citizens.",
+        "rejected": "Corrections required. Please re-upload requested documents.",
+        "none": "No application status available yet."
+      },
+      "scheduledMeetings": "Scheduled Meetings ({{count}})",
+      "noMeetings": "No meetings scheduled yet.",
+      "meetingCompleted": "Completed",
+      "addNote": "Add Note",
+      "withdraw": "Withdraw My Application",
+      "withdrawn": "Your aspirant registration has been withdrawn.",
+      "withdrawFailed": "Failed to withdraw your aspirant registration. Please try again.",
+      "withdrawBlockedDuringVoting": "You cannot withdraw your candidacy while voting is active.",
+      "withdrawConfirmTitle": "Withdraw Registration",
+      "withdrawConfirmText": "Are you sure you want to withdraw your aspirant registration? This action cannot be undone.",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "chatTitle": "Chat with Citizens",
+      "chatSubtitle": "Have a direct text conversation with citizens from your ward to listen, respond, and engage transparently.",
+      "joinInterview": "Join Interview",
+      "signedSOP": "Signed SOP",
+      "sopEnglish": "Signed English SOP",
+      "sopKannada": "Signed Kannada SOP",
+      "postsTitle": "Direct meet with citizen",
+      "refreshPostsAria": "Refresh posts",
+      "createDirectPost": "Schedule A Direct meet",
+      "dmTitle": "Title",
+      "dmDescription": "Description",
+      "dmLocation": "Location",
+      "dmGoogleMapsLink": "Google Map Link",
+      "dmDate": "Date",
+      "dmTime": "Start Time",
+      "dmEndTime": "End Time",
+      "loadingPosts": "Loading posts…",
+      "attending": "Attending",
+      "scheduleTitle": "Schedule Meeting",
+      "schedulePrompt": "Provide a confirmed date & time for the meeting.",
+      "scheduledDateLabel": "Scheduled date & time",
+      "scheduleNote": "This will be sent to the voter and saved as the meeting time.",
+      "scheduling": "Scheduling…",
+      "confirmAccept": "Confirm & Accept",
+      "postDirectTitle": "Post Direct Meet",
+      "field": {
+        "title": "Title",
+        "description": "Description",
+        "location": "Location",
+        "note": "Note"
+      },
+      "requestsTable": {
+        "voter": "Voter",
+        "message": "Message"
+      },
+      "noRequests": "No requests yet.",
+      "requestErrorPrefix": "Error:",
+      "lastChecked": "Last checked:",
+      "pendingTitle": "Application Under Review",
+      "pendingMessage": "Your application is under review. We will verify your details and documents and update you soon.",
+      "fieldLabels": {
+        "status": "Status",
+        "wardNumber": "Ward Number",
+        "assembly": "Assembly",
+        "applicationDate": "Application Date"
+      },
+      "posting": "Posting…",
+      "post": "Post",
+      "directPosted": "Direct meet posted",
+      "directMeetError": "Failed to post direct meet",
+      "postDeleted": "Post deleted",
+      "postDeleteFailed": "Failed to delete post",
+      "deletePostAria": "Delete post",
+      "addNoteTitle": "Add Meeting Note",
+      "addNotePrompt": "Add notes or summary after the meeting is completed.",
+      "saving": "Saving…",
+      "saveNote": "Save Note",
+      "noteSaved": "Note saved",
+      "deleted": "Meeting deleted",
+      "deleteForbidden": "You cannot delete this meeting because it was created by another aspirant.",
+      "deleteFailed": "Failed to delete meeting"
+    }
+  },
+  "status": {
+    "uploadSuccess": "Files uploaded successfully",
+    "wardCreated": "Ward registered",
+    "aspirantRegistered": "Aspirant registered",
+    "voteCast": "Vote recorded"
+  },
+  "report": "Report",
+  "reported": "Reported",
+  "reportReason": "Report Reason",
+  "reportReason1": "Please provide a detailed reason for this report.",
+  "attachmentRequired": "Attachment (Required)",
+  "reportAttachments": "Add attachments",
+  "pages": {
+    "landing": {
+      "kicker": "Prajaakeeya",
+      "title": "Ward-level democracy for Bengaluru",
+      "subtitle": "A transparent, citizen-first primary to choose BBMP ward aspirants using verified voter rolls.",
+      "ctaVoter": "Login",
+      "ctaAdmin": "Admin Login",
+      "voterAssociation": "Voter Association",
+      "note": "Your vote is tied to your ward. One voter, one vote, one ward.",
+      "homePage": {
+        "title": "PRAJAAKEEYA",
+        "association": "Citizens Association",
+        "tagline": "\"This Voter's Association is not connected with any parties.\nMy participation itself is my high command, and technology is my leader.\"",
+        "proceed": "Proceed",
+        "noEntryTitle": "🚫 NO ENTRY for",
+        "noEntryBadge": "NO ENTRY",
+        "dreamerLabel": "POSSESSED PEOPLE",
+        "dreamerQuote": "My leader will fix everything.",
+        "hopelessLabel": "The Hopeless People",
+        "hopelessQuote": "Nothing can change here.",
+        "welcomeTitle": "✅ WELCOME",
+        "welcomeLabel": "WELCOME",
+        "ownerLabel": "The Owner",
+        "ownerDesc": "\"This is MY country, my state, my town, my village. The government runs on MY tax money. I'm not a follower I am the LEADER( People who are awake )\"",
+        "gaveUp": "Gave up",
+        "defeatedMindset": "Defeated mindset",
+        "blindFollower": "Blind follower",
+        "noSelfWill": "No self-will",
+        "ownerQuote1": "This is MY country, my state, my town, my village.",
+        "ownerQuote2": "The government runs on MY tax money.",
+        "leaderDeclaration": "I'm not a follower — I am the ",
+        "leader":"LEADER",
+        "awakeLabel": "People who are awake"
+      },
+      "nav": {
+        "home": "Home",
+        "aspirants": "Aspirants",
+        "candidates": "aspirants",
+        "elections": "Elections",
+        "about": "About Prajakeeya",
+        "contact": "Contact Us"
+      },
+      "slider1": {
+        "title": "A new brand of politics for Bengaluru",
+        "subtitle": "Citizen-led ward selection with verified voter rolls and transparent outcomes.",
+        "cta": "Join the Primary"
+      },
+      "slider2": {
+        "title": "Ward-level accountability starts here",
+        "subtitle": "Local leaders, local priorities, and one verified vote per ward.",
+        "cta": "Verify EPIC"
+      },
+      "slider3": {
+        "title": "",
+        "subtitle": "",
+        "cta": " "
+      },
+      "animatedTitles": [
+        "Our Rights, Our Voice",
+        "Power in the Hands of the People",
+        "By the People, For the People"
+      ],
+      "animatedSubtitle": "Every citizen shapes our future.",
+      "cards": {
+        "aspirant": {
+          "title": "Aspirant",
+          "description": "Stand for your community. Share your vision. Lead with skill and transparency.",
+          "bullets": [
+            "Represent your community with transparent decision-making.",
+            "Advocate ideas based on skill and public interest.",
+            "Engage with voters directly to build trust.",
+            "Lead initiatives focused on people’s needs."
+          ],
+          "cta": "Login as an Aspirant"
+        },
+        "voter": {
+          "title": "Voter",
+          "description": "Your voice decides the future. Explore aspirants. Shape decisions. Be heard.",
+          "bullets": [
+            "Review aspirants and their plans before supporting.",
+            "Raise local concerns and participate in dialogue.",
+            "Cast your voice where it matters.",
+            "Hold leaders accountable through active participation."
+          ],
+          "cta": "Login as a Voter"
+        }
+      },
+      "pillars": {
+        "election": {
+          "title": "Accountability",
+          "body": "Every decision is tied to verified voter feedback and public accountability."
+        },
+        "mission": {
+          "title": "Responsibility",
+          "body": "Ward-first leadership that owns outcomes and delivers measurable results."
+        },
+        "issues": {
+          "title": "Transparency",
+          "body": "Open processes, visible progress, and public reporting at every step."
+        }
+      },
+      "learnMore": "Learn more",
+      "sopOverline": "Standard Operating Procedure",
+      "foundation": {
+        "kicker": "OUR FOUNDATION",
+        "title": "Core Values That Define Us",
+        "subtitle": "Three pillars that guide every decision, action, and commitment we make to the people of Karnataka."
+      },
+      "features": {
+        "item1": {
+          "title": "People-Centric",
+          "body": "Governance designed around citizen needs, not political convenience."
+        },
+        "item2": {
+          "title": "Democratic Selection",
+          "body": "aspirants chosen through transparent, ward-level processes."
+        },
+        "item3": {
+          "title": "Verified Citizens",
+          "body": "Every participant authenticated through EPIC verification."
+        },
+        "item4": {
+          "title": "Unique Identity",
+          "body": "No duplicate entries, no manipulation, pure democracy."
+        }
+      },
+      "journey": {
+        "kicker": "OUR JOURNEY",
+        "title": "History & Milestones",
+        "subtitle": "The evolution of a people-first political movement.",
+        "cards": {
+          "2017": {
+            "title": "Prajakeeya Vision Announced",
+            "body": "The foundational philosophy of people-centric governance was publicly articulated, setting the stage for a new kind of political framework."
+          },
+          "2018": {
+            "title": "Party Registered with ART Framework",
+            "body": "Prajaakeeya was officially registered on September 18, 2018, with the Accountability, Responsibility, and Transparency (ART) framework."
+          },
+          "2019": {
+            "title": "Lok Sabha Elections Contested",
+            "body": "Contested the 2019 Lok Sabha elections across Karnataka with citizen aspirants and a non-celebrity policy."
+          }
+        }
+      },
+      "about": {
+        "title": "What is Prajaakeeya?",
+        "summary": "Prajaakeeya is a Karnataka-based political movement focused on people-centric governance. It promotes transparent candidate selection, accountable leadership, and citizen participation anchored in verified electoral data.",
+        "historyTitle": "History & Milestones",
+        "history1": "Announced in 2017 by Upendra with the Prajaakeeya vision of people-first administration.",
+        "history2": "Registered as Prajaakeeya in 2018 with the ART framework: Accountability, Responsibility, Transparency.",
+        "history3": "Contested the 2019 Lok Sabha elections across Karnataka with citizen aspirants and a non-celebrity policy.",
+        "quickFactsTitle": "Quick Facts",
+        "abbreviation": {
+          "label": "Abbreviation:",
+          "value": "Prajaakeeya"
+        },
+        "founder": {
+          "label": "Founder/President:",
+          "value": "Upendra"
+        },
+        "founded": {
+          "label": "Founded:",
+          "value": "18 September 2018"
+        },
+        "headquarters": {
+          "label": "Headquarters:",
+          "value": "Bengaluru, Karnataka"
+        },
+        "ideology": {
+          "label": "Ideology:",
+          "value": "Prajaakeeya (people-centric)"
+        },
+        "source": "Read more on Wikipedia",
+        "compareTitle": "Prajaakeeya vs Conventional Politics",
+        "compareBody": "Prajaakeeya foregrounds citizen participation and local accountability, in contrast to top-down party politics (Rajakeeya).",
+        "notesTitle": "Notes",
+        "notesBody": "The party emphasises neutral, data-driven campaigning and community platforms rather than promotional visuals.",
+        "artTitle": "ART Framework",
+        "governance": {
+          "title": "Governance & Candidate Model",
+          "body": "Prajaakeeya follows an open candidature model with transparent selection, background checks, and a focus on local accountability. Centralised party funding is discouraged to ensure independence."
+        },
+        "model": {
+          "pointsTitle": "Key points",
+          "points": [
+            "Open candidature with selection tests and interviews",
+            "Background and integrity checks for aspirants",
+            "No central party funds; focus on local accountability",
+            "Uniform discipline and public reporting"
+          ]
+        },
+        "performance": {
+          "title": "Electoral Performance",
+          "body": "Prajaakeeya contested the 2019 Lok Sabha elections and has engaged in local contests, emphasising technology-first campaigning and civic participation."
+        },
+        "footerNote": "This page provides an informational overview of Prajaakeeya. Content is neutral and presented for clarity."
+      },
+      "core": {
+        "kicker": "OUR BELIEFS",
+        "title": "Core Principles",
+        "subtitle": "The non-negotiable foundations of Prajaakeeya governance.",
+        "item1": {
+          "title": "Voter-centric party",
+          "body": "Citizens are the leaders, and the system is driven by their choices."
+        },
+        "item2": {
+          "title": "Cashless model",
+          "body": "No party fund collections; essential expenses are borne by the party president."
+        },
+        "item3": {
+          "title": "No workers/cadre or regional offices",
+          "body": "A structural departure from traditional party organization."
+        },
+        "item4": {
+          "title": "SOP-led selection and governance",
+          "body": "A defined SOP guides how representatives are chosen and how they function."
+        }
+      },
+      "sopFlow": {
+        "title": "People’s Representative (PR) SOP Flow",
+        "coreRule": "All the citizens together should select a candidate and send them to the election. Once that candidate is elected and becomes a public representative, they must come to this app and website and perform their duties according to the SOP (Standard Operating Procedure).",
+        "step1": {
+          "title": "Connecting with people",
+          "items": [
+            "Public contact channels",
+            "Using technology & media",
+            "Government structure & volunteers",
+            "Public contact centre",
+            "Complaint boxes",
+            "Personal meetings (Gram & Ward Sabha)"
+          ]
+        },
+        "step2": {
+          "title": "Collecting issues and ideas",
+          "items": [
+            "Pooling details on problems, needs and demands with urgent, moderate and low priority.",
+            "Collecting ideas and suggestions of intelligent people separately.",
+            "Segregation of issues/ideas with experts’ advice.",
+            "Rewards & recognitions for good and implementable ideas."
+          ]
+        },
+        "step3": {
+          "title": "Presenting and executing through the system",
+          "items": [
+            "Working with administration",
+            "Follow up with local bodies"
+          ]
+        },
+        "step4": {
+          "title": "Projects and planning",
+          "items": [
+            "Project types: ongoing projects and new projects.",
+            "Planning: project budget (activity-based costing) & time schedules.",
+            "Plans: Plan A, Plan B, Plan C, Plan D."
+          ]
+        },
+        "step5": {
+          "title": "Polling and public verdict",
+          "body": "Polling for public opinion → Public verdict → Plan B."
+        },
+        "step6": {
+          "title": "Transparent execution and reporting",
+          "items": [
+            "Execution by PR with complete transparency, authenticated by visual documentary evidence for final reporting.",
+            "PR should submit polling details (visual documents of work) and people’s verdict to the UPP party."
+          ]
+        },
+        "step7": {
+          "title": "Performance appraisal and outcomes",
+          "items": [
+            "Polling for PR performance appraisal.",
+            "Positive result → Continue.",
+            "Negative result → Corrections.",
+            "PR gets one or maximum two more chances to improve; if unsuccessful, he should resign."
+          ]
+        },
+        "step8": {
+          "title": "Governance tech vision",
+          "body": "Ultimate aim: bring blockchain technology to all stages of governance for complete transparency."
+        }
+      },
+      "footer": {
+        "title": "Prajaakeeya",
+        "subtitle": "People-led ward selection with verified voter rolls and transparent outcomes.",
+        "rights": "© 2026 Prajaakeeya. All rights reserved.",
+        "source": "Read more on Wikipedia"
+      },
+      "ideologyTitle": "Prajaakeeya Ideology",
+      "ideologyBody": "People-first governance, data-backed decisions, and accountable leadership built from the ward up. This platform makes candidate selection transparent and grounded in the real electorate.",
+      "sopTitle": "SOP for Ward Selection",
+      "sop1": {
+        "title": "Verify Citizens",
+        "body": "Import official electoral rolls to anchor every vote to a real EPIC."
+      },
+      "sop2": {
+        "title": "Register Aspirants",
+        "body": "Citizens declare their intent and publish a manifesto for their ward."
+      },
+      "sop3": {
+        "title": "Approve & Publish",
+        "body": "Admin review ensures credible aspirants and clean ward lists."
+      },
+      "sop4": {
+        "title": "Vote & Declare",
+        "body": "Verified ward citizens cast a single vote; results are transparent."
+      },
+      "feature1": {
+        "title": "Real roll verification",
+        "body": "EPIC validation ensures ward integrity and prevents cross-ward voting."
+      },
+      "feature2": {
+        "title": "Single vote guarantee",
+        "body": "Each verified voter can cast exactly one ballot in their ward."
+      },
+      "feature3": {
+        "title": "Visible outcomes",
+        "body": "Aggregated results help the party award the B-Form confidently."
+      },
+      "elections": {
+        "bbmp": {
+          "title": "BBMP Ward Elections 2025",
+          "level": "Municipal Corporation",
+          "status": "upcoming",
+          "date": "15 March 2025",
+          "location": "Bengaluru",
+          "candidates": "198 aspirants"
+        },
+        "assembly2023": {
+          "title": "Karnataka Assembly Elections 2023",
+          "level": "State Assembly",
+          "status": "completed",
+          "date": "10 May 2023",
+          "location": "Karnataka",
+          "stats": "224 aspirants • 28,500,000 Votes"
+        },
+        "loksabha2024": {
+          "title": "Lok Sabha Elections 2024",
+          "level": "Parliamentary",
+          "status": "completed",
+          "date": "26 April 2024",
+          "location": "Karnataka (28 constituencies)",
+          "stats": "28 aspirants • 32,000,000 Votes"
+        },
+        "gram2024": {
+          "title": "Gram Panchayat Elections 2024",
+          "level": "Local Body",
+          "status": "ongoing",
+          "date": "20 December 2024",
+          "location": "Rural Karnataka",
+          "stats": "5600 aspirants • 12,500,000 Votes"
+        },
+        "zilla2024": {
+          "title": "Zilla Panchayat Elections 2024",
+          "level": "District Council",
+          "status": "completed",
+          "date": "15 November 2024",
+          "location": "All Districts",
+          "stats": "1200 aspirants • 18,000,000 Votes"
+        },
+        "urban2025": {
+          "title": "Urban Local Body Elections 2025",
+          "level": "Municipal",
+          "status": "upcoming",
+          "date": "1 June 2025",
+          "location": "All Urban Areas",
+          "stats": "450 aspirants"
+        }
+      },
+      "extraction": {
+        "title": "Extraction Progress",
+        "subtitle": "Monitor the progress of voter data extraction from PDFs",
+        "trigger": "Start Extraction",
+        "empty": "No active jobs"
+      },
+      "voterCount": {
+        "title": "Voter Count by Ward",
+        "subtitle": "Total number of registered citizens in each ward",
+        "listDescription": "List of citizens",
+        "ward": "Ward",
+        "total": "Total Citizens",
+        "attachments": "Add attachments"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "subtitle": "Get in touch with us for any queries or support — we'll respond as soon as possible.",
+        "address": "Address",
+        "addressValue": "Your address here",
+        "phone": "Phone",
+        "phoneValue": "+91 12345 67890",
+        "email": "Email",
+        "emailValue": "contact@yourdomain.org",
+        "workingHours": "Working Hours",
+        "workingHoursValue": "Mon – Fri, 9 AM – 6 PM",
+        "footer": {
+          "tagline": "People-led ward selection with verified voter rolls and transparent outcomes.",
+          "copyright": "© 2026 Prajaakeeya. All rights reserved.",
+          "readMore": "Read more on Wikipedia"
+        }
+      },
+      "epic": {
+        "title": "EPIC Verification",
+        "subtitle": "Verify your EPIC number and find your assigned ward",
+        "epicLabel": "Enter EPIC Number",
+        "assigned": "Assigned Ward",
+        "verified": "EPIC Verified Successfully!",
+        "enterEpic": "Please enter a valid EPIC number",
+        "error": "Invalid EPIC number"
+      },
+      "aspirantApproval": {
+        "title": "Aspirant Approved",
+        "subtitle": "Review and approve aspirants for wards",
+        "stateSelect": "Choose State",
+        "parliamentarySelect": "Choose Parliamentary",
+        "assemblySelect": "Choose Assembly",
+        "wardSelect": "Choose Ward",
+        "selectWard": "Select a ward to view aspirants",
+        "approve": "Approve",
+        "noAspirants": "No aspirants found for this ward"
+      },
+      "voting": {
+        "title": "Cast Your Vote",
+        "subtitle": "Select your preferred candidate for your ward",
+        "restrictionsTitle": "Voting Rights",
+        "restrictionsIntro": "You will receive voting rights once you complete the activity below.",
+        "restrictions": {
+          "item2": "Interviewing ,chat with aspirant, directly meeting, or having a phone call with a minimum of two aspirants."
+        },
+        "restrictionsConclusion": "After completing any one of these activities, your voting rights will be granted.",
+        "enableTitle": "Enable Your Vote",
+        "preVotingNote": "Before voting, please connect with aspirants by chatting, calling, joining meetings, or requesting a direct meeting.",
+        "formTitle": "Voting Form",
+        "formSubtitle": "Choose your candidate carefully",
+        "wardLabel": "Ward Number",
+        "assemblyLabel": "Assembly",
+        "votesLabel": "Votes",
+        "viewDetails": "View Details",
+        "ward": "Ward",
+        "aspirant": "Aspirant",
+        "noCandidates": "No approved aspirants available",
+        "voted": "Voted",
+        "confirmTitle": "Confirm Vote",
+        "confirmText": "Are you sure you want to cast your vote? This action cannot be undone.",
+        "selectedCandidate": "Selected Candidate",
+        "confirmVote": "Confirm Vote",
+        "submit": "Cast Vote",
+        "youHaveVotedFor": "You have voted for",
+        "votingFor": "Voting For:",
+        "verifyDialogTitle": "Verify OTP",
+        "enterOtp": "Enter OTP",
+        "otpPlaceholder": "000000",
+        "otpExpires": "OTP expires in {{time}}",
+        "otpExpired": "OTP expired.",
+        "resendOtp": "Resend OTP",
+        "verifyAndVote": "Verify & Vote",
+        "successTitle": "Thank you for being responsible citizens and participating in the voting process.",
+        "successLine1": "Once the voting process is completed, you will be able to see the aspirant who has received the highest number of votes. That aspirant will represent your ward and contest in the actual election.If the aspirant wins the election, we will provide complete instructions on this site/app about how the elected representative should work according to the SOP.",
+        "successLine2": "Citizens will also be able to guide, monitor, and communicate with the representative through this website/app to ensure that the work is carried out as per the citizens’ expectations.",
+        "votedForLabel": "Voted For:",
+        "close": "Close",
+        "sopTitle": "Voter Standard operating procedure (SOP)",
+        "sopIntro": "Please read and acknowledge the following before casting your vote:",
+        "sopAgreeButton": "I Agree & Proceed",
+        "sopCancelButton": "Cancel"
+      },
+      "candidateDetails": {
+        "tabs": {
+          "profile": "Aspirant Profile",
+          "meetings": "Video Meetings",
+          "posts": "Meet Citizens",
+          "directCall": "Phone Call"
+        },
+        "labels": {
+          "fullName": "Full name",
+          "age": "Age",
+          "gender": "Gender",
+          "education": "Education",
+          "occupation": "Occupation",
+          "phone": "Phone",
+          "address": "Address",
+          "wardName": "Ward Name",
+          "state": "State",
+          "parliamentary": "Parliamentary Constituency",
+          "assembly": "Assembly Constituency",
+          "about": "About Me",
+          "documents": "Documents & Declarations",
+          "sopConfirmation": "SOP Confirmation",
+          "sopText": "This candidate has read and accepted the People's Representative SOP and agrees to public accountability and performance review.",
+          "verified": "Verified",
+          "pending": "Pending verification",
+          "view": "View",
+          "wardNumber": "Ward Number"
+        },
+        "meetings": {
+          "title": "Meeting Details",
+          "googleMeetings": "Video Meetings",
+          "meeting": "Meeting",
+          "meetingNum": "Meeting {{num}}",
+          "titleLabel": "Title",
+          "notesLabel": "Notes",
+          "statusLabel": "Status",
+          "completed": "Completed",
+          "upcoming": "Upcoming",
+          "notesButton": "Notes",
+          "nextMeetingDate": "Next Meeting Date",
+          "nextMeeting": "Next Meeting",
+          "otherMeetings": "Other meetings ({{count}})",
+          "startTime": "Start Time",
+          "timeZone": "Time Zone",
+          "timeZoneValue": "IST (India)",
+          "startsIn": "Starts in: {{hours}}h {{minutes}}m",
+          "platform": "Platform",
+          "platformValue": "Google Meet",
+          "linkActive": "Link will be active when meeting starts",
+          "notScheduled": "Meeting not scheduled yet",
+          "joinGoogleMeet": "Join video Meet",
+          "description": "Description"
+        },
+        "actions": {
+          "joinChat": "Join Chat",
+          "directMeet": "Request for Direct Meet",
+          "viewProfile": "View Profile",
+          "voteNow": "Vote Now"
+        },
+        "instructions": {
+          "title": "Participation Instructions",
+          "onTime": "Join the meeting on time",
+          "muteMic": "Keep your microphone muted unless invited",
+          "raiseHand": "Use the \"Raise Hand\" feature to speak",
+          "respectful": "Be respectful and concise",
+          "followMod": "Follow moderator instructions",
+          "recorded": "Meeting may be recorded for transparency",
+          "misconduct": "Misconduct may lead to removal"
+        },
+        "posts": {
+          "noPosts": "No posts yet.",
+          "likes": "{{count}} like",
+          "likes_plural": "{{count}} likes",
+          "visiting": "Visits",
+          "visit": "Visit",
+          "attending": "{{count}} Attending"
+        },
+        "directCall": {
+          "title": "Direct Call",
+          "description": "Connect directly with the aspirant via phone call",
+          "phoneLabel": "Phone Number",
+          "callNow": "Call Now",
+          "noPhone": "Phone number not available"
+        },
+        "booking": {
+          "title": "Request a Direct Meet",
+          "messageLabel": "Message",
+          "messagePlaceholder": "Tell the aspirant what you'd like to discuss",
+          "note": "The aspirant will receive your request and confirm a meeting time.",
+          "cancel": "Cancel",
+          "sendRequest": "Send Request",
+          "sending": "Sending…",
+          "success": "Booking request sent",
+          "loginRequired": "Please login to mark attendance"
+        },
+        "dialog": {
+          "meetingNotes": "Meeting Notes",
+          "noNotes": "No notes available.",
+          "close": "Close",
+          "noDocument": "No document available"
+        },
+        "otherAspirants": {
+          "title": "Other Aspirants",
+          "noAspirants": "No other aspirants yet."
+        }
+      },
+      "results": {
+        "title": "Karnataka Elections",
+        "subtitle": "Overview of elections in Karnataka",
+        "selectWard": "Select Ward",
+        "aspirant": "Aspirant",
+        "votes": "Votes",
+        "noResults": "No results available for this ward"
+      },
+      "error": {
+        "title": "Page not found",
+        "back": "Go Home"
+      },
+      "loading": {
+        "title": "Loading data..."
+      }
+    },
+    "voting": {
+      "title": "Cast Your Vote",
+      "subtitle": "Select your preferred candidate for your ward",
+      "formTitle": "Voting Form",
+      "formSubtitle": "Choose your candidate carefully",
+      "wardLabel": "Ward Number",
+      "assemblyLabel": "Assembly",
+      "votesLabel": "Votes",
+      "viewDetails": "View Details",
+      "ward": "Ward",
+      "aspirant": "Aspirant",
+      "noCandidates": "No approved aspirants available",
+      "voted": "Voted",
+      "confirmTitle": "Confirm Vote",
+      "confirmText": "Are you sure you want to cast your vote? This action cannot be undone.",
+      "selectedCandidate": "Selected Candidate",
+      "confirmVote": "Confirm Vote",
+      "submit": "Cast Vote",
+      "youHaveVotedFor": "You have voted for",
+      "votingFor": "Voting For:",
+      "verifyDialogTitle": "Verify OTP",
+      "enterOtp": "Enter OTP",
+      "otpPlaceholder": "000000",
+      "otpExpires": "OTP expires in {{time}}",
+      "otpExpired": "OTP expired. Please resend.",
+      "resendOtp": "Resend OTP",
+      "verifyAndVote": "Verify & Vote",
+      "successTitle": "Thank you for being responsible citizens and participating in the voting process.",
+      "successLine1": "Once the voting process is completed, you will be able to see the aspirant who has received the highest number of votes. That aspirant will represent your ward and contest in the actual election.If the aspirant wins the election, we will provide complete instructions on this site/app about how the elected representative should work according to the SOP.",
+      "successLine2": "Citizens will also be able to guide, monitor, and communicate with the representative through this website/app to ensure that the work is carried out as per the citizens’ expectations.",
+      "votedForLabel": "Voted For:",
+      "close": "Close",
+      "sopTitle": "Voter Standard operating procedure (SOP)",
+      "sopIntro": "Please read and acknowledge the following before casting your vote:",
+      "sopAgreeButton": "I Agree & Proceed",
+      "sopCancelButton": "Cancel",
+      "sop": {
+        "1": {
+          "title": "Your Vote is Your Responsibility",
+          "body": "By casting your vote, you acknowledge that you have reviewed the candidate's profile, manifesto, and qualifications. Your vote represents your informed decision."
+        },
+        "2": {
+          "title": "Confidentiality & Anonymity",
+          "body": "Your vote is completely anonymous and confidential. No one, including administrators, can trace your vote back to you."
+        },
+        "3": {
+          "title": "One Vote Per Citizen",
+          "body": "Each verified citizen is entitled to cast one vote per election. Multiple voting attempts will be automatically blocked."
+        },
+        "4": {
+          "title": "Vote is Final",
+          "body": "Once your vote is cast and verified with OTP, it cannot be changed or withdrawn. Please ensure your selection is final before proceeding."
+        },
+        "5": {
+          "title": "Transparent & Auditable",
+          "body": "All votes are recorded in a tamper-proof system and can be audited by election observers while maintaining voter anonymity."
+        },
+        "warningTitle": "⚠️ Important: By clicking \"I Agree & Proceed\", you confirm that:",
+        "confirm1": "You have read and understood the voting SOP",
+        "confirm2": "You are making an informed decision",
+        "confirm3": "You will not attempt to vote multiple times",
+        "confirm4": "You accept that your vote is final once cast"
+      },
+      "confirmDescription": "By casting your vote, you are exercising your democratic right to choose a representative for your ward. Your vote is anonymous and secure. Once submitted, this action cannot be reversed.",
+      "otpInvalid": "Please enter a valid 4-digit OTP",
+      "otpSentInfo": "An OTP has been sent to your registered email. Please enter it below to confirm your vote."
+    },
+    "voterCount": {
+      "title": "Voter Count",
+      "subtitle": "Voter counts by ward",
+      "ward": "Ward",
+      "total": "Total Citizens"
+    },
+    "wardCandidates": {
+      "title": "Aspirants",
+      "subtitle": "Meet the Aspirants contesting for your ward",
+      "goToDashboard": "Home",
+      "viewManifesto": "View Details",
+      "vote": "Polling",
+      "signedSOP": "Signed SOP",
+      "votingWindowTitle": "Voting Eligibility",
+      "votingWindowDates": "Voting starts on {{start}} and ends on {{end}}",
+      "votingEligibility": "To become eligible to vote, you must interact with at least 2 aspirants through chat, video meeting, or phone call.",
+      "joinInterview": "Chat To Evaluate My Eligibility",
+      "votingEligibilityEnabled": "✓ Voting eligibility has been enabled",
+      "votingEligibilityDescription": "You have met the interaction requirements. Voting will be available once the voting window opens.",
+      "aspirantChat": "Aspirants Group Chat",
+      "register": "Register as Aspirant",
+      "continueRegistration": "Continue Registration",
+      "aspirantRegistrationTitle": "Want to represent your ward?",
+      "aspirantRegistrationDescription": "Connect with the people, and if you have the qualification and humility to bow your head and work according to their Demands register as an aspirant.",
+      "registrationPendingTitle": "Your registration is pending.",
+      "registrationPendingDescription": "Complete document uploads to proceed with your application.",
+      "pendingApprovalTitle": "Your aspirant registration is pending approval. Please continue to complete document uploads.",
+      "pendingApprovalDescription": "Once all documents are uploaded and verified, your registration will be reviewed by the admin.",
+      "registerQuestion": "Would you like to register as an aspirant  ?",
+      "registerDescription": "Connect with the people, and if you have the qualification and humility to bow your head and work according to their Demands register as an aspirant.",
+      "yesRegister": "Yes, Register as Aspirant",
+      "reportCivicIssue": "Public Issue",
+      "noAspirantsTitle": "No aspirants yet",
+      "noAspirantsDescription": "There are no aspirants for this ward yet.",
+      "demoAspirantNotice": "The profile displayed below is a demo example to showcase how aspirant details and meeting links work.",
+      "profileDisclaimer": "Note: Profiles are self-submitted by aspirants—please review carefully. You may be redirected outside the app; return here after viewing to submit your rating.",
+      "videoMeetTitle": "Video Meet",
+      "joinVideoMeeting": "Video call",
+      "platformGoogleMeet": "Google Meeting",
+      "platformZoom": "Zoom Meeting",
+      "platformInstagram": "Instagram Live",
+      "platformFacebook": "Facebook Live",
+      "directMeetDefaultTitle": "Meet to evaluate my eligibility",
+      "meetDefaultTitle": "To evaluate my eligibility",
+      "ratingWindowInfo": "Meeting ended. Ratings open tomorrow from 10 AM to 10 PM.",
+      "ratingWindowInfoMeet": "Meet ended. Ratings open tomorrow from 10 AM to 10 PM.",
+      "directMeetTitle": "Direct Meet",
+      "openInMaps": "Open in Maps",
+      "phoneCall": "Phone",
+      "chat": "Chat",
+      "startsIn": "Starts in",
+      "startedAgo": "Started {{time}} ago",
+      "attending": "Attending ({{count}})"
+    },
+    "aspirants": {
+      "title": "Aspirants",
+      "subtitle": "View aspirants registered for wards"
+    },
+    "aspirantApproval": {
+      "wardSelect": "Select Ward",
+      "selectWard": "Select Ward"
+    },
+    "candidateDetails": {
+      "tabs": {
+        "profile": "Aspirant Profile",
+        "meetings": "Video Meetings",
+        "posts": "Meet Citizens",
+        "directCall": "Phone Call"
+      },
+      "labels": {
+        "fullName": "Full name",
+        "age": "Age",
+        "gender": "Gender",
+        "education": "Education",
+        "occupation": "Occupation",
+        "wardName": "Ward Name",
+        "state": "State",
+        "phone": "Phone",
+        "address": "Address",
+        "parliamentary": "Parliamentary Constituency",
+        "assembly": "Assembly Constituency",
+        "about": "About Me",
+        "documents": "Documents & Declarations",
+        "sopConfirmation": "SOP Confirmation",
+        "sopText": "This candidate has read and accepted the People's Representative SOP and agrees to public accountability and performance review.",
+        "verified": "Verified",
+        "pending": "Pending verification",
+        "view": "View",
+        "ward": "Ward"
+      },
+      "meetings": {
+        "title": "Meeting Details",
+        "googleMeetings": "Video Meetings",
+        "meeting": "Meeting",
+        "meetingNum": "Meeting {{num}}",
+        "titleLabel": "Title",
+        "notesLabel": "Notes",
+        "statusLabel": "Status",
+        "completed": "Completed",
+        "upcoming": "Upcoming",
+        "notesButton": "Notes",
+        "nextMeetingDate": "Next Meeting Date",
+        "startTime": "Start Time",
+        "timeZone": "Time Zone",
+        "timeZoneValue": "IST (India)",
+        "startsIn": "Starts in: {{hours}}h {{minutes}}m",
+        "platform": "Platform",
+        "platformValue": "Google Meet",
+        "linkActive": "Link will be active when meeting starts",
+        "notScheduled": "Meeting not scheduled yet",
+        "joinGoogleMeet": "Join video Meet",
+        "description": "Description"
+      },
+      "actions": {
+        "joinChat": "Join Chat",
+        "directMeet": "Request for Direct Meet",
+        "viewProfile": "View Profile"
+      },
+      "instructions": {
+        "title": "Participation Instructions",
+        "onTime": "Join the meeting on time",
+        "muteMic": "Keep your microphone muted unless invited",
+        "raiseHand": "Use the \"Raise Hand\" feature to speak",
+        "respectful": "Be respectful and concise",
+        "followMod": "Follow moderator instructions",
+        "recorded": "Meeting may be recorded for transparency",
+        "misconduct": "Misconduct may lead to removal"
+      },
+      "posts": {
+        "noPosts": "No posts yet.",
+        "likes": "{{count}} like",
+        "likes_plural": "{{count}} likes",
+        "visiting": "Visits",
+        "visit": "Visit",
+        "attending": "{{count}} Attending"
+      },
+      "booking": {
+        "title": "Request a Direct Meet",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Tell the aspirant what you'd like to discuss",
+        "note": "The aspirant will receive your request and confirm a meeting time.",
+        "cancel": "Cancel",
+        "sendRequest": "Send Request",
+        "sending": "Sending…",
+        "success": "Booking request sent",
+        "loginRequired": "Please login to mark attendance"
+      },
+      "dialog": {
+        "meetingNotes": "Meeting Notes",
+        "noNotes": "No notes available.",
+        "close": "Close",
+        "noDocument": "No document available"
+      },
+      "otherAspirants": {
+        "title": "Other Aspirants",
+        "noAspirants": "No other aspirants yet"
+      }
+    },
+    "login": {
+      "leftTitle": "Participate. Vote. Empower.",
+      "leftSubtitle": "Register to make your voice count.",
+      "footerMotto": "SELECTION · ELECTION · CORRECTION · REJECTION",
+      "registerButton": "Register",
+      "title": "Login",
+      "voterTab": "Voter",
+      "aspirantTab": "Aspirant",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "otpLabel": "OTP",
+      "otpPlaceholder": "Enter 6-digit OTP",
+      "requestOtp": "Request OTP",
+      "loginButton": "Login",
+      "enterVoterId": "Enter your Voter ID",
+      "enterPhoneNumber": "Enter your phone number",
+      "phoneLabel": "Phone Number",
+      "sendOtp": "Send OTP",
+      "otpSent": "OTP sent to your phone. Enter it below.",
+      "changePhone": "Change Phone Number",
+      "resendOtp": "Resend OTP",
+      "resendOtpIn": "Resend OTP in {{time}}",
+      "otpExpiresIn": "OTP expires in {{seconds}}s",
+      "otpExpired": "OTP expired.",
+      "socialDivider": "or login with social platforms",
+      "socialGoogle": "Sign in with Google",
+      "socialApple": "Sign in with Apple",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "preRegister": {
+        "title": "Verify Your Email",
+        "subtitle": "We'll send a 6-digit OTP to your email"
+      },
+      "oath": {
+        "title": "The Real Prajaakeeya",
+        "subtitle": "Please read before agreeing",
+        "scrollHint": "↓ scroll to continue",
+        "fullRead": "Read Full Oath",
+        "pledgeButton": "✊ Proceed to Register",
+        "declineButton": "No, I'm just a silent spectator",
+        "para0": " I don’t get demotivated with other’s comments, I don’t get influenced by any parties, leaders, their vocabulary skills, promises, money, rallies, social services, blame games, publicity, protests (I protest only for the Right to Recall, until an amendment is made to the Constitution)",
+        "para1": "I Want A WORKER Who works according to my demands",
+        "para4": "From today, I am not a follower who blindly follows leaders."
+      },
+      "soldOut": {
+        "acknowledgment": "That's okay.\nYou've chosen to remain a silent spectator",
+        "quote": "\"The system survives on our silence.\nThe door is always open — when you're ready to be the employer.\"",
+        "goBack": "← Go back"
+      },
+      "votersCanLoginWithGoogle": "Citizens can sign in with Google",
+      "verifyOtp": "Verify OTP",
+      "continueAsGuest": "Continue as Guest",
+      "bengaluruNotice": "Voter registration is currently open only for Bengaluru wards (GBA, BBMP).\nIt will be opened for citizens in other constituencies soon."
+    },
+    "register": {
+      "leftTitle": "Welcome to Prajakeeya",
+      "leftSubtitle": "Sign in to access your dashboard.",
+      "loginButton": "Login",
+      "confirmTitle": "Confirm Voter Details",
+      "confirmBody": "Do you want to proceed with this VOTER ID and take a selfie for verification?",
+      "title": "Register",
+      "epicTitle": "Voter / EPIC ID",
+      "epicNote": "We collect the Voter ID (EPIC) only to allocate the correct ward based on your voting area.",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Login",
+      "welcomeMessage": "Welcome to The Real Prajaakeeya!",
+      "welcomeTo": "Welcome to",
+      "welcomeHighlight": "I am a revolutionary citizen who has decided to take responsibility.",
+      "continueButton": "Continue →",
+      "signUpGoogle": "Sign up with Google",
+      "registerWithSocial": "Sign In",
+      "yourDetails": "Your Details",
+      "selfieVerification": "Selfie Verification",
+      "captureYourSelfie": "Capture your selfie for verification",
+      "openCamera": "Open Camera",
+      "continueAsGuest": "Continue as Guest",
+      "consentText": "I confirm that my registration on Prajaakeeya is done voluntarily and with my consent.",
+      "photoCaptured": "Photo Captured",
+      "motto": "Your Ward. Your Voice. Your Duty.",
+      "instructionsTitle": "Please Read the Instructions Carefully",
+      "oldSystemTitle": "RAJAKEEYA (Old System)",
+      "oldSystem1": "Once in 5 years, we vote and elect one person.",
+      "oldSystem2": "After that? He / She gets full power for 5 years",
+      "oldSystem3": "Our tax money is in their hands",
+      "oldSystem4": "We just watch silently",
+      "oldSystem5": "This is Rajakeeya.",
+      "newSystemTitle": "PRAJAAKEEYA (New System)",
+      "newSystem1": "I am not just a voter. I am the employer.",
+      "newSystem2": "Government runs on my tax money.",
+      "newSystem3": "So the representative is my employee. He / She must work according to people's needs.",
+      "newSystem4": "What should I do? Just 5 minutes in a week.",
+      "newSystem5": "Through a mobile app or website, I can:",
+      "newSystem6": "✔ Select my representative",
+      "newSystem7": "✔ Check his / her work",
+      "newSystem8": "✔ Warn if work is not proper",
+      "newSystem9": "✔ Correct through majority polling",
+      "newSystem10": "✔ Recommend for higher position if good",
+      "oathTitle": "Simple Oath",
+      "oath1": "As a citizen",
+      "oath2": "I will give 5 minutes every week.",
+      "oath3": "I will check how my tax money is used.",
+      "oath4": "I will see whether my representative is working honestly.",
+      "oath5": "I am not a silent spectator.",
+      "oath6": "I am a responsible citizen.",
+      "pledgeTitle": "My Oath as a Voter",
+      "pledgeImportant": "Important: Please read carefully before proceeding.",
+      "pledgeBody": "Until now, once every five years, I used to exercise my right only on one day by casting my vote, and for the remaining five years, I remained a silent spectator.\n\nBut,\nFrom today onwards, throughout the entire five years, I will make time to use this website/application to evaluate the qualifications of aspirants and choose who should contest in the elections.\n\nAfter electing them, through this application or website and its SOP, I will stay continuously connected with my representative, submit my demands, and ensure they work with complete transparency and regularly report their performance.",
+      "pledgeAgree": "I have read and agree to the Voter Commitment",
+      "pledgeAccept": "Accept & Continue",
+      "registrationInfo": "RAJAKEEYA (Old System)\nOnce in 5 years,\nwe vote and elect one person.\nAfter that?\nHe / She gets full power for 5 years\nOur tax money is in their hands\nWe just watch silently\nThis is Rajakeeya.\n\nPRAJAAKEEYA (New System)\nI am not just a voter.\nI am the employer.\nGovernment runs on my tax money.\nSo the representative is my employee.\nHe / She must work\naccording to people's needs.\nWhat should I do?\nJust 5 minutes in a week.\nThrough a mobile app or website, I can:\n✔ Select my representative\n✔ Check his / her work\n✔ Warn if work is not proper\n✔ Correct through majority polling\n✔ Recommend for higher position if good\n\nSimple Oath\n\"As a citizen,\nI will give 5 minutes every week.\nI will check how my tax money is used.\nI will see whether my representative is working honestly.\nI am not a silent spectator.\nI am a responsible citizen.\"",
+      "readCarefully": "Read carefully",
+      "responsibility1": "A responsible voter doesn't just vote once in 5 years — he monitors his ward every month.",
+      "responsibility2": "Ask questions, demand transparency, and track where every rupee of public money goes.",
+      "responsibility3": "If a representative fails the people, the Right to Recall must be exercised without fear.",
+      "responsibility4": "Participation is power — attend ward meetings, raise issues, and be part of decisions.",
+      "responsibility5": "In Prajaakeeya, leadership begins with citizens — responsibility starts with you.",
+      "acceptCheckbox": "I have read and accept the above points",
+      "registerNow": "Register now",
+      "userAlreadyRegistered": "User already Registered",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email address",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "otpLabel": "Enter OTP",
+      "otpPlaceholder": "Enter 6-digit OTP",
+      "otpRequired": "OTP is required",
+      "otpInvalid": "Please enter a valid 6-digit OTP",
+      "resendOtpIn": "Resend OTP in {{time}}",
+      "resendOtp": "Resend OTP",
+      "sending": "Sending...",
+      "epicLabel": "VOTER ID",
+      "voterListConsent": "I voluntarily register myself in the citizens' list",
+      "epicInvalid": "Please enter a valid VOTER ID",
+      "voterFound": "Voter Details Found",
+      "voterNotFound": "Voter not found with this VOTER ID",
+      "proceed": "Proceed",
+      "notYou": "Not you?",
+      "continue": "Continue",
+      "verifyOtp": "Verify OTP",
+      "submit": "Submit",
+      "loading": "Loading...",
+      "corporation": "Corporation",
+      "ward": "Ward",
+      "epicId": "VOTER ID",
+      "aspirantPrompt": {
+        "title": "Are you willing to become a public servant (worker)?",
+        "yesLabel": "Yes",
+        "noLabel": "No"
+      },
+      "otpDescription": "We've sent a 4-digit OTP to your registered Phone no. Enter the code below to verify your registration.",
+      "otpExpiresIn": "OTP expires in {{seconds}}s",
+      "otpExpired": "OTP Expired.",
+      "resendPrompt": "Didn't receive the OTP?",
+      "resendOtpLink": "Resend",
+      "bengaluruNotice": "Voter registration is currently open only for Bengaluru wards (GBA, BBMP).\nIt will be opened for citizens in other constituencies soon.",
+      "ageConfirm": "I confirm that I am 18 years or older to use this platform."
+    }
+  },
+  "civicIssues": {
+    "title": "Public Issues",
+    "subtitle": "Report Your Ward Issues Now",
+    "ward": "Ward",
+    "error": "Error",
+    "failedToLoad": "Failed to load issues.",
+    "failedToReport": "Failed to report. Try again.",
+    "reportBtn": "Report",
+    "reportedBtn": "Reported",
+    "reportedSuccess": "Reported \"{{category}}\" successfully!",
+    "handRaise_one": "{{count}} reported",
+    "handRaise_other": "{{count}} reported",
+    "constituency": "Constituency",
+    "municipality": "Municipality",
+    "electionType": "Election Type"
+  },
+  "postRegistration": {
+    "publicServantQuestion": "Are you willing to become a Public Servant?",
+    "publicServantDesc": "Connect with citizens, share your vision, and participate in ward discussions.",
+    "responsibleVoterQuestion": "I will stay as a Responsible Voter",
+    "responsibleVoterDesc": "Continue as a voter and support the candidates in your ward."
+  },
+  "privacyPolicy": {
+    "header": {
+      "logoAlt": "Prajaakeeya",
+      "appName": "Prajaakeeya",
+      "appNameKn": "ಪ್ರಜಾಕೀಯ",
+      "themeToggleLabel": "toggle theme",
+      "langToggleEng": "ENG",
+      "langToggleKn": "ಕನ್ನಡ"
+    },
+    "hero": {
+      "title": "Privacy-Policy Disclaimer",
+      "association": "Prajaakeeya — www.prajaakeeya.in",
+      "effectiveDate": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026",
+      "intro1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
+      "intro2": "This Privacy Policy explains what information we collect, how we use it, and how we protect your privacy when you access and use the Prajaakeeya platform. By signing in and using our platform, you agree to the terms outlined in this Privacy Policy.",
+      "intro3": "Prajaakeeya is committed to minimal data collection and maximum user privacy. We believe that civic participation should not come at the cost of personal data exploitation."
+    },
+    "footer": {
+      "copyright": "© 2026 Prajaakeeya. All rights reserved."
+    },
+    "sections": {
+      "s1": {
+        "title": "1. Introduction",
+        "p1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
+        "p2": "This Privacy Policy explains what information we collect, how we use it, and how we protect your privacy when you access and use the Prajaakeeya platform. By signing in and using our platform, you agree to the terms outlined in this Privacy Policy.",
+        "p3": "Prajaakeeya is committed to minimal data collection and maximum user privacy. We believe that civic participation should not come at the cost of personal data exploitation."
+      },
+      "s2": {
+        "title": "2. Information We Collect",
+        "sub21": {
+          "title": "2.1 Information Provided During Sign-In",
+          "p1": "To access the Prajaakeeya platform, users are required to sign in using their Gmail ID (Google Sign-In). The only information we collect during this process is:",
+          "b1": "Gmail email address (used as the user's unique identifier on the platform)",
+          "b2": "Display name associated with the Google account"
+        },
+        "sub22": {
+          "title": "2.2 Information We Do NOT Collect",
+          "p1": "Prajaakeeya is committed to a strict no-surveillance policy. We do not collect, store, or process any of the following:",
+          "b1": "IP address of the user",
+          "b2": "Device ID or device fingerprint",
+          "b3": "Location or geolocation data of the user",
+          "b4": "Selfies, photographs, or any biometric data of the user",
+          "b5": "Browsing history, cookies for tracking, or behavioural analytics",
+          "b6": "Contacts, call logs, SMS, or any data from the user's device",
+          "b7": "Financial information such as bank details or payment data"
+        },
+        "sub23": {
+          "title": "2.3 Information Provided Voluntarily by Aspirants",
+          "p1": "Aspirants who register on the platform may voluntarily provide additional information such as their name, background, qualifications, vision statements, and other details relevant to their civic participation.",
+          "p2": "This information is provided at the aspirant's own discretion and is displayed on their public profile within the platform."
+        }
+      },
+      "s3": {
+        "title": "3. Use of Information",
+        "p1": "The limited information collected on the Prajaakeeya platform is used solely for the following purposes:",
+        "b1": "Authenticating users via Google Sign-In to provide access to the platform",
+        "b2": "Identifying users within the platform using their email address",
+        "b3": "Enabling communication and interaction between users and aspirants",
+        "b4": "Facilitating participation at Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe levels",
+        "b5": "Maintaining transparency and accountability within the platform",
+        "b6": "Preventing misuse of user identities and platform features",
+        "b7": "Supporting community-driven civic participation and engagement",
+        "p2": "Prajaakeeya does not sell, rent, trade, or share user data with any third parties for marketing, advertising, or commercial purposes."
+      },
+      "s4": {
+        "title": "4. Village / Taluk / Zilla / Ward / Assembly / Parliament / Purasabhe / Nagarasanhe Based Participation",
+        "p1": "Prajaakeeya enables users to participate in civic engagement at multiple levels of governance. Users may engage with aspirants and civic discussions organized by:",
+        "b1": "Village level",
+        "b2": "Taluk level",
+        "b3": "Zilla (District) level",
+        "b4": "Ward level",
+        "b5": "Assembly Constituency level",
+        "b6": "Parliamentary Constituency level",
+        "b7": "Purasabhe (Town Municipality) level",
+        "b8": "Nagarasanhe (City Corporation) level",
+        "p2": "Users choose their level of participation based on their area of interest and civic engagement goals.",
+        "p3": "Prajaakeeya provides the platform infrastructure for interaction; it does not assign or mandate participation at any level."
+      },
+      "s5": {
+        "title": "5. Data Security",
+        "p1": "Prajaakeeya takes the security of user information seriously. We implement the following measures to protect user data:",
+        "b1": "All data transmission between the user and the platform is encrypted using SSL/TLS protocols",
+        "b2": "Authentication is handled through Google's secure OAuth 2.0 sign-in mechanism",
+        "b3": "Access to backend systems and databases is restricted to authorized personnel only",
+        "b4": "Regular security reviews and updates are conducted to maintain platform integrity",
+        "b5": "We do not store passwords, as authentication is entirely managed by Google",
+        "p2": "While we take reasonable measures to protect your information, no method of electronic transmission or storage is 100% secure. Users are encouraged to safeguard their Google account credentials independently."
+      },
+      "s6": {
+        "title": "6. Data Sharing and Third-Party Disclosure",
+        "p1": "Prajaakeeya does not share user information with third parties except in the following limited circumstances:",
+        "b1": "When required by law, regulation, or legal process (such as a court order or government request)",
+        "b2": "To protect the rights, safety, or property of Prajaakeeya, its users, or the public",
+        "b3": "To enforce the platform's Terms of Service or Privacy Policy",
+        "b4": "With the user's explicit consent",
+        "p2": "We do not engage in any form of data brokerage, advertising-based data sharing, or profiling of users."
+      },
+      "s7": {
+        "title": "7. User Rights and Controls",
+        "p1": "As a user of Prajaakeeya, you have the following rights:",
+        "b1": "Right to Access: You may request information about the data we hold associated with your account",
+        "b2": "Right to Deletion: You may request deletion of your account and associated data at any time by contacting us",
+        "b3": "Right to Withdraw: You may stop using the platform at any time; your sign-in session can be terminated by logging out",
+        "b4": "Right to Correction: If any information displayed on the platform about you is incorrect, you may request a correction",
+        "b5": "Right to Portability: You may request a copy of your data in a commonly used electronic format",
+        "p2": "To exercise any of these rights, please contact us at the email address provided in the Contact section of this policy."
+      },
+      "s8": {
+        "title": "8. Reporting Misuse",
+        "p1": "Prajaakeeya takes platform integrity seriously. Users may report the following types of misuse:",
+        "b1": "Fraudulent use of user ID (email ID) or impersonation of another user",
+        "b2": "Misleading aspirant information or false claims made by aspirants",
+        "b3": "Identity misuse, including unauthorized use of another person's credentials",
+        "b4": "Inappropriate, abusive, or threatening conduct on the platform",
+        "b5": "Spam, phishing attempts, or any activity intended to disrupt the platform",
+        "p2": "Reports will be reviewed by the Prajaakeeya team, and appropriate actions will be taken in accordance with platform policies. Actions may include warnings, temporary suspension, or permanent removal of accounts found to be in violation."
+      },
+      "s9": {
+        "title": "9. Cookies and Tracking Technologies",
+        "p1": "Prajaakeeya uses only essential cookies required for the basic functioning of the platform, such as maintaining your sign-in session. We do not use:",
+        "b1": "Tracking cookies or advertising cookies",
+        "b2": "Third-party analytics tools that track user behavior",
+        "b3": "Pixel tags, web beacons, or similar tracking technologies",
+        "b4": "Browser fingerprinting or any device identification techniques",
+        "p2": "Our approach to cookies is strictly functional, not analytical or commercial."
+      },
+      "s10": {
+        "title": "10. Age Requirement",
+        "p1": "Prajaakeeya is intended only for eligible users and participants above 18 years of age. We do not knowingly collect or solicit information from individuals under 18 years of age.",
+        "p2": "If we become aware that a user under the age of 18 has signed in to the platform, we will take steps to remove their account and associated data promptly. If you believe a minor has accessed the platform, please contact us immediately."
+      },
+      "s11": {
+        "title": "11. Changes to This Privacy Policy",
+        "p1": "Prajaakeeya reserves the right to update or modify this Privacy Policy at any time. Changes will be effective upon posting the revised policy on the platform. Users will be notified of significant changes through a notice on the platform or via their registered email address.",
+        "p2": "We encourage users to review this Privacy Policy periodically to stay informed about how we protect their information. Continued use of the platform after changes are posted constitutes acceptance of the updated policy."
+      },
+      "s12": {
+        "title": "12. Platform Neutrality and Non-Political Affiliation",
+        "p1": "Prajaakeeya is a digital civic participation platform designed to enable users to interact, discuss civic issues, and evaluate aspirants within their participation in elections and governance processes.",
+        "p2": "Prajaakeeya is not a political party, political organization, or government authority.",
+        "p3": "The platform does not support, promote, or endorse any political party, political ideology, or individual aspirant.",
+        "p4": "Prajaakeeya only provides technology tools that allow users and aspirants to interact transparently.",
+        "p5": "All decisions, discussions, and opinions expressed on the platform belong solely to the users.",
+        "p6": "The platform does not influence, direct, or control the civic choices or opinions of its users.",
+        "p7": "Prajaakeeya maintains strict neutrality and serves as an impartial civic infrastructure."
+      },
+      "s13": {
+        "title": "13. Aspirant Information Responsibility",
+        "p1": "Information provided by aspirants on the Prajaakeeya platform is submitted voluntarily by the aspirants themselves. Prajaakeeya does not independently verify or guarantee the accuracy, authenticity, or completeness of the information provided by aspirants.",
+        "p2": "Users are encouraged to:",
+        "b1": "Interact with aspirants directly through the platform",
+        "b2": "Ask questions and seek clarifications on aspirant profiles and claims",
+        "b3": "Conduct interviews with aspirants using the platform's communication tools",
+        "b4": "Evaluate aspirant credibility independently based on their own judgment",
+        "b5": "Cross-reference aspirant claims with publicly available information",
+        "p3": "Prajaakeeya acts only as a technology platform facilitating communication between users and aspirants. The platform shall not be held responsible for any incorrect, misleading, or incomplete information submitted by aspirants."
+      },
+      "s14": {
+        "title": "14. Platform Purpose and Limitation",
+        "p1": "Prajaakeeya is designed as a civic engagement platform and does not conduct official elections. The following limitations apply:",
+        "b1": "Any selection process conducted on the platform is intended only for community evaluation and engagement purposes.",
+        "b2": "The results displayed on the platform do not represent official election results and have no legal standing in any government or statutory election process.",
+        "b3": "Prajaakeeya does not influence or control how users make their decisions.",
+        "b4": "Users participate on the platform voluntarily and at their own discretion.",
+        "b5": "The platform is not a substitute for any official electoral process conducted by government authorities.",
+        "b6": "Prajaakeeya does not claim to replace, replicate, or interfere with any statutory election process."
+      },
+      "s15": {
+        "title": "15. Data Retention",
+        "p1": "Prajaakeeya retains user information (email address and display name) only for as long as the user maintains an active account on the platform. Upon account deletion:",
+        "b1": "The user's email address and display name are removed from our systems",
+        "b2": "Any content or interactions associated with the account may be anonymized or deleted",
+        "b3": "Aspirant profiles and associated content are removed upon request",
+        "p2": "We do not retain user data beyond what is necessary for the functioning of the platform and compliance with legal obligations."
+      },
+      "s16": {
+        "title": "16. Governing Law",
+        "p1": "This Privacy Policy shall be governed by and construed in accordance with the laws of India, including the Information Technology Act, 2000, and any applicable data protection regulations. Any disputes arising from this policy shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka, India."
+      },
+      "s17": {
+        "title": "17. Contact Us",
+        "p1": "If you have any questions, concerns, or requests regarding this Privacy Policy, or if you wish to exercise your rights as described in this policy, please contact us at:",
+        "b1": "Prajaakeeya",
+        "b2": "Website: www.prajaakeeya.in",
+        "b3": "Email: support@prajaakeeya.in",
+        "p2": "We will make every reasonable effort to respond to your inquiry within a reasonable timeframe."
+      }
+    }
+  },
+  "termsAndConditions": {
+    "header": {
+      "logoAlt": "Prajaakeeya",
+      "appName": "Prajaakeeya",
+      "appNameKn": "ಪ್ರಜಾಕೀಯ",
+      "themeToggleLabel": "toggle theme",
+      "langToggleEng": "ENG",
+      "langToggleKn": "ಕನ್ನಡ"
+    },
+    "hero": {
+      "title": "Terms and Conditions",
+      "association": "www.prajaakeeya.in",
+      "effectiveDate": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026",
+      "intro": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. These Terms and Conditions (\"Terms\") govern your access to and use of the Prajaakeeya platform, including all features, tools, content, and services offered through the platform.",
+      "affiliation": "By signing in and using the Prajaakeeya platform, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree with any part of these Terms, you must not access or use the platform."
+    },
+    "footer": {
+      "copyright": "© 2026 Prajaakeeya. All rights reserved."
+    },
+    "sections": {
+      "s1": {
+        "title": "1. Introduction and Acceptance of Terms",
+        "p1": "Prajaakeeya reserves the right to modify these Terms at any time. Continued use of the platform after changes are posted constitutes your acceptance of the revised Terms."
+      },
+      "s2": {
+        "title": "2. Definitions",
+        "p1": "For the purposes of these Terms:",
+        "b1": "\"Platform\" refers to the Prajaakeeya web application, mobile application, and all associated services accessible at www.prajaakeeya.in",
+        "b2": "\"User\" refers to any individual who signs in and accesses the Prajaakeeya platform",
+        "b3": "\"Aspirant\" refers to any individual who registers on the platform as a civic participant seeking to engage with users at any governance level",
+        "b4": "\"Content\" refers to all text, images, information, data, and other materials posted, submitted, or displayed on the platform by users or aspirants",
+        "b5": "\"We,\" \"Us,\" \"Our\" refers to Prajaakeeya and its team",
+        "b6": "\"Governance Levels\" refers to Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe"
+      },
+      "s3": {
+        "title": "3. Eligibility",
+        "p1": "To use the Prajaakeeya platform, you must:",
+        "b1": "Be at least 18 years of age",
+        "b2": "Have a valid Gmail account for sign-in purposes",
+        "b3": "Have the legal capacity to enter into a binding agreement",
+        "b4": "Not have been previously suspended or removed from the platform for violations of these Terms",
+        "p2": "By signing in, you represent and warrant that you meet all the above eligibility requirements. Prajaakeeya reserves the right to verify eligibility and deny access to anyone who does not meet these criteria."
+      },
+      "s4": {
+        "title": "4. Account Registration and Sign-In",
+        "b1": "Access to the Prajaakeeya platform requires signing in using a Gmail ID through Google's OAuth 2.0 authentication",
+        "b2": "Each user must use their own authentic Gmail account; use of fake, borrowed, or shared accounts is strictly prohibited",
+        "b3": "You are responsible for maintaining the security of your Google account credentials",
+        "b4": "You are responsible for all activities that occur under your account on the platform",
+        "b5": "You must notify Prajaakeeya immediately if you become aware of any unauthorized use of your account",
+        "b6": "Prajaakeeya is not responsible for any loss or damage arising from your failure to protect your account credentials"
+      },
+      "s5": {
+        "title": "5. Platform Purpose and Scope",
+        "p1": "Prajaakeeya is a digital civic participation platform that enables users to interact with aspirants, discuss civic issues, and evaluate aspirants within their participation in elections and governance processes.",
+        "p2": "The platform facilitates engagement at the following governance levels:",
+        "b1": "Village level",
+        "b2": "Taluk level",
+        "b3": "Zilla (District) level",
+        "b4": "Ward level",
+        "b5": "Assembly Constituency level",
+        "b6": "Parliamentary Constituency level",
+        "b7": "Purasabhe (Town Municipality) level",
+        "b8": "Nagarasanhe (City Corporation) level",
+        "p3": "Prajaakeeya provides only the technology infrastructure for civic engagement. The platform does not conduct official elections, endorse aspirants, or influence user decisions in any manner."
+      },
+      "s6": {
+        "title": "6. Platform Neutrality and Non-Political Affiliation",
+        "b1": "Prajaakeeya is not a political party, political organization, or government authority",
+        "b2": "The platform does not support, promote, or endorse any political party, political ideology, or individual aspirant",
+        "b3": "Prajaakeeya only provides technology tools that allow users and aspirants to interact transparently",
+        "b4": "All decisions, discussions, and opinions expressed on the platform belong solely to the users",
+        "b5": "The platform does not influence, direct, or control the civic choices or opinions of its users",
+        "b6": "Prajaakeeya maintains strict neutrality and serves as an impartial civic infrastructure"
+      },
+      "s7": {
+        "title": "7. User Conduct and Responsibilities",
+        "p1": "By using the Prajaakeeya platform, you agree to the following:",
+        "sub1": {
+          "title": "7.1 You SHALL:",
+          "b1": "Use the platform only for lawful civic engagement purposes",
+          "b2": "Provide accurate and truthful information in all interactions",
+          "b3": "Respect other users, aspirants, and the diversity of opinions on the platform",
+          "b4": "Report any misuse, abuse, or violations you encounter on the platform",
+          "b5": "Comply with all applicable local, state, and national laws"
+        },
+        "sub2": {
+          "title": "7.2 You SHALL NOT:",
+          "b1": "Impersonate any person or entity, or falsely represent your affiliation with any person or entity",
+          "b2": "Use another person's Gmail ID or account to access the platform",
+          "b3": "Post, share, or distribute false, misleading, defamatory, or harmful content",
+          "b4": "Engage in hate speech, harassment, bullying, threats, or abusive behavior toward any user or aspirant",
+          "b5": "Use the platform for commercial advertising, spam, or unsolicited promotional activities",
+          "b6": "Attempt to hack, disrupt, or interfere with the platform's infrastructure, security, or functionality",
+          "b7": "Use automated bots, scrapers, or similar tools to access or extract data from the platform",
+          "b8": "Manipulate ratings, reviews, or any evaluation mechanism on the platform",
+          "b9": "Promote violence, illegal activities, or any activity that violates public order",
+          "b10": "Use the platform to spread propaganda for or against any political party or aspirant in a manner that constitutes paid or coordinated campaigning"
+        }
+      },
+      "s8": {
+        "title": "8. Aspirant Conduct and Responsibilities",
+        "p1": "Aspirants who register on the Prajaakeeya platform agree to the following additional terms:",
+        "b1": "All information submitted to the platform must be accurate, truthful, and up to date",
+        "b2": "Aspirants are solely responsible for the content they post, including biographical details, qualifications, vision statements, and promises",
+        "b3": "Aspirants shall not misrepresent their qualifications, achievements, or affiliations",
+        "b4": "Aspirants shall engage respectfully with all users and respond to questions and interviews in good faith",
+        "b5": "Aspirants shall not use the platform to spread misinformation or make false promises",
+        "b6": "Aspirants acknowledge that users may independently evaluate and verify the information they provide",
+        "b7": "Aspirants shall not use the platform for any activity that violates the Representation of the People Act or any other applicable election law"
+      },
+      "s9": {
+        "title": "9. Aspirant Information Disclaimer",
+        "p1": "Information provided by aspirants on the Prajaakeeya platform is submitted voluntarily by the aspirants themselves. Prajaakeeya does not independently verify or guarantee the accuracy, authenticity, or completeness of the information provided by aspirants.",
+        "p2": "Users are encouraged to:",
+        "b1": "Interact with aspirants directly through the platform",
+        "b2": "Ask questions and seek clarifications",
+        "b3": "Conduct interviews using the platform's communication tools",
+        "b4": "Evaluate aspirant credibility independently based on their own judgment",
+        "b5": "Cross-reference aspirant claims with publicly available information",
+        "p3": "Prajaakeeya acts only as a technology platform facilitating communication between users and aspirants. The platform shall not be held responsible for any incorrect, misleading, or incomplete information submitted by aspirants."
+      },
+      "s10": {
+        "title": "10. Content Ownership and Intellectual Property",
+        "sub1": {
+          "title": "10.1 User and Aspirant Content",
+          "b1": "Users and aspirants retain ownership of the content they submit to the platform",
+          "b2": "By posting content on Prajaakeeya, you grant the platform a non-exclusive, royalty-free, worldwide license to display, distribute, and store such content for the purpose of operating the platform",
+          "b3": "You represent and warrant that you have the right to post all content you submit and that such content does not infringe upon the intellectual property rights of any third party"
+        },
+        "sub2": {
+          "title": "10.2 Platform Content",
+          "b1": "All intellectual property related to the Prajaakeeya platform, including its name, logo, design, software, code, and documentation, is owned by Prajaakeeya",
+          "b2": "You may not copy, modify, distribute, sell, or lease any part of the platform or its intellectual property without prior written consent from Prajaakeeya",
+          "b3": "The Prajaakeeya name and logo are proprietary marks and may not be used without authorization"
+        }
+      },
+      "s11": {
+        "title": "11. Platform Limitation and Election Disclaimer",
+        "b1": "Prajaakeeya is designed as a civic engagement platform and does not conduct official elections",
+        "b2": "Any selection process conducted on the platform is intended only for community evaluation and engagement purposes",
+        "b3": "The results displayed on the platform do not represent official election results and have no legal standing in any government or statutory election process",
+        "b4": "Prajaakeeya does not influence or control how users make their decisions",
+        "b5": "Users participate on the platform voluntarily and at their own discretion",
+        "b6": "The platform is not a substitute for any official electoral process conducted by government authorities",
+        "b7": "Prajaakeeya does not claim to replace, replicate, or interfere with any statutory election process"
+      },
+      "s12": {
+        "title": "12. Reporting Misuse",
+        "p1": "Prajaakeeya takes platform integrity seriously. Users may report the following types of misuse:",
+        "b1": "Fraudulent use of user ID (email ID) or impersonation of another user",
+        "b2": "Misleading aspirant information or false claims made by aspirants",
+        "b3": "Identity misuse, including unauthorized use of another person's credentials",
+        "b4": "Inappropriate, abusive, or threatening conduct on the platform",
+        "b5": "Spam, phishing attempts, or any activity intended to disrupt the platform",
+        "p2": "Reports will be reviewed by the Prajaakeeya team, and appropriate actions will be taken in accordance with platform policies. Actions may include warnings, temporary suspension, or permanent removal of accounts found to be in violation."
+      },
+      "s13": {
+        "title": "13. Account Suspension and Termination",
+        "p1": "Prajaakeeya reserves the right to suspend or terminate any user or aspirant account at its sole discretion, without prior notice, for the following reasons:",
+        "b1": "Violation of any provision of these Terms and Conditions",
+        "b2": "Engaging in fraudulent, abusive, or unlawful activity on the platform",
+        "b3": "Impersonation or identity misuse",
+        "b4": "Posting misleading, defamatory, or harmful content",
+        "b5": "Attempting to hack, disrupt, or compromise the platform's security",
+        "b6": "Any conduct that Prajaakeeya reasonably determines to be harmful to the platform, its users, or the public interest",
+        "p2": "Upon termination, the user's access to the platform will be revoked, and associated data may be deleted in accordance with the Privacy Policy. Prajaakeeya is not liable for any loss or damage resulting from account suspension or termination."
+      },
+      "s14": {
+        "title": "14. Limitation of Liability",
+        "p1": "To the maximum extent permitted by applicable law:",
+        "b1": "Prajaakeeya provides the platform on an \"as is\" and \"as available\" basis, without any warranties of any kind, whether express or implied",
+        "b2": "Prajaakeeya does not warrant that the platform will be uninterrupted, error-free, secure, or free from viruses or other harmful components",
+        "b3": "Prajaakeeya is not liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the platform",
+        "b4": "Prajaakeeya is not responsible for the actions, content, or conduct of any user or aspirant on the platform",
+        "b5": "Prajaakeeya is not liable for any decisions made by users based on information available on the platform",
+        "b6": "Prajaakeeya's total liability for any claim arising out of or relating to these Terms shall not exceed the amount paid by the user to Prajaakeeya, if any, in the twelve months preceding the claim"
+      },
+      "s15": {
+        "title": "15. Indemnification",
+        "p1": "You agree to indemnify, defend, and hold harmless Prajaakeeya, its founders, team members, and affiliates from and against any and all claims, damages, losses, liabilities, costs, and expenses (including reasonable legal fees) arising out of or related to:",
+        "b1": "Your use of the platform",
+        "b2": "Your violation of these Terms and Conditions",
+        "b3": "Your violation of any applicable law or regulation",
+        "b4": "Content you post, submit, or share on the platform",
+        "b5": "Your infringement of any intellectual property or other rights of any third party",
+        "b6": "Any dispute between you and another user or aspirant on the platform"
+      },
+      "s16": {
+        "title": "16. Privacy",
+        "p1": "Your use of the Prajaakeeya platform is also governed by our Privacy Policy, available at www.prajaakeeya.in/privacy-policy-disclaimer. The Privacy Policy explains what information we collect, how we use it, and how we protect your privacy. By using the platform, you consent to the collection and use of information as described in the Privacy Policy."
+      },
+      "s17": {
+        "title": "17. Third-Party Links and Services",
+        "p1": "The Prajaakeeya platform may contain links to third-party websites or services that are not owned or controlled by Prajaakeeya. We are not responsible for the content, privacy policies, or practices of any third-party websites or services. You acknowledge and agree that Prajaakeeya shall not be liable for any damage or loss caused by your use of or reliance on any third-party content, goods, or services."
+      },
+      "s18": {
+        "title": "18. Force Majeure",
+        "p1": "Prajaakeeya shall not be liable for any failure or delay in performing its obligations under these Terms due to circumstances beyond its reasonable control, including but not limited to natural disasters, acts of government, war, terrorism, pandemics, internet or telecommunications failures, power outages, cyberattacks, or any other force majeure event."
+      },
+      "s19": {
+        "title": "19. Severability",
+        "p1": "If any provision of these Terms is found to be invalid, illegal, or unenforceable by a court of competent jurisdiction, the remaining provisions shall continue in full force and effect. The invalid or unenforceable provision shall be modified to the minimum extent necessary to make it valid and enforceable while preserving the original intent."
+      },
+      "s20": {
+        "title": "20. Entire Agreement",
+        "p1": "These Terms and Conditions, together with the Privacy Policy, constitute the entire agreement between you and Prajaakeeya regarding your use of the platform. These Terms supersede all prior agreements, communications, and understandings, whether written or oral, relating to the subject matter herein."
+      },
+      "s21": {
+        "title": "21. No Waiver",
+        "p1": "The failure of Prajaakeeya to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision. Any waiver of any provision of these Terms shall be effective only if in writing and signed by an authorized representative of Prajaakeeya."
+      },
+      "s22": {
+        "title": "22. Governing Law and Jurisdiction",
+        "p1": "These Terms and Conditions shall be governed by and construed in accordance with the laws of India, including the Information Technology Act, 2000, and any applicable regulations. Any disputes arising from these Terms or your use of the platform shall be subject to the exclusive jurisdiction of the courts in Bengaluru, Karnataka, India."
+      },
+      "s23": {
+        "title": "23. Contact Us",
+        "p1": "If you have any questions, concerns, or requests regarding these Terms and Conditions, please contact us at:",
+        "b1": "Website: www.prajaakeeya.in",
+        "b2": "Email: support@prajaakeeya.in",
+        "p2": "We will make every reasonable effort to respond to your inquiry within a reasonable timeframe."
+      }
+    }
+  },
+  "communityGuidelines": {
+    "header": {
+      "logoAlt": "Prajaakeeya",
+      "appName": "Prajaakeeya",
+      "appNameKn": "ಪ್ರಜಾಕೀಯ",
+      "themeToggleLabel": "toggle theme",
+      "langToggleEng": "ENG",
+      "langToggleKn": "ಕನ್ನಡ"
+    },
+    "hero": {
+      "title": "Community Guidelines",
+      "association": "PRAJAAKEEYA — Community Guidelines",
+      "intro": "www.prajaakeeya.in",
+      "affiliation": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026"
+    },
+    "footer": {
+      "copyright": "© 2026 Prajaakeeya. All rights reserved."
+    },
+    "sections": {
+      "s1": {
+        "title": "1. Purpose of These Guidelines",
+        "p1": "Prajaakeeya is a digital civic engagement platform that brings users and aspirants together for transparent, respectful, and meaningful civic participation. These Community Guidelines establish the standards of behavior expected from every participant on the platform.",
+        "p2": "Our goal is to create a safe, inclusive, and constructive space where users can interact with aspirants, discuss civic issues, ask questions, conduct interviews, and evaluate aspirants — all within an environment of mutual respect and accountability.",
+        "p3": "Every user and aspirant on Prajaakeeya is expected to read, understand, and follow these guidelines. Violations may result in warnings, temporary suspension, or permanent removal from the platform."
+      },
+      "s2": {
+        "title": "2. Core Principles",
+        "p1": "Prajaakeeya is built on the following core principles that guide all activity on the platform:",
+        "b1": "Transparency: All interactions should be honest, open, and in good faith",
+        "b2": "Respect: Every participant deserves to be treated with dignity regardless of their background, opinions, or civic position",
+        "b3": "Accountability: Users and aspirants are responsible for the content they post and the conduct they exhibit",
+        "b4": "Neutrality: The platform does not favor any political party, ideology, or aspirant; all participants are treated equally",
+        "b5": "Civic Purpose: The platform exists solely for civic engagement; commercial, political campaigning, or personal exploitation is not permitted"
+      },
+      "s3": {
+        "title": "3. User Conduct Guidelines",
+        "ss1": {
+          "title": "3.1 Be Respectful and Civil",
+          "b1": "Treat all users, aspirants, and platform participants with courtesy and respect",
+          "b2": "Disagreements are natural in civic discussions; express your views constructively without personal attacks",
+          "b3": "Listen to differing opinions with an open mind; civic engagement thrives on diverse perspectives",
+          "b4": "Address aspirants and fellow users by their name or appropriate form of address",
+          "b5": "Avoid condescending, dismissive, or belittling language"
+        },
+        "ss2": {
+          "title": "3.2 Be Honest and Authentic",
+          "b1": "Use your genuine Gmail ID to sign in; do not create fake or misleading accounts",
+          "b2": "Present your views and opinions honestly; do not pretend to represent organizations or groups you are not affiliated with",
+          "b3": "Do not fabricate facts, statistics, or claims during civic discussions",
+          "b4": "If sharing information about an aspirant or civic issue, ensure it is accurate to the best of your knowledge",
+          "b5": "Correct yourself openly if you realize you have shared inaccurate information"
+        },
+        "ss3": {
+          "title": "3.3 Engage Constructively",
+          "b1": "Focus discussions on civic issues, governance, community welfare, and aspirant evaluation",
+          "b2": "Ask meaningful questions to aspirants; the platform is designed for genuine civic interaction",
+          "b3": "Contribute to discussions in a way that adds value and promotes understanding",
+          "b4": "Use the interview and interaction tools on the platform for their intended civic purpose",
+          "b5": "Provide feedback on aspirants based on your genuine assessment, not personal bias or external influence"
+        }
+      },
+      "s4": {
+        "title": "4. Aspirant Conduct Guidelines",
+        "ss1": {
+          "title": "4.1 Be Truthful and Transparent",
+          "b1": "Provide accurate information about your background, qualifications, experience, and civic vision",
+          "b2": "Do not exaggerate, fabricate, or misrepresent your achievements, affiliations, or capabilities",
+          "b3": "Update your profile information promptly if any details change",
+          "b4": "Be transparent about your civic goals and intentions when engaging with users",
+          "b5": "Acknowledge limitations honestly; users respect aspirants who are genuine"
+        },
+        "ss2": {
+          "title": "4.2 Engage Respectfully with Users",
+          "b1": "Respond to user questions and interview requests in good faith and with patience",
+          "b2": "Treat every user's question as legitimate, regardless of its simplicity or complexity",
+          "b3": "Do not dismiss, ignore, or ridicule users for their opinions or questions",
+          "b4": "Accept constructive criticism gracefully; civic participation involves accountability",
+          "b5": "Maintain professional and respectful communication at all times"
+        },
+        "ss3": {
+          "title": "4.3 Respect Platform Neutrality",
+          "b1": "Do not use the platform to campaign for or against any political party",
+          "b2": "Do not attempt to influence users through paid promotions, coordinated messaging, or manipulation",
+          "b3": "Do not recruit users for political rallies, fundraising, or activities outside the platform's civic purpose",
+          "b4": "Present your civic vision independently without demeaning other aspirants",
+          "b5": "Respect the platform's role as a neutral civic space"
+        }
+      },
+      "s5": {
+        "title": "5. Prohibited Content and Behavior",
+        "p1": "The following content and behavior are strictly prohibited on the Prajaakeeya platform. Violations will result in action as described in Section 10.",
+        "ss1": {
+          "title": "5.1 Hate Speech and Discrimination",
+          "b1": "Content that promotes hatred, violence, or discrimination based on religion, caste, race, ethnicity, gender, sexual orientation, disability, language, or regional identity",
+          "b2": "Derogatory slurs, casteist remarks, communal provocation, or any language intended to demean a group of people",
+          "b3": "Content that promotes supremacy of any group over another"
+        },
+        "ss2": {
+          "title": "5.2 Harassment and Bullying",
+          "b1": "Personal attacks, name-calling, or targeted harassment of any user or aspirant",
+          "b2": "Persistent unwanted contact, stalking, or intimidation",
+          "b3": "Publicly shaming or humiliating any individual on the platform",
+          "b4": "Coordinated attacks or pile-on behavior against a user or aspirant",
+          "b5": "Doxxing — sharing private or personal information of any individual without their consent"
+        },
+        "ss3": {
+          "title": "5.3 Misinformation and Fake Content",
+          "b1": "Deliberately spreading false or misleading information about aspirants, civic issues, or governance matters",
+          "b2": "Sharing fabricated documents, altered images, deepfakes, or manipulated media",
+          "b3": "Creating fake profiles or impersonating real individuals",
+          "b4": "Spreading unverified rumors or conspiracy theories as established facts",
+          "b5": "Misattributing statements or positions to aspirants or public figures"
+        },
+        "ss4": {
+          "title": "5.4 Spam and Commercial Exploitation",
+          "b1": "Posting unsolicited advertisements, promotional content, or commercial offers",
+          "b2": "Sending repetitive, irrelevant, or bulk messages to users or aspirants",
+          "b3": "Using the platform to promote products, services, businesses, or external ventures",
+          "b4": "Posting affiliate links, referral codes, or monetization schemes",
+          "b5": "Using bots or automated tools to post content or interact with users"
+        },
+        "ss5": {
+          "title": "5.5 Illegal and Harmful Activities",
+          "b1": "Content that promotes, encourages, or facilitates illegal activities",
+          "b2": "Content that incites violence, terrorism, or harm against individuals or groups",
+          "b3": "Content that violates the Indian Penal Code, Information Technology Act, Representation of the People Act, or any other applicable law",
+          "b4": "Sharing content related to illegal weapons, drugs, or other prohibited items",
+          "b5": "Attempting to hack, breach, or compromise the platform's security infrastructure"
+        },
+        "ss6": {
+          "title": "5.6 Sexual and Inappropriate Content",
+          "b1": "Sexually explicit, suggestive, or obscene content of any kind",
+          "b2": "Non-consensual sharing of intimate images or content",
+          "b3": "Sexual harassment, unwelcome advances, or inappropriate personal messages",
+          "b4": "Content that sexualizes or exploits minors in any way"
+        },
+        "ss7": {
+          "title": "5.7 Manipulation and Bad Faith Conduct",
+          "b1": "Creating multiple accounts to manipulate discussions, ratings, or evaluations",
+          "b2": "Coordinated inauthentic behavior — groups of accounts acting together to artificially boost or suppress an aspirant",
+          "b3": "Bribing, coercing, or incentivizing users to post favorable or unfavorable content about aspirants",
+          "b4": "Vote manipulation, rating fraud, or any attempt to game the platform's evaluation mechanisms",
+          "b5": "Deliberately disrupting civic discussions through trolling, derailing, or provocative behavior with no constructive intent"
+        }
+      },
+      "s6": {
+        "title": "6. Interaction and Interview Guidelines",
+        "p1": "Prajaakeeya provides tools for users to interact with and interview aspirants. The following guidelines govern these interactions:",
+        "ss1": {
+          "title": "6.1 For Users Interacting with Aspirants",
+          "b1": "Approach interactions with genuine civic curiosity and the intent to understand the aspirant's vision",
+          "b2": "Ask relevant questions about governance, community issues, qualifications, and plans",
+          "b3": "Allow aspirants adequate time to respond; not all answers can be immediate",
+          "b4": "Avoid asking inappropriate personal questions unrelated to civic participation",
+          "b5": "Base your evaluation on the aspirant's responses, conduct, and demonstrated civic commitment",
+          "b6": "Do not use interactions as a platform for personal attacks or political campaigning"
+        },
+        "ss2": {
+          "title": "6.2 For Aspirants During Interactions",
+          "b1": "Be prepared to answer questions about your civic vision, qualifications, and plans",
+          "b2": "Respond to all reasonable questions honestly and within a reasonable timeframe",
+          "b3": "If you cannot answer a question immediately, acknowledge it and commit to a follow-up",
+          "b4": "Do not deflect all questions or avoid accountability; users value transparency",
+          "b5": "Treat every interaction as an opportunity to demonstrate your civic commitment",
+          "b6": "Do not use interactions to solicit donations, recruit supporters, or promote political parties"
+        }
+      },
+      "s7": {
+        "title": "7. Content Posting Guidelines",
+        "ss1": {
+          "title": "7.1 General Standards",
+          "b1": "All content posted on the platform should be relevant to civic engagement, governance, or community welfare",
+          "b2": "Content should be written in a language and tone that is accessible and respectful",
+          "b3": "If sharing facts or data, provide context and sources where possible",
+          "b4": "Opinions are welcome but should be clearly identified as opinions, not stated as facts",
+          "b5": "Content should contribute positively to the civic discourse on the platform"
+        },
+        "ss2": {
+          "title": "7.2 Multimedia Content",
+          "b1": "Images, videos, or documents shared on the platform must be relevant to civic discussions",
+          "b2": "Do not share copyrighted material without proper authorization",
+          "b3": "Do not share altered, manipulated, or misleading media",
+          "b4": "All multimedia content must comply with the prohibited content rules in Section 5",
+          "b5": "Do not share content that contains personal or private information of others"
+        }
+      },
+      "s8": {
+        "title": "8. Participation at Governance Levels",
+        "p1": "Prajaakeeya enables participation at Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe levels. The following guidelines apply:",
+        "b1": "Users should participate at governance levels relevant to their area of interest and civic goals",
+        "b2": "Engaging at multiple levels is permitted, but users should ensure their participation is genuine and constructive",
+        "b3": "Do not flood discussions at any governance level with irrelevant content or spam",
+        "b4": "Respect the local context and community-specific issues at each governance level",
+        "b5": "Cross-level discussions are encouraged when they contribute to broader civic understanding",
+        "b6": "Do not attempt to dominate or monopolize discussions at any governance level"
+      },
+      "s9": {
+        "title": "9. Privacy and Personal Information",
+        "b1": "Do not share the personal information of other users or aspirants without their consent",
+        "b2": "Do not attempt to discover, collect, or store the personal data of other participants",
+        "b3": "Respect the privacy of all individuals on the platform",
+        "b4": "Do not take screenshots or record interactions for the purpose of harassment, defamation, or misuse",
+        "b5": "If you receive private or sensitive information inadvertently, do not share or exploit it",
+        "b6": "Report any privacy violations to the Prajaakeeya team immediately"
+      },
+      "s10": {
+        "title": "10. Enforcement and Consequences",
+        "p1": "Prajaakeeya enforces these Community Guidelines through a graduated response system. The specific action taken depends on the severity and frequency of the violation.",
+        "ss1": {
+          "title": "10.1 Warning",
+          "p1": "Issued for first-time minor violations such as off-topic posting, mildly disrespectful language, or unintentional guideline breaches",
+          "p2": "The user or aspirant will be notified of the specific violation and reminded of the relevant guideline"
+        },
+        "ss2": {
+          "title": "10.2 Content Removal",
+          "p1": "Content that violates these guidelines may be removed without prior notice",
+          "p2": "The user or aspirant will be informed of the removal and the reason for it"
+        },
+        "ss3": {
+          "title": "10.3 Temporary Suspension",
+          "p1": "Issued for repeated minor violations, moderate violations such as harassment, misinformation, or manipulation",
+          "p2": "The duration of suspension depends on the severity and may range from 24 hours to 30 days",
+          "p3": "During suspension, the user or aspirant cannot access the platform"
+        },
+        "ss4": {
+          "title": "10.4 Permanent Removal",
+          "p1": "Issued for severe violations such as hate speech, serious threats, illegal activity, identity fraud, or persistent violations after prior warnings",
+          "p2": "Permanently removed users or aspirants will lose all access to the platform",
+          "p3": "Re-registration using a different account after permanent removal is itself a violation"
+        },
+        "ss5": {
+          "title": "10.5 Legal Action",
+          "p1": "In cases involving illegal activities, Prajaakeeya reserves the right to report the matter to appropriate law enforcement authorities",
+          "p2": "Prajaakeeya may cooperate with legal authorities as required by law"
+        }
+      },
+      "s11": {
+        "title": "11. Reporting Violations",
+        "p1": "If you encounter any content or behavior that violates these Community Guidelines, you are encouraged to report it through the platform's reporting mechanism.",
+        "p2": "You may report:",
+        "b1": "Fraudulent use of user ID (email ID) or impersonation",
+        "b2": "Misleading aspirant information or false claims",
+        "b3": "Identity misuse or unauthorized account access",
+        "b4": "Hate speech, harassment, or abusive conduct",
+        "b5": "Spam, commercial exploitation, or irrelevant content",
+        "b6": "Misinformation, fake content, or manipulated media",
+        "b7": "Privacy violations or doxxing",
+        "b8": "Any other conduct that violates these guidelines",
+        "p3": "All reports are reviewed by the Prajaakeeya team. We aim to review reports promptly and take appropriate action. The identity of the reporting user will be kept confidential to the extent possible."
+      },
+      "s12": {
+        "title": "12. Appeals",
+        "p1": "If your account has been suspended or content has been removed and you believe the action was taken in error, you may submit an appeal by contacting us at support@prajaakeeya.in.",
+        "p2": "Your appeal should include:",
+        "b1": "Your registered email address",
+        "b2": "A description of the action taken (suspension, content removal, etc.)",
+        "b3": "Your explanation of why you believe the action was incorrect",
+        "b4": "Any supporting information or context",
+        "p3": "Appeals will be reviewed by the Prajaakeeya team, and a decision will be communicated to you within a reasonable timeframe. The decision on the appeal is final."
+      },
+      "s13": {
+        "title": "13. Platform Safety and Security",
+        "b1": "Do not attempt to access accounts, data, or systems that do not belong to you",
+        "b2": "Do not probe, scan, or test the vulnerability of the platform's security systems",
+        "b3": "Do not introduce malware, viruses, or any harmful code into the platform",
+        "b4": "Report any security vulnerabilities you discover to the Prajaakeeya team immediately rather than exploiting them",
+        "b5": "Do not attempt to reverse-engineer, decompile, or disassemble any part of the platform"
+      },
+      "s14": {
+        "title": "14. Civic Responsibility",
+        "p1": "Prajaakeeya encourages all participants to embrace their civic responsibility:",
+        "b1": "Use the platform as a tool for genuine civic engagement and community betterment",
+        "b2": "Encourage fellow citizens to participate in civic discussions constructively",
+        "b3": "Hold aspirants accountable through respectful questioning and evaluation",
+        "b4": "Contribute to building a culture of transparency, accountability, and informed civic participation",
+        "b5": "Remember that the strength of any civic platform lies in the quality of participation by its community"
+      },
+      "s15": {
+        "title": "15. Disclaimer",
+        "p1": "These Community Guidelines are designed to maintain a healthy and productive civic engagement environment. However:",
+        "b1": "Prajaakeeya cannot monitor all content and interactions in real time",
+        "b2": "The platform relies on community reporting to identify violations",
+        "b3": "Prajaakeeya does not endorse or take responsibility for the views, opinions, or content posted by users or aspirants",
+        "b4": "The platform's enforcement actions are based on available information and platform policies",
+        "b5": "These guidelines may be updated from time to time to address new challenges and maintain community standards"
+      },
+      "s16": {
+        "title": "16. Contact Us",
+        "p1": "If you have questions about these Community Guidelines or need to report a violation, please contact us at:",
+        "b1": "Prajaakeeya",
+        "b2": "Website: www.prajaakeeya.in",
+        "b3": "Email: support@prajaakeeya.in"
+      }
+    }
+  }
+}
