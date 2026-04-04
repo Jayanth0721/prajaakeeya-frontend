@@ -161,7 +161,7 @@ const UserLoginPage = () => {
     }
   };
 
-  const isInWebView = typeof window !== 'undefined' && (/ReactNative/i.test(navigator.userAgent || '') || /PrajaakeeyaWV/i.test(navigator.userAgent || ''));
+  const isInWebView = typeof window !== 'undefined' && (/ReactNative/i.test(navigator.userAgent || '') || (window as any).isPrajaakeeyaApp);
 
   const onGoogleSignIn = async () => {
     setError('');
@@ -174,7 +174,7 @@ const UserLoginPage = () => {
           setGoogleLoading(false);
           return;
         }
-        // In Native iOS WebView (PrajaakeeyaWV): use popup now that native supports real windows
+        // In Native iOS WebView (isPrajaakeeyaApp): use popup now that native supports real windows
         await setPersistence(auth, browserLocalPersistence);
         const result = await signInWithPopup(auth, googleProvider);
         const idToken = await result.user.getIdToken();
