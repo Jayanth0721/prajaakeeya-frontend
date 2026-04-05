@@ -71,7 +71,7 @@ const sections: SafetySection[] = [
             'If you encounter any content or behaviour on Prajaakeeya that endangers children or constitutes CSAE, please report it immediately through any of the following channels:',
         ],
         bullets: [
-            'Email: support@prajaakeeya.in',
+            'Email: support@prajaakeeya.org',
             'In-app reporting feature',
             'Contact local law enforcement or Childline India (Dial 1098)',
             'Report to the National Commission for Protection of Child Rights (NCPCR) at https://ncpcr.gov.in',
@@ -117,9 +117,9 @@ const sections: SafetySection[] = [
             'For any questions, concerns, or reports related to child safety on Prajaakeeya, please contact us:',
         ],
         bullets: [
-            'Email: support@prajaakeeya.in',
+            'Email: support@prajaakeeya.org',
             'Organization: Prajaakeeya',
-            'Website: https://prajaakeeya.in',
+            'Website: https://prajaakeeya.org',
         ],
     },
 ];

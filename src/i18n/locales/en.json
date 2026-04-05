@@ -1685,9 +1685,9 @@
     },
     "hero": {
       "title": "Privacy-Policy Disclaimer",
-      "association": "Prajaakeeya — www.prajaakeeya.in",
+      "association": "Prajaakeeya — www.prajaakeeya.org",
       "effectiveDate": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026",
-      "intro1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
+      "intro1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.org. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
       "intro2": "This Privacy Policy explains what information we collect, how we use it, and how we protect your privacy when you access and use the Prajaakeeya platform. By signing in and using our platform, you agree to the terms outlined in this Privacy Policy.",
       "intro3": "Prajaakeeya is committed to minimal data collection and maximum user privacy. We believe that civic participation should not come at the cost of personal data exploitation."
     },
@@ -1697,7 +1697,7 @@
     "sections": {
       "s1": {
         "title": "1. Introduction",
-        "p1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
+        "p1": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.org. Prajaakeeya is designed to empower citizens by enabling transparent interaction between users and aspirants at various levels of governance, including Village, Taluk, Zilla, Ward, Assembly, Parliament, Purasabhe, and Nagarasanhe.",
         "p2": "This Privacy Policy explains what information we collect, how we use it, and how we protect your privacy when you access and use the Prajaakeeya platform. By signing in and using our platform, you agree to the terms outlined in this Privacy Policy.",
         "p3": "Prajaakeeya is committed to minimal data collection and maximum user privacy. We believe that civic participation should not come at the cost of personal data exploitation."
       },
@@ -1857,8 +1857,8 @@
         "title": "17. Contact Us",
         "p1": "If you have any questions, concerns, or requests regarding this Privacy Policy, or if you wish to exercise your rights as described in this policy, please contact us at:",
         "b1": "Prajaakeeya",
-        "b2": "Website: www.prajaakeeya.in",
-        "b3": "Email: support@prajaakeeya.in",
+        "b2": "Website: www.prajaakeeya.org",
+        "b3": "Email: support@prajaakeeya.org",
         "p2": "We will make every reasonable effort to respond to your inquiry within a reasonable timeframe."
       }
     }
@@ -1874,9 +1874,9 @@
     },
     "hero": {
       "title": "Terms and Conditions",
-      "association": "www.prajaakeeya.in",
+      "association": "www.prajaakeeya.org",
       "effectiveDate": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026",
-      "intro": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.in. These Terms and Conditions (\"Terms\") govern your access to and use of the Prajaakeeya platform, including all features, tools, content, and services offered through the platform.",
+      "intro": "Welcome to Prajaakeeya, a digital civic engagement platform accessible at www.prajaakeeya.org. These Terms and Conditions (\"Terms\") govern your access to and use of the Prajaakeeya platform, including all features, tools, content, and services offered through the platform.",
       "affiliation": "By signing in and using the Prajaakeeya platform, you acknowledge that you have read, understood, and agree to be bound by these Terms. If you do not agree with any part of these Terms, you must not access or use the platform."
     },
     "footer": {
@@ -1890,7 +1890,7 @@
       "s2": {
         "title": "2. Definitions",
         "p1": "For the purposes of these Terms:",
-        "b1": "\"Platform\" refers to the Prajaakeeya web application, mobile application, and all associated services accessible at www.prajaakeeya.in",
+        "b1": "\"Platform\" refers to the Prajaakeeya web application, mobile application, and all associated services accessible at www.prajaakeeya.org",
         "b2": "\"User\" refers to any individual who signs in and accesses the Prajaakeeya platform",
         "b3": "\"Aspirant\" refers to any individual who registers on the platform as a civic participant seeking to engage with users at any governance level",
         "b4": "\"Content\" refers to all text, images, information, data, and other materials posted, submitted, or displayed on the platform by users or aspirants",
@@ -2053,7 +2053,7 @@
       },
       "s16": {
         "title": "16. Privacy",
-        "p1": "Your use of the Prajaakeeya platform is also governed by our Privacy Policy, available at www.prajaakeeya.in/privacy-policy. The Privacy Policy explains what information we collect, how we use it, and how we protect your privacy. By using the platform, you consent to the collection and use of information as described in the Privacy Policy."
+        "p1": "Your use of the Prajaakeeya platform is also governed by our Privacy Policy, available at www.prajaakeeya.org/privacy-policy. The Privacy Policy explains what information we collect, how we use it, and how we protect your privacy. By using the platform, you consent to the collection and use of information as described in the Privacy Policy."
       },
       "s17": {
         "title": "17. Third-Party Links and Services",
@@ -2082,8 +2082,8 @@
       "s23": {
         "title": "23. Contact Us",
         "p1": "If you have any questions, concerns, or requests regarding these Terms and Conditions, please contact us at:",
-        "b1": "Website: www.prajaakeeya.in",
-        "b2": "Email: support@prajaakeeya.in",
+        "b1": "Website: www.prajaakeeya.org",
+        "b2": "Email: support@prajaakeeya.org",
         "p2": "We will make every reasonable effort to respond to your inquiry within a reasonable timeframe."
       }
     }
@@ -2100,7 +2100,7 @@
     "hero": {
       "title": "Community Guidelines",
       "association": "PRAJAAKEEYA — Community Guidelines",
-      "intro": "www.prajaakeeya.in",
+      "intro": "www.prajaakeeya.org",
       "affiliation": "Effective Date: March 25, 2026 | Last Updated: March 25, 2026"
     },
     "footer": {
@@ -2340,7 +2340,7 @@
       },
       "s12": {
         "title": "12. Appeals",
-        "p1": "If your account has been suspended or content has been removed and you believe the action was taken in error, you may submit an appeal by contacting us at support@prajaakeeya.in.",
+        "p1": "If your account has been suspended or content has been removed and you believe the action was taken in error, you may submit an appeal by contacting us at support@prajaakeeya.org.",
         "p2": "Your appeal should include:",
         "b1": "Your registered email address",
         "b2": "A description of the action taken (suspension, content removal, etc.)",
@@ -2378,8 +2378,8 @@
         "title": "16. Contact Us",
         "p1": "If you have questions about these Community Guidelines or need to report a violation, please contact us at:",
         "b1": "Prajaakeeya",
-        "b2": "Website: www.prajaakeeya.in",
-        "b3": "Email: support@prajaakeeya.in"
+        "b2": "Website: www.prajaakeeya.org",
+        "b3": "Email: support@prajaakeeya.org"
       }
     }
   }
