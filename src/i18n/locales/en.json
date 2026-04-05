@@ -448,7 +448,7 @@
         "checkbox": {
           "agreed": "The Citizens who elected me are my employers who pay my salary and have appointed me to work.As per this SOP (Standard Operating Procedure), I will work according to the wishes of the citizens and will undergo an evaluation (polling) of my performance every 6 months throughout the 5-year term through this site/app.If more than 50% of the citizens express dissatisfaction with my work and I fail the evaluation, I will improve my performance within the next 3 months and undergo another evaluation through this site/app.If again more than 50% of the citizens reject my performance, I will resign from my position.",
           "agreed1": "I voluntarily declare that if I receive fewer votes than another aspirant, I will support the aspirant who receives the highest votes and will not contest in the real election. I understand that this platform does not restrict anyone from contesting elections.",
-           "agreed2":"I register as an aspirant with my consent. I agree to share my contact details and be responsible for all my interactions.",
+          "agreed2": "I register as an aspirant with my consent. I agree to share my contact details and be responsible for all my interactions.",
           "agreeLabel": "I have read all the above details and I agree to them."
         },
         "signature": {
@@ -486,7 +486,7 @@
   },
   "userDashboard": {
     "aspirantBanner": "Through this application, you can connect with people across multiple channels—direct meetings, video interactions, live sessions on Facebook and Instagram, and chat—while continuously evaluating yourself",
-     "title": "Prajaakeeya Portal",
+    "title": "Prajaakeeya Portal",
     "welcome": "Welcome",
     "subtitle": "Manage your participation in the ward selection process",
     "numberOfVotes": "Number of Votes",
@@ -713,7 +713,7 @@
         "ownerQuote1": "This is MY country, my state, my town, my village.",
         "ownerQuote2": "The government runs on MY tax money.",
         "leaderDeclaration": "I'm not a follower — I am the ",
-        "leader":"LEADER",
+        "leader": "LEADER",
         "awakeLabel": "People who are awake"
       },
       "nav": {
@@ -2053,7 +2053,7 @@
       },
       "s16": {
         "title": "16. Privacy",
-        "p1": "Your use of the Prajaakeeya platform is also governed by our Privacy Policy, available at www.prajaakeeya.in/privacy-policy-disclaimer. The Privacy Policy explains what information we collect, how we use it, and how we protect your privacy. By using the platform, you consent to the collection and use of information as described in the Privacy Policy."
+        "p1": "Your use of the Prajaakeeya platform is also governed by our Privacy Policy, available at www.prajaakeeya.in/privacy-policy. The Privacy Policy explains what information we collect, how we use it, and how we protect your privacy. By using the platform, you consent to the collection and use of information as described in the Privacy Policy."
       },
       "s17": {
         "title": "17. Third-Party Links and Services",

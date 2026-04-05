@@ -33,7 +33,7 @@ const AuthFooter: React.FC = () => {
       >
         <Link
           component={RouterLink}
-          to="/privacy-policy-disclaimer"
+          to="/privacy-policy"
           underline="hover"
           sx={{
             color: isDark ? BRAND.yellow2 : BRAND.red,
