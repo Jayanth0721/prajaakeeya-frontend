@@ -12,6 +12,7 @@ interface AuthState {
   isAdmin: boolean;
   isAuthenticated: boolean;
   setAuth: (token: string, user: AuthUser) => void;
+  clearSession: () => void;
   logout: () => void;
   fetchProfile: () => Promise<void>;
 }
@@ -44,6 +45,27 @@ const useAuthStore = create<AuthState>()(
         };
 
         set({ token, user: normalizedUser, isAdmin: normalizedUser.role === 'admin', isAuthenticated: true });
+      },
+      // Clear the current session (in-memory state + persisted localStorage)
+      // WITHOUT triggering a full-page reload. Use this when you need to drop
+      // a previous user's cached data before attaching a new session — e.g.
+      // at the end of a fresh OAuth sign-up on a device where someone else
+      // was previously logged in.
+      clearSession: () => {
+        set({ token: null, user: null, isAdmin: false, isAuthenticated: false });
+        delete apiClient.defaults.headers.common.Authorization;
+        const preserveKeys = ['theme-storage', 'i18nextLng'];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('civic_raised_')) preserveKeys.push(key);
+        }
+        const preserved: Record<string, string> = {};
+        preserveKeys.forEach(key => {
+          const val = localStorage.getItem(key);
+          if (val !== null) preserved[key] = val;
+        });
+        localStorage.clear();
+        Object.entries(preserved).forEach(([key, val]) => localStorage.setItem(key, val));
       },
       logout: () => {
         set({ token: null, user: null, isAdmin: false, isAuthenticated: false });

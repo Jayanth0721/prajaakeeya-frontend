@@ -32,6 +32,7 @@ import AdminGramaPanchayatPage from "./pages/admin/AdminGramaPanchayatPage";
 import AdminUploadSopPage from "./pages/admin/AdminUploadSopPage";
 import UserLoginPage from "./pages/UserLoginPage";
 import UserRegisterPage from "./pages/UserRegisterPage";
+import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 import UserPledgePage from "./pages/UserPledgePage";
 import ProfileCompletionPage from "./pages/ProfileCompletionPage";
@@ -371,6 +372,8 @@ const App = () => {
             />
           </Route>
 
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
+          <Route path="/oauth/success" element={<AuthCallbackPage />} />
           <Route path="/loading" element={<LoadingPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route

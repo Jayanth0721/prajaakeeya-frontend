@@ -60,28 +60,34 @@ export const loginWithEpic = async (payload: EpicLoginPayload) => {
   return data;
 };
 
-export const loginWithGoogle = async (idToken: string) => {
-  const endpoints = ['/auth/google/login'];
-  let lastError: any = null;
+export const GOOGLE_OAUTH_STATE_KEY = 'google_oauth_state';
 
-  for (const endpoint of endpoints) {
-    try {
-      const { data } = await apiClient.post<{ token: string; user: AuthUser }>(endpoint, { idToken });
-      return data;
-    } catch (err: any) {
-      lastError = err;
-      if (err?.response?.status !== 404) {
-        throw err;
-      }
-    }
-  }
-
-  throw lastError;
+/**
+ * Generates a cryptographically random CSRF token, persists it to
+ * sessionStorage so the /auth/callback handler can verify it, and returns it.
+ */
+const createGoogleOAuthState = (): string => {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  const token = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  sessionStorage.setItem(GOOGLE_OAUTH_STATE_KEY, token);
+  return token;
 };
 
-export const loginWithApple = async (idToken: string) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/apple/login', { idToken });
-  return data;
+/**
+ * Returns the backend Google OAuth entry point. The browser should be
+ * redirected here; the backend takes care of the full Authorization Code
+ * flow and redirects back to the frontend at /auth/callback?token=...&user=...
+ *
+ * A CSRF `state` token is generated and appended as a query param; the same
+ * token is stored in sessionStorage and must be compared against the `state`
+ * returned on the callback to mitigate CSRF attacks.
+ */
+export const getGoogleOAuthUrl = (): string => {
+  const raw = import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? '';
+  const host = String(raw).replace(/\/+$/g, '');
+  const state = createGoogleOAuthState();
+  return `${host}/api/auth/google?state=${encodeURIComponent(state)}`;
 };
 
 export const requestAdminOtp = (payload: AdminLoginPayload) => apiClient.post('/auth/admin/login', payload);

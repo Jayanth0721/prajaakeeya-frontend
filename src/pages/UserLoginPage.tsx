@@ -7,9 +7,8 @@ import SplitAuthLayout from '../components/SplitAuthLayout';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
-import { signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase';
-import { loginWithGoogle, sendAspirantOtp, verifyAspirantLoginOtp, resendAspirantOtp } from '../services/authService';
+import { sendAspirantOtp, verifyAspirantLoginOtp, resendAspirantOtp } from '../services/authService';
+import { getGoogleOAuthUrl } from '../services/authService';
 import * as yup from 'yup';
 
 interface AspirantLoginForm {
@@ -43,34 +42,6 @@ const UserLoginPage = () => {
   const [otpTimer, setOtpTimer] = useState(0);
   const [resendLoading, setResendLoading] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const hasCheckedRedirect = useRef(false);
-
-  useEffect(() => {
-    if (hasCheckedRedirect.current) return;
-    hasCheckedRedirect.current = true;
-
-    const checkRedirect = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          setGoogleLoading(true);
-          const idToken = await result.user.getIdToken();
-          const { token, user } = await loginWithGoogle(idToken);
-          logout();
-          setRedirecting(true);
-          setAuth(token, user);
-          navigate('/user/voters', { replace: true });
-        }
-      } catch (err: any) {
-        console.error('Redirect result error:', err);
-        const apiMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message;
-        setError(apiMessage || t('common.error') || 'Google sign-in failed');
-      } finally {
-        setGoogleLoading(false);
-      }
-    };
-    checkRedirect();
-  }, [auth, navigate, setAuth, logout, t]);
 
   useEffect(() => {
     if (otpTimer > 0) {
@@ -163,45 +134,19 @@ const UserLoginPage = () => {
 
   const isInWebView = typeof window !== 'undefined' && (/ReactNative/i.test(navigator.userAgent || '') || (window as any).isPrajaakeeyaApp);
 
-  const onGoogleSignIn = async () => {
+  const onGoogleSignIn = () => {
     setError('');
-    setGoogleLoading(true);
-    try {
-      if (isInWebView) {
-        if (/ReactNative/i.test(navigator.userAgent || '')) {
-          // In React Native WebView: ask RN to handle Google Sign-In via InAppBrowser
-          (window as any).ReactNativeWebView?.postMessage(JSON.stringify({ type: 'GOOGLE_SIGN_IN' }));
-          setGoogleLoading(false);
-          return;
-        }
-        // In Native iOS WebView (isPrajaakeeyaApp): use popup now that native supports real windows
-        await setPersistence(auth, browserLocalPersistence);
-        const result = await signInWithPopup(auth, googleProvider);
-        const idToken = await result.user.getIdToken();
-        const { token, user } = await loginWithGoogle(idToken);
-
-        logout();
-        setRedirecting(true);
-        setAuth(token, user);
-        navigate('/user/voters', { replace: true });
-        return;
-      }
-      // Normal browser: popup works fine
-      const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
-      const { token, user } = await loginWithGoogle(idToken);
-
-      logout();
-      setRedirecting(true);
-      setAuth(token, user);
-      navigate('/user/voters', { replace: true });
-    } catch (err: any) {
-      const apiMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message;
-      setError(apiMessage || t('common.error') || 'Google sign-in failed');
-      setRedirecting(false);
-    } finally {
-      setGoogleLoading(false);
+    // In React Native WebView, delegate to native layer (it will open the same URL in an in-app browser)
+    if (isInWebView && /ReactNative/i.test(navigator.userAgent || '')) {
+      (window as any).ReactNativeWebView?.postMessage(
+        JSON.stringify({ type: 'GOOGLE_SIGN_IN', url: getGoogleOAuthUrl() })
+      );
+      return;
     }
+    setGoogleLoading(true);
+    // Clear any stale auth before starting the OAuth flow
+    logout();
+    window.location.href = getGoogleOAuthUrl();
   };
 
   useEffect(() => {
