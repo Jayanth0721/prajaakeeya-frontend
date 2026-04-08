@@ -21,11 +21,8 @@ import {
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { appleProvider } from "../config/firebase";
-import { loginWithApple } from "../services/authService";
+import { getGoogleOAuthUrl } from "../services/authService";
 import useAuthStore from "../store/useAuthStore";
-import apiClient from "../services/apiClient";
 import * as yup from "yup";
 import SplitAuthLayout from "../components/SplitAuthLayout";
 import prajakeeyaLogo from "../assets/images/prajakeeya.png";
@@ -135,128 +132,32 @@ const UserRegisterPage = () => {
     }
   }, [setValue]);
 
-  // Handle Google Sign-In
-  const handleGoogleSignIn = async () => {
+  // Handle Google Sign-In — redirect to backend OAuth entry point.
+  // Backend handles consent + user creation, then redirects to
+  // /auth/callback?token=...&user=... where we finalize the session.
+  const handleGoogleSignIn = () => {
     setError("");
+    if (isInWebView) {
+      (window as any).ReactNativeWebView?.postMessage(
+        JSON.stringify({ type: "GOOGLE_SIGN_IN", url: getGoogleOAuthUrl() }),
+      );
+      return;
+    }
     setGoogleLoading(true);
-    try {
-      if (isInWebView) {
-        (window as any).ReactNativeWebView?.postMessage(
-          JSON.stringify({ type: "GOOGLE_SIGN_IN" }),
-        );
-        setGoogleLoading(false);
-        return;
-      }
-
-      const authInstance = getAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(authInstance, provider);
-      const idToken = await result.user.getIdToken();
-
-      try {
-        const loginResponse = await apiClient.post("/auth/google/login", {
-          idToken,
-        });
-        if (loginResponse.data.token) {
-          setAuth(loginResponse.data.token, loginResponse.data.user);
-          navigate("/user/dashboard", { replace: true });
-          return;
-        }
-      } catch (loginError: any) {
-        if (loginError?.response?.status === 404) {
-          setValue("name", result.user.displayName || "");
-          setFirebaseIdToken(idToken);
-          setStep(2);
-          setGoogleLoading(false);
-          return;
-        }
-        throw loginError;
-      }
-    } catch (err: any) {
-      const errorMsg =
-        err?.response?.data?.message || err?.message || "Google sign-in failed";
-      setError(errorMsg);
-    } finally {
-      setGoogleLoading(false);
-    }
+    window.location.href = getGoogleOAuthUrl();
   };
 
-  // Handle Apple Sign-In
-  const handleAppleSignIn = async () => {
-    setError("");
-    setAppleLoading(true);
-    try {
-      if (isInWebView) {
-        (window as any).ReactNativeWebView?.postMessage(
-          JSON.stringify({ type: "APPLE_SIGN_IN" }),
-        );
-        setAppleLoading(false);
-        return;
-      }
-      const authInstance = getAuth();
-      const result = await signInWithPopup(authInstance, appleProvider);
-      const idToken = await result.user.getIdToken();
-
-      try {
-        const loginResponse = await loginWithApple(idToken);
-        if (loginResponse.token) {
-          setAuth(loginResponse.token, loginResponse.user);
-          navigate("/user/dashboard", { replace: true });
-          return;
-        }
-      } catch (loginError: any) {
-        if (loginError?.response?.status === 404) {
-          setValue("name", result.user.displayName || "");
-          setFirebaseIdToken(idToken);
-          setStep(2);
-          setAppleLoading(false);
-          return;
-        }
-        throw loginError;
-      }
-    } catch (err: any) {
-      const errorMsg =
-        err?.response?.data?.message || err?.message || "Apple sign-in failed";
-      setError(errorMsg);
-    } finally {
-      setAppleLoading(false);
-    }
+  // Apple sign-in is disabled pending native backend integration.
+  const handleAppleSignIn = () => {
+    setError("Apple sign-in is temporarily unavailable.");
   };
 
-  // Handle Details Form Submit (Step 2) — registers voter and stores token
-  const onDetailsSubmit = async (values: RegisterForm) => {
-    setError("");
-    setLoading(true);
-    try {
-      // Get a fresh Firebase ID token (the stored one may have expired)
-      const authInstance = getAuth();
-      const currentUser = authInstance.currentUser;
-      const freshToken = currentUser
-        ? await currentUser.getIdToken(true)
-        : firebaseIdToken;
-
-      const registerResponse = await apiClient.post("/auth/register-voter", {
-        name: values.name,
-        idToken: freshToken,
-      });
-      if (!registerResponse.data.token) {
-        setError("Registration failed");
-        setLoading(false);
-        return;
-      }
-      setPendingAuth({
-        token: registerResponse.data.token,
-        user: { ...registerResponse.data.user },
-      });
-      // Directly show the welcome/celebration step — skip selfie capture
-      setShowCelebration(true);
-    } catch (err: any) {
-      const errorMsg =
-        err?.response?.data?.message || err?.message || "Registration failed";
-      setError(errorMsg);
-    } finally {
-      setLoading(false);
-    }
+  // Details form (step 2) is no longer reachable under the backend OAuth flow
+  // — user creation happens server-side during the OAuth callback. Kept as a
+  // no-op to preserve the existing UI shell until the step-2 code path is
+  // removed.
+  const onDetailsSubmit = async (_values: RegisterForm) => {
+    setError("Registration flow has moved to Google sign-in.");
   };
 
   const darkFieldSx = {
