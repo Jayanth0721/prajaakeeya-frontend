@@ -35,7 +35,7 @@ const UserRegisterPage = () => {
   const isKannada = (i18n.language || "").startsWith("kn");
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const { setAuth, logout } = useAuthStore();
+  const { setAuth, clearSession } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [step, setStep] = useState<1 | 2>(1);
@@ -869,9 +869,17 @@ const UserRegisterPage = () => {
                   onClick={() => {
                     setShowCelebration(false);
                     if (pendingAuth) {
-                      logout();
+                      // Drop any previous user's cached data on this device
+                      // (localStorage + in-memory store) before attaching the
+                      // new session. Uses clearSession instead of logout()
+                      // to avoid the full-page reload that logout() triggers,
+                      // which would re-show the index.html preloader.
+                      clearSession();
                       setAuth(pendingAuth.token, pendingAuth.user);
-                      navigate("/user/civic-issues", { replace: true });
+                      // RedirectIfAuth forces authenticated users to
+                      // /user/voters anyway, so navigate there directly to
+                      // avoid a flash through /user/civic-issues.
+                      navigate("/user/voters", { replace: true });
                     }
                   }}
                   sx={{

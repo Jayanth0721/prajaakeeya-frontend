@@ -74,14 +74,15 @@ const WardVotersPage: React.FC = () => {
         }
     }, []);
 
-    // Initial fetch
+    // Initial fetch on mount; debounced refetch when the search query changes.
+    // Merged into a single effect so we don't fire two requests on mount.
+    const isFirstRun = useRef(true);
     useEffect(() => {
-        fetchVoters(query, 1, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Debounced search — reset to page 1 when query changes
-    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            fetchVoters(query, 1, false);
+            return;
+        }
         const timer = setTimeout(() => {
             setPage(1);
             setHasMore(true);
