@@ -227,6 +227,7 @@ const DocumentsUploadStep = ({
                 onSelfieCaptured={onSelfieCaptured}
                 clearPhoto={clearPhoto}
                 aspirantId={aspirantId ?? undefined}
+                alreadyUploaded={!!documents.photo?.uploaded}
                 onUploadSuccess={(result) => {
                   // Mark photo as uploaded so the parent can proceed
                   setDocuments(prev => ({ ...prev, photo: { name: 'selfie.png', size: 0, uploaded: true, progress: 100 } }));

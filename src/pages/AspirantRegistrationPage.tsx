@@ -182,16 +182,21 @@ const AspirantRegistrationPage = () => {
       });
       if (Array.isArray(parsed.answers)) setAnswers(parsed.answers);
       if (parsed.documents) {
+        // Only restore docs that were fully uploaded. In-flight uploads (progress < 100
+        // or uploaded=false) would otherwise render a stuck progress spinner on refresh
+        // since no upload is actually running anymore.
+        const restoreDoc = (d: any) =>
+          d && d.uploaded ? { name: d.name, size: 0, uploaded: true, progress: 100 } : null;
         setDocuments({
-          resume: parsed.documents.resume ? { name: parsed.documents.resume.name, size: 0, uploaded: !!parsed.documents.resume.uploaded, progress: parsed.documents.resume.progress || 0 } : null,
-          epic: parsed.documents.epic ? { name: parsed.documents.epic.name, size: 0, uploaded: !!parsed.documents.epic.uploaded, progress: parsed.documents.epic.progress || 0 } : null,
-          epicBack: parsed.documents.epicBack ? { name: parsed.documents.epicBack.name, size: 0, uploaded: !!parsed.documents.epicBack.uploaded, progress: parsed.documents.epicBack.progress || 0 } : null,
-          addressProof: parsed.documents.addressProof ? { name: parsed.documents.addressProof.name, size: 0, uploaded: !!parsed.documents.addressProof.uploaded, progress: parsed.documents.addressProof.progress || 0 } : null,
-          photo: parsed.documents.photo ? { name: parsed.documents.photo.name, size: 0, uploaded: !!parsed.documents.photo.uploaded, progress: parsed.documents.photo.progress || 0 } : null,
-          signedAgreement: parsed.documents.signedAgreement ? { name: parsed.documents.signedAgreement.name, size: 0, uploaded: !!parsed.documents.signedAgreement.uploaded, progress: parsed.documents.signedAgreement.progress || 0 } : null,
-          codeOfConduct: parsed.documents.codeOfConduct ? { name: parsed.documents.codeOfConduct.name, size: 0, uploaded: !!parsed.documents.codeOfConduct.uploaded, progress: parsed.documents.codeOfConduct.progress || 0 } : null,
-          sopEn: parsed.documents.sopEn ? { name: parsed.documents.sopEn.name, size: 0, uploaded: !!parsed.documents.sopEn.uploaded, progress: parsed.documents.sopEn.progress || 0 } : null,
-          sopKn: parsed.documents.sopKn ? { name: parsed.documents.sopKn.name, size: 0, uploaded: !!parsed.documents.sopKn.uploaded, progress: parsed.documents.sopKn.progress || 0 } : null
+          resume: restoreDoc(parsed.documents.resume),
+          epic: restoreDoc(parsed.documents.epic),
+          epicBack: restoreDoc(parsed.documents.epicBack),
+          addressProof: restoreDoc(parsed.documents.addressProof),
+          photo: restoreDoc(parsed.documents.photo),
+          signedAgreement: restoreDoc(parsed.documents.signedAgreement),
+          codeOfConduct: restoreDoc(parsed.documents.codeOfConduct),
+          sopEn: restoreDoc(parsed.documents.sopEn),
+          sopKn: restoreDoc(parsed.documents.sopKn),
         });
       }
       if (parsed.capturedPhoto) setCapturedPhoto(parsed.capturedPhoto);

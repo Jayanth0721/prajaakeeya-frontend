@@ -42,6 +42,7 @@ interface Props {
   aspirantId?: number; // Used for direct API upload
   onUploadSuccess?: (result: any) => void; // Called after successful auto-upload
   onUploadError?: (error: any) => void; // Called when auto-upload fails
+  alreadyUploaded?: boolean; // True when photo was already uploaded in a previous session (draft restore)
 }
 
 const LivePhotoCaptureStep = ({
@@ -62,6 +63,7 @@ const LivePhotoCaptureStep = ({
   aspirantId,
   onUploadSuccess,
   onUploadError,
+  alreadyUploaded,
 }: Props) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -107,11 +109,14 @@ const LivePhotoCaptureStep = ({
   };
 
   // ── Internal auto-upload state ────────────────────────────────────────────
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>(
+    alreadyUploaded ? 'success' : 'idle'
+  );
   const [uploadErrorKey, setUploadErrorKey] = useState('');
   // Prevents the raw-camera useEffect from double-uploading when liveness/gallery
-  // paths already called performUpload directly.
-  const uploadTriggeredRef = useRef(false);
+  // paths already called performUpload directly. Also set when the photo was
+  // restored from a prior session so we don't re-upload on refresh.
+  const uploadTriggeredRef = useRef(!!alreadyUploaded);
 
   // Validate file before upload — returns an i18n key on failure
   const validateFile = (file: File): string | null => {
