@@ -493,6 +493,9 @@ const DocumentsUploadStep = ({
                                     errorMessage = err.response.data.message;
                                   }
                                   setDocuments(prev => ({ ...prev, sopEn: { name: file.name, size: file.size, uploaded: false, progress: 0, error: true, errorKey, errorMessage } }));
+                                } finally {
+                                  // reset the file input value so re-selecting the same file after delete triggers onChange
+                                  e.target.value = '';
                                 }
                               }}
                             />

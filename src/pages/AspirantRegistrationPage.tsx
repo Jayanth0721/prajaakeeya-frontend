@@ -453,6 +453,8 @@ const AspirantRegistrationPage = () => {
           setDocuments(prev => ({ ...prev, [docType]: { name: file.name, size: file.size, uploaded: true, progress: 100 } }));
           // update aspirantResp with latest data
           setAspirantResp(result ?? aspirantResp);
+          // reset the file input value so re-selecting the same file after delete triggers onChange
+          event.target.value = '';
         } catch (err: any) {
           console.error('Document upload failed', err?.response?.data || err);
           const status = err?.response?.status;
