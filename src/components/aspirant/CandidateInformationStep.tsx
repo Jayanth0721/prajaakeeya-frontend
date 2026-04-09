@@ -634,7 +634,7 @@ const CandidateInformationStep = ({
           }}
         >
           {elections.map((el) => (
-            <MenuItem key={el.id} value={el.id} disabled={el.type !== 'municipal_corporation'}>{el.name}</MenuItem>
+            <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
           ))}
         </TextField>
       ),
@@ -726,7 +726,6 @@ const CandidateInformationStep = ({
                 options={municipalities}
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
-                getOptionDisabled={(option) => !option.name.toUpperCase().includes('GBA')}
                 value={selectedMunicipality}
                 onChange={(_, selected) => {
                   setSelectedMunicipality(selected);
@@ -1027,7 +1026,7 @@ const CandidateInformationStep = ({
           <Grid container spacing={2.5}>
             {fields.map(({ id, colXs, colMd, node }, idx) => (
               <React.Fragment key={id}>
-                {id === 'electionType' && (
+                {/* {id === 'electionType' && (
                   <Grid item xs={12}>
                     <Alert
                       severity="info"
@@ -1045,7 +1044,7 @@ const CandidateInformationStep = ({
                       {t('forms.aspirant.electionInfoMessage')}
                     </Alert>
                   </Grid>
-                )}
+                )} */}
                 <Grid item xs={colXs} md={colMd}>
                   <motion.div variants={itemVariants}>
                     <Box sx={{
