@@ -1422,6 +1422,13 @@ const WardCandidateListPage = () => {
           </Stack>
         )}
 
+        {/* GP / Village not found help message */}
+        {isGramPanchayat && (
+          <Typography variant="body2" sx={{ color: textFaint, fontStyle: 'italic', mt: 0.5 }}>
+            {t('gpVillageNotFound')}
+          </Typography>
+        )}
+
         {/* If server reports user has voted, show a green notice */}
         {(user?.hasVoted || hasVoted) && (
           <Box sx={{ my: 2 }}>
