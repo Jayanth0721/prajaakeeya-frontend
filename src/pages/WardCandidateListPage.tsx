@@ -1147,6 +1147,13 @@ const WardCandidateListPage = () => {
           </Stack>
         )}
 
+        {/* GP / Village not found help message - mobile: above filters */}
+        {isGramPanchayat && (
+          <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' }, color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mb: 0.5 }}>
+            {t('civicIssues.gpVillageNotFound')}
+          </Typography>
+        )}
+
         {/* Election Type & Constituency Filters */}
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%' }}>
           <TextField
@@ -1420,6 +1427,13 @@ const WardCandidateListPage = () => {
               )}
             />
           </Stack>
+        )}
+
+        {/* GP / Village not found help message - desktop: below filters */}
+        {isGramPanchayat && (
+          <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mt: 0.5 }}>
+            {t('civicIssues.gpVillageNotFound')}
+          </Typography>
         )}
 
         {/* If server reports user has voted, show a green notice */}

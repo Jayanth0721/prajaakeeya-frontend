@@ -597,46 +597,53 @@ const CandidateInformationStep = ({
     {
       id: 'electionType', colXs: 12, colMd: 6,
       node: (
-        <TextField
-          fullWidth
-          select
-          label={
-            <>
-              <span>{t('forms.aspirant.electionType', { defaultValue: 'Election Type' })}</span>
-              <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
-            </>
-          }
-          {...electionReg}
-          value={watchedElectionId || ''}
-          onChange={(e) => {
-            try { electionReg.onChange?.(e as any); } catch (err) { /* ignore */ }
-            const val = e.target.value;
-            setValue('electionId', val === '' ? '' : Number(val));
-          }}
-          disabled={loading}
-          error={!!errors.electionId}
-          helperText={errors.electionId && t((errors.electionId as any).message || 'validation.required')}
-          sx={{
-            ...darkFieldSx,
-            '& .MuiSelect-select': { color: watchedElectionId ? (isDark ? '#fff' : 'rgba(15,23,42,0.9)') : (isDark ? 'rgba(255,255,255,0.35)' : 'rgba(15,23,42,0.5)'), fontFamily: FF },
-          }}
-          SelectProps={{
-            MenuProps: {
-              PaperProps: {
-                sx: {
-                  bgcolor: isDark ? '#1a1515' : '#ffffff',
-                  '& .MuiMenuItem-root': { color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(15,23,42,0.85)', fontFamily: FF },
-                  '& .MuiMenuItem-root:hover': { bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.1)' },
-                  '& .MuiMenuItem-root.Mui-selected': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.2)', color: GOLD },
+        <>
+          <TextField
+            fullWidth
+            select
+            label={
+              <>
+                <span>{t('forms.aspirant.electionType', { defaultValue: 'Election Type' })}</span>
+                <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
+              </>
+            }
+            {...electionReg}
+            value={watchedElectionId || ''}
+            onChange={(e) => {
+              try { electionReg.onChange?.(e as any); } catch (err) { /* ignore */ }
+              const val = e.target.value;
+              setValue('electionId', val === '' ? '' : Number(val));
+            }}
+            disabled={loading}
+            error={!!errors.electionId}
+            helperText={errors.electionId && t((errors.electionId as any).message || 'validation.required')}
+            sx={{
+              ...darkFieldSx,
+              '& .MuiSelect-select': { color: watchedElectionId ? (isDark ? '#fff' : 'rgba(15,23,42,0.9)') : (isDark ? 'rgba(255,255,255,0.35)' : 'rgba(15,23,42,0.5)'), fontFamily: FF },
+            }}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: {
+                  sx: {
+                    bgcolor: isDark ? '#1a1515' : '#ffffff',
+                    '& .MuiMenuItem-root': { color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(15,23,42,0.85)', fontFamily: FF },
+                    '& .MuiMenuItem-root:hover': { bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.1)' },
+                    '& .MuiMenuItem-root.Mui-selected': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.2)', color: GOLD },
+                  },
                 },
               },
-            },
-          }}
-        >
-          {elections.map((el) => (
-            <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
-          ))}
-        </TextField>
+            }}
+          >
+            {elections.map((el) => (
+              <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
+            ))}
+          </TextField>
+          {selectedElectionForAge?.type === 'gram_panchayat' && (
+            <Typography variant="body2" sx={{ color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mt: 1, fontFamily: FF, fontSize: '0.78rem' }}>
+              {t('civicIssues.gpVillageNotFound')}
+            </Typography>
+          )}
+        </>
       ),
     },
     {
