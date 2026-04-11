@@ -16,7 +16,6 @@ import {
   useTheme,
 } from '@mui/material';
 import {
-  CheckCircle as CheckCircleIcon,
   HowToVote as HowToVoteIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -24,13 +23,8 @@ import useAuthStore from '../store/useAuthStore';
 import { createAspirantSchema } from '../utils/validation';
 import { fetchElections as fetchElectionsList, type Election } from '../services/electionService';
 import { registerAspirant, type AspirantPayload, getAspirantById } from '../services/aspirantService';
-import { isFileSizeValid } from '../utils/fileUtils';
-import { uploadAspirantDocument, uploadProfilePicture } from '../services/mediaService';
-import SopFlowChart from '../components/aspirant/SopFlowChart';
 import DeclarationStep from '../components/aspirant/DeclarationStep';
 import CandidateInformationStep from '../components/aspirant/CandidateInformationStep';
-import DocumentsUploadStep from '../components/aspirant/DocumentsUploadStep';
-import LivePhotoCaptureStep from '../components/aspirant/LivePhotoCaptureStep';
 
 interface AspirantForm {
   name: string;
@@ -52,15 +46,6 @@ interface AspirantForm {
   // Detailed candidate responses are captured via the questionnaire `answers` array
 }
 
-interface UploadedFile {
-  name: string;
-  size: number;
-  uploaded: boolean;
-  progress: number;
-  error?: boolean;
-  errorMessage?: string;
-}
-
 const AspirantRegistrationPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -69,24 +54,9 @@ const AspirantRegistrationPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeStep, setActiveStep] = useState(0);
-  const [sopAgreed, setSopAgreed] = useState(true);
+  const [sopAgreed] = useState(true);
   const [answers, setAnswers] = useState<string[]>(Array(9).fill(''));
-  const [documents, setDocuments] = useState({
-    resume: null as UploadedFile | null,
-    epic: null as UploadedFile | null,
-    epicBack: null as UploadedFile | null,
-    addressProof: null as UploadedFile | null,
-    photo: null as UploadedFile | null,
-    signedAgreement: null as UploadedFile | null,
-    codeOfConduct: null as UploadedFile | null,
-    sopEn: null as UploadedFile | null,
-    sopKn: null as UploadedFile | null
-  });
   const [aspirantResp, setAspirantResp] = useState<any | null>(null);
-  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
-  const [cameraActive, setCameraActive] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [declarationChecks, setDeclarationChecks] = useState({
     agreed: false,
   });
@@ -181,25 +151,6 @@ const AspirantRegistrationPage = () => {
         try { setValue(k as any, vals[k]); } catch (e) { /* ignore */ }
       });
       if (Array.isArray(parsed.answers)) setAnswers(parsed.answers);
-      if (parsed.documents) {
-        // Only restore docs that were fully uploaded. In-flight uploads (progress < 100
-        // or uploaded=false) would otherwise render a stuck progress spinner on refresh
-        // since no upload is actually running anymore.
-        const restoreDoc = (d: any) =>
-          d && d.uploaded ? { name: d.name, size: 0, uploaded: true, progress: 100 } : null;
-        setDocuments({
-          resume: restoreDoc(parsed.documents.resume),
-          epic: restoreDoc(parsed.documents.epic),
-          epicBack: restoreDoc(parsed.documents.epicBack),
-          addressProof: restoreDoc(parsed.documents.addressProof),
-          photo: restoreDoc(parsed.documents.photo),
-          signedAgreement: restoreDoc(parsed.documents.signedAgreement),
-          codeOfConduct: restoreDoc(parsed.documents.codeOfConduct),
-          sopEn: restoreDoc(parsed.documents.sopEn),
-          sopKn: restoreDoc(parsed.documents.sopKn),
-        });
-      }
-      if (parsed.capturedPhoto) setCapturedPhoto(parsed.capturedPhoto);
       // clear resume state so navigating back doesn't re-trigger
       try { if ((location as any).state) (location as any).state.resume = false; } catch (e) { /* ignore */ }
       window.scrollTo(0, 0);
@@ -211,33 +162,24 @@ const AspirantRegistrationPage = () => {
   const watchedValues = watch();
   useEffect(() => {
     try {
-      const docMeta = Object.entries(documents).reduce((acc, [k, v]) => {
-        acc[k] = v ? { name: v.name, uploaded: v.uploaded, progress: v.progress } : null;
-        return acc;
-      }, {} as Record<string, any>);
       const payload = {
         values: watchedValues,
         answers,
-        documents: docMeta,
-        capturedPhoto,
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
     } catch (e) {
       // ignore
     }
-  }, [watchedValues, answers, documents, capturedPhoto, DRAFT_KEY]);
+  }, [watchedValues, answers, DRAFT_KEY]);
 
-  // On initial load, skip to Documents step if user already has an aspirant record
+  // On initial load, navigate to Documents page if user already has an aspirant record
   const hasSkippedToDocsRef = useRef(false);
   useEffect(() => {
     if (user?.aspirantId && !hasSkippedToDocsRef.current && activeStep === 0 && !loading) {
       hasSkippedToDocsRef.current = true;
-      setSopAgreed(true);
-      setDeclarationChecks({ agreed: true });
-      setActiveStep(2);
-      window.scrollTo(0, 0);
+      navigate('/user/aspirants/documents', { replace: true });
     }
-  }, [user?.aspirantId, activeStep, loading]);
+  }, [user?.aspirantId, activeStep, loading, navigate]);
 
 
   useEffect(() => {
@@ -316,29 +258,6 @@ const AspirantRegistrationPage = () => {
       return;
     }
 
-    if (activeStep === 2) {
-      // Step 3 is the final step (Documents + Live Photo).
-      // Refresh profile / aspirant data from server before showing success dialog
-      try {
-        setLoading(true);
-        try { await fetchProfile(); } catch (e) { /* non-fatal */ }
-        const aspirantIdToFetch = (aspirantResp && aspirantResp.id) ? aspirantResp.id : (user?.aspirantId ?? null);
-        if (aspirantIdToFetch) {
-          try {
-            const resp = await getAspirantById(Number(aspirantIdToFetch));
-            setAspirantResp(resp?.data ?? resp);
-          } catch (e) {
-            // ignore
-          }
-        }
-      } finally {
-        setLoading(false);
-      }
-
-      setSuccessDialogOpen(true);
-      return;
-    }
-
     setActiveStep((prev) => prev + 1);
     window.scrollTo(0, 0);
   };
@@ -352,300 +271,6 @@ const AspirantRegistrationPage = () => {
     navigate('/user/dashboard', { replace: true });
   };
 
-  const handleFileUpload = (docType: keyof typeof documents) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Validate file size before attempting upload
-      if (!isFileSizeValid(file)) {
-        // Mark document as failed with error
-        setDocuments(prev => ({
-          ...prev,
-          [docType]: {
-            name: file.name,
-            size: file.size,
-            uploaded: false,
-            progress: 0,
-            error: true,
-            errorMessage: t('forms.aspirant.messages.fileSize2mb')
-          }
-        }));
-        // reset the input
-        event.target.value = '';
-        return;
-      }
-      // File type validation
-      const fileExtension = file.name.split('.').pop()?.toLowerCase();
-      let isValidType = false;
-      let errorMessage = '';
-
-      switch (docType) {
-        case 'resume':
-          isValidType = fileExtension === 'pdf';
-          errorMessage = t('forms.aspirant.messages.resumePdfOnly');
-          break;
-        case 'epic':
-        case 'epicBack':
-          isValidType = ['jpg', 'jpeg', 'png'].includes(fileExtension || '');
-          errorMessage = t('forms.aspirant.messages.epicImageOnly');
-          break;
-        case 'addressProof':
-          isValidType = ['jpg', 'jpeg', 'png'].includes(fileExtension || '');
-          errorMessage = t('forms.aspirant.messages.addressProofImageOnly');
-          break;
-        case 'photo':
-          isValidType = ['jpg', 'jpeg', 'png'].includes(fileExtension || '');
-          errorMessage = t('forms.aspirant.messages.photoImageOnly');
-          break;
-        case 'signedAgreement':
-        case 'codeOfConduct':
-          isValidType = fileExtension === 'pdf';
-          errorMessage = t('forms.aspirant.messages.pdfOnly');
-          break;
-        default:
-          isValidType = true;
-      }
-
-      if (!isValidType) {
-        // Mark document as failed with error
-        setDocuments(prev => ({
-          ...prev,
-          [docType]: {
-            name: file.name,
-            size: file.size,
-            uploaded: false,
-            progress: 0,
-            error: true,
-            errorMessage: errorMessage
-          }
-        }));
-        // Reset the input
-        event.target.value = '';
-        return;
-      }
-
-      // update UI immediately
-      const uploadedFile: UploadedFile = { name: file.name, size: file.size, uploaded: false, progress: 10 };
-      setDocuments(prev => ({ ...prev, [docType]: uploadedFile }));
-
-      // Get aspirantId from response or user profile
-      const aspirantId = aspirantResp?.id ?? user?.aspirantId ?? null;
-      if (!aspirantId) {
-        setError(t('forms.aspirant.messages.missingAspirantRecord'));
-        setOpen(true);
-        // reset input
-        event.target.value = '';
-        return;
-      }
-
-      // Map UI docType to API documentType
-      const docTypeMap: Record<string, string> = {
-        resume: 'resume',
-        epic: 'epic_card',
-        epicBack: 'epic_card_back',
-        addressProof: 'address_proof',
-        photo: 'recent_photo',
-        signedAgreement: 'agreement',
-        codeOfConduct: 'code_of_conduct'
-      };
-
-      const apiDocType = docTypeMap[docType] || String(docType);
-
-      (async () => {
-        try {
-          setLoading(true);
-          const result = await uploadAspirantDocument(Number(aspirantId), apiDocType, file);
-          // server returns updated aspirant object; update documents state to uploaded
-          setDocuments(prev => ({ ...prev, [docType]: { name: file.name, size: file.size, uploaded: true, progress: 100 } }));
-          // update aspirantResp with latest data
-          setAspirantResp(result ?? aspirantResp);
-          // reset the file input value so re-selecting the same file after delete triggers onChange
-          event.target.value = '';
-        } catch (err: any) {
-          console.error('Document upload failed', err?.response?.data || err);
-          const status = err?.response?.status;
-          // Axios uses `code` === 'ERR_NETWORK' for network-level failures
-          const code = err?.code;
-          let errorMsg = t('forms.aspirant.messages.uploadFailed');
-          if (status === 413) {
-            errorMsg = t('forms.aspirant.messages.fileSize10mb');
-          } else if (code === 'ERR_NETWORK' || !err?.response) {
-            errorMsg = t('forms.aspirant.messages.uploadFailedMaybeLarge');
-          } else {
-            errorMsg = err?.response?.data?.message || err?.message || t('forms.aspirant.messages.uploadFailed');
-          }
-          // Mark document as failed with error
-          setDocuments(prev => ({
-            ...prev,
-            [docType]: {
-              name: file.name,
-              size: file.size,
-              uploaded: false,
-              progress: 0,
-              error: true,
-              errorMessage: errorMsg
-            }
-          }));
-          // reset the file input value so user can retry
-          event.target.value = '';
-        } finally {
-          setLoading(false);
-        }
-      })();
-    }
-  };
-
-  const startCamera = async () => {
-    try {
-      setError('');
-
-      // Stop any existing stream
-      stopCamera();
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-        },
-        audio: false,
-      });
-
-      if (!videoRef.current) {
-        setError(t('forms.aspirant.messages.cameraNotReady'));
-        return;
-      }
-
-      const video = videoRef.current;
-
-      video.srcObject = stream;
-      video.muted = true;
-      video.playsInline = true;
-      await video.play();
-
-      setCameraActive(true);
-    } catch (err) {
-      console.error('Camera error:', err);
-      setError(t('forms.aspirant.messages.cameraStartError'));
-    }
-  };
-
-
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setCameraActive(false);
-  };
-
-
-  const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const context = canvasRef.current.getContext('2d');
-      if (context) {
-        const video = videoRef.current;
-
-        // Make canvas square using the smaller dimension
-        const size = Math.min(video.videoWidth, video.videoHeight);
-        canvasRef.current.width = size;
-        canvasRef.current.height = size;
-
-        // Calculate center crop offsets
-        const offsetX = (video.videoWidth - size) / 2;
-        const offsetY = (video.videoHeight - size) / 2;
-
-        // Draw center-cropped video frame to square canvas
-        context.drawImage(
-          video,
-          offsetX, offsetY, size, size,  // source rectangle (center crop)
-          0, 0, size, size                // destination rectangle (full canvas)
-        );
-
-        // Convert canvas to image data URL
-        const imageData = canvasRef.current.toDataURL('image/png');
-        setCapturedPhoto(imageData);
-
-        // Clear any previous file errors now that a valid capture exists
-        setError('');
-        setOpen(false);
-
-        // Stop camera after capture
-        stopCamera();
-      }
-    }
-  };
-
-  const retakePhoto = () => {
-    setCapturedPhoto(null);
-    startCamera();
-  };
-
-  const handleAspirantSelfieCaptured = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => setCapturedPhoto(e.target?.result as string);
-    reader.readAsDataURL(file);
-  };
-
-  const clearPhoto = () => {
-    setCapturedPhoto(null);
-  };
-
-
-
-  const handleConfirmSelfie = async () => {
-    if (!capturedPhoto) {
-      setError(t('forms.aspirant.messages.noPhotoCaptured'));
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await fetch(capturedPhoto);
-      const blob = await response.blob();
-      const file = new File([blob], 'selfie.png', { type: 'image/png' });
-      const aspirantId = (aspirantResp && aspirantResp.id) ? aspirantResp.id : (user?.aspirantId ?? null);
-      let result: any = null;
-      if (aspirantId) {
-        result = await uploadAspirantDocument(Number(aspirantId), 'selfie', file);
-      } else {
-        result = await uploadProfilePicture(file);
-      }
-
-      setDocuments(prev => ({
-        ...prev,
-        photo: { name: 'selfie.png', size: blob.size || 0, uploaded: true, progress: 100 }
-      }));
-      setAspirantResp(result ?? aspirantResp);
-      try {
-        if (typeof fetchProfile === 'function') {
-          await fetchProfile();
-        }
-      } catch (e) {
-        // non-fatal
-        console.warn('fetchProfile failed after selfie upload', e);
-      }
-
-      try {
-        window.dispatchEvent(new CustomEvent('aspirant:documentUploaded', { detail: { documentType: aspirantId ? 'selfie' : 'profile-picture' } }));
-      } catch (e) {
-        // ignore
-      }
-
-      setError('');
-      // Do not trigger the generic registration-success snackbar here —
-      // confirming a selfie should not show "Aspirant registered" again.
-      // Stop camera after successful upload
-      stopCamera();
-    } catch (err: any) {
-      console.error('Profile picture upload failed', err?.response?.data || err);
-      setError(err?.response?.data?.message || err?.message || t('forms.aspirant.messages.profilePictureUploadFailed'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmitRegistration = async (finalize = false) => {
     const values = watchedValues;
 
@@ -656,8 +281,7 @@ const AspirantRegistrationPage = () => {
       if (finalize) {
         setSuccessDialogOpen(true);
       } else {
-        setActiveStep(2);
-        window.scrollTo(0, 0);
+        navigate('/user/aspirants/documents');
       }
       setLoading(false);
       return;
@@ -714,8 +338,7 @@ const AspirantRegistrationPage = () => {
           // ignore
         }
       } else {
-        setActiveStep(2);
-        window.scrollTo(0, 0);
+        navigate('/user/aspirants/documents');
       }
     } catch (err: any) {
       console.error('Aspirant registration error response:', err?.response?.data || err);
@@ -763,8 +386,7 @@ const AspirantRegistrationPage = () => {
               // ignore
             }
           } else {
-            setActiveStep(2);
-            window.scrollTo(0, 0);
+            navigate('/user/aspirants/documents');
           }
           return;
         } catch (profileErr) {
@@ -779,9 +401,6 @@ const AspirantRegistrationPage = () => {
     }
   };
 
-  const canProceedStep4 =
-    documents.photo?.uploaded &&
-    (documents.sopEn?.uploaded || documents.sopKn?.uploaded);
   const canProceedStep6 =
     declarationChecks.agreed &&
     digitalSignature.trim().length > 0 &&
@@ -842,40 +461,6 @@ const AspirantRegistrationPage = () => {
           />
         )}
 
-        {activeStep === 2 && (
-          <DocumentsUploadStep
-            documents={documents}
-            setDocuments={setDocuments}
-            handleFileUpload={handleFileUpload}
-            onBack={handleBack}
-            onNext={handleNext}
-            onCancel={handleHome}
-            canProceed={canProceedStep4}
-            submitButtonText={t('forms.aspirant.navigation.submit')}
-            cameraActive={cameraActive}
-            capturedPhoto={capturedPhoto}
-            loading={loading}
-            videoRef={videoRef}
-            canvasRef={canvasRef}
-            startCamera={startCamera}
-            stopCamera={stopCamera}
-            capturePhoto={capturePhoto}
-            retakePhoto={retakePhoto}
-            handleConfirmSelfie={handleConfirmSelfie}
-            onSelfieCaptured={handleAspirantSelfieCaptured}
-            clearPhoto={clearPhoto}
-            aspirantId={aspirantResp?.id ?? user?.aspirantId ?? null}
-            onAspirantUpdated={async (result) => {
-              try {
-                // Update local aspirantResp and refresh profile in auth store
-                if (result) {
-                  setAspirantResp(result ?? aspirantResp);
-                }
-                try { await fetchProfile(); } catch (e) { /* non-fatal */ }
-              } catch (e) { /* ignore */ }
-            }}
-          />
-        )}
       </form>
 
       <Snackbar

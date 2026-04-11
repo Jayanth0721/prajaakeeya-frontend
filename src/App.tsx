@@ -41,6 +41,7 @@ import CivicIssuesPage from "./pages/CivicIssuesPage";
 import ReportIssuePage from "./pages/ReportIssuePage";
 import CivicIssueDetailPage from "./pages/CivicIssueDetailPage";
 import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
+import DocumentsUploadPage from "./pages/DocumentsUploadPage";
 import SopPage from "./pages/SopPage";
 import SignedSopPage from "./pages/SignedSopPage";
 import AspirantApprovalPage from "./pages/AspirantApprovalPage";
@@ -320,6 +321,10 @@ const App = () => {
             <Route
               path="aspirants/register"
               element={<AspirantRegistrationPage />}
+            />
+            <Route
+              path="aspirants/documents"
+              element={<DocumentsUploadPage />}
             />
             <Route
               path="aspirants/verify-otp"
