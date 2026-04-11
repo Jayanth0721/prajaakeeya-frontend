@@ -57,14 +57,31 @@ const DocumentsUploadPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
-  // Load aspirant data on mount
+  // Load aspirant data on mount and hydrate already-uploaded documents from server
   useEffect(() => {
     const aspirantId = user?.aspirantId;
-    if (aspirantId) {
-      getAspirantById(Number(aspirantId))
-        .then((resp) => setAspirantResp(resp?.data ?? resp))
-        .catch(() => {});
-    }
+    if (!aspirantId) return;
+    getAspirantById(Number(aspirantId))
+      .then((resp) => {
+        const data = resp?.data ?? resp;
+        setAspirantResp(data);
+        if (!data) return;
+        const uploadedMarker = (name: string): UploadedFile => ({
+          name,
+          size: 0,
+          uploaded: true,
+          progress: 100,
+        });
+        setDocuments((prev) => ({
+          ...prev,
+          photo:
+            data.selfieUrl || data.recentPhotoUrl
+              ? uploadedMarker('selfie.png')
+              : prev.photo,
+          sopEn: data.sopUrl ? uploadedMarker('sop.pdf') : prev.sopEn,
+        }));
+      })
+      .catch(() => {});
   }, [user?.aspirantId]);
 
   const canProceedStep4 =
