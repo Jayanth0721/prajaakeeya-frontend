@@ -495,7 +495,11 @@ const LivePhotoCaptureStep = ({
                     variant="outlined"
                     size="small"
                     startIcon={<CameraswitchIcon />}
-                    onClick={() => { if (onSelfieCaptured && clearPhoto) { clearPhoto(); setShowLiveness(true); } else { retakePhoto?.(); } }}
+                    onClick={() => {
+                      setUploadStatus('idle');
+                      uploadTriggeredRef.current = false;
+                      if (onSelfieCaptured && clearPhoto) { clearPhoto(); setShowLiveness(true); } else { retakePhoto?.(); }
+                    }}
                     sx={{
                       fontFamily: FF, fontWeight: 700,
                       color: isDark ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.8)',
