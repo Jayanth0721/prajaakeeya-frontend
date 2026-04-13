@@ -118,6 +118,14 @@ const LivePhotoCaptureStep = ({
   // restored from a prior session so we don't re-upload on refresh.
   const uploadTriggeredRef = useRef(!!alreadyUploaded);
 
+  // Sync uploadStatus when alreadyUploaded changes (e.g. after async server fetch on mount)
+  useEffect(() => {
+    if (alreadyUploaded && uploadStatus === 'idle') {
+      setUploadStatus('success');
+      uploadTriggeredRef.current = true;
+    }
+  }, [alreadyUploaded]);
+
   // Validate file before upload — returns an i18n key on failure
   const validateFile = (file: File): string | null => {
     const ext = file.name.split('.').pop()?.toLowerCase();
