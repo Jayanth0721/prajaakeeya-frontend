@@ -25,8 +25,10 @@ export const wardSchema = yup.object({
   number: yup.string().required('validation.required'),
   name: yup.string().required('validation.required'),
   state: yup.string().required('validation.required'),
-  parliamentary: yup.string().required('validation.required'),
-  assembly: yup.string().required('validation.required')
+  category: yup.string().required('validation.required'),
+  municipality: yup.string().required('validation.required'),
+  parliamentary: yup.string().optional(),
+  assembly: yup.string().optional(),
 });
 
 // Minimum age requirements by election type
