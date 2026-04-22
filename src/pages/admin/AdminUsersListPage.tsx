@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Box, Card, CardContent, Stack, Typography, TextField, InputAdornment,
     Button, CircularProgress, Pagination, Grid, Dialog, DialogTitle,
@@ -22,6 +22,7 @@ const AdminUsersListPage: React.FC = () => {
     const [total, setTotal] = useState(0);
     const limit = 20;
     const [confirm, setConfirm] = useState<{ open: boolean; id?: number; action?: 'block' | 'unblock' }>({ open: false });
+    const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const load = useCallback((pageNum: number, searchTerm: string) => {
         setLoading(true);
@@ -40,14 +41,15 @@ const AdminUsersListPage: React.FC = () => {
         load(1, '');
     }, [isAdmin, load, navigate]);
 
-    // Debounce search — fires 400ms after user stops typing
-    useEffect(() => {
-        const timer = setTimeout(() => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearch(value);
+        if (searchTimer.current) clearTimeout(searchTimer.current);
+        searchTimer.current = setTimeout(() => {
             setPage(1);
-            load(1, search);
+            load(1, value);
         }, 400);
-        return () => clearTimeout(timer);
-    }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
+    };
 
     const handlePageChange = (_: any, value: number) => {
         setPage(value);
@@ -94,7 +96,7 @@ const AdminUsersListPage: React.FC = () => {
                             size="small"
                             placeholder="Search by name..."
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={handleSearchChange}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">

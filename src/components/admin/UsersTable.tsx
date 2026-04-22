@@ -3,7 +3,6 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     IconButton, Tooltip, Box, Typography, Chip, Avatar,
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import BlockIcon from '@mui/icons-material/Block';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 
@@ -17,7 +16,14 @@ type Props = {
     onEdit?: (id: number) => void;
 };
 
-const UsersTable: React.FC<Props> = ({ users, onView, onToggleBlock }) => {
+const safeAvatarSrc = (url?: string | null) => {
+    if (!url) return undefined;
+    // Google profile pictures are blocked by ORB (no CORS headers); skip them
+    if (url.includes('googleusercontent.com') || url.includes('lh3.google')) return undefined;
+    return url;
+};
+
+const UsersTable: React.FC<Props> = ({ users, onToggleBlock }) => {
     if (!users || users.length === 0) return <Box sx={{ py: 4 }}><Typography>No users found.</Typography></Box>;
 
     return (
@@ -28,7 +34,7 @@ const UsersTable: React.FC<Props> = ({ users, onView, onToggleBlock }) => {
                         <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }} align="right">Actions</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }} align="right">Block</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -37,7 +43,7 @@ const UsersTable: React.FC<Props> = ({ users, onView, onToggleBlock }) => {
                             <TableCell>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                     <Avatar
-                                        src={u.profilePicture || undefined}
+                                        src={safeAvatarSrc(u.profilePicture)}
                                         alt={u.name}
                                         sx={{ width: 34, height: 34, bgcolor: 'primary.main' }}
                                     >
@@ -54,12 +60,7 @@ const UsersTable: React.FC<Props> = ({ users, onView, onToggleBlock }) => {
                                 }
                             </TableCell>
                             <TableCell align="right">
-                                <Tooltip title="View">
-                                    <IconButton size="small" onClick={() => onView && onView(u.id)}>
-                                        <VisibilityIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title={u.isBlocked ? 'Unblock' : 'Block'}>
+<Tooltip title={u.isBlocked ? 'Unblock' : 'Block'}>
                                     <IconButton
                                         size="small"
                                         onClick={() => onToggleBlock && onToggleBlock(u)}

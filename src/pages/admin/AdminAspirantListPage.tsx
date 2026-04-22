@@ -8,10 +8,13 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useNavigate } from 'react-router-dom';
 import { getAllAspirants, AdminAspirant } from '../../services/aspirantService';
 import adminUsersService from '../../services/adminUsersService';
 
 const AdminAspirantListPage: React.FC = () => {
+  const navigate = useNavigate();
   const [aspirants, setAspirants] = useState<AdminAspirant[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -165,27 +168,37 @@ const AdminAspirantListPage: React.FC = () => {
                             <Typography variant="body2">{a.constituencyName}</Typography>
                           </TableCell>
                           <TableCell align="center">
-                            {a.isBlocked ? (
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                               <Button
                                 size="small"
                                 variant="outlined"
-                                color="success"
-                                startIcon={<CheckCircleIcon fontSize="small" />}
-                                onClick={() => openConfirm(a, 'unblock')}
+                                startIcon={<VisibilityIcon fontSize="small" />}
+                                onClick={() => navigate(`/admin/users/${a.id}`)}
                               >
-                                Unblock
+                                View
                               </Button>
-                            ) : (
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                color="error"
-                                startIcon={<BlockIcon fontSize="small" />}
-                                onClick={() => openConfirm(a, 'block')}
-                              >
-                                Block
-                              </Button>
-                            )}
+                              {a.isBlocked ? (
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="success"
+                                  startIcon={<CheckCircleIcon fontSize="small" />}
+                                  onClick={() => openConfirm(a, 'unblock')}
+                                >
+                                  Unblock
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="error"
+                                  startIcon={<BlockIcon fontSize="small" />}
+                                  onClick={() => openConfirm(a, 'block')}
+                                >
+                                  Block
+                                </Button>
+                              )}
+                            </Box>
                           </TableCell>
                         </TableRow>
                       ))

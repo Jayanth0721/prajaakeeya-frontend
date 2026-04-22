@@ -69,7 +69,7 @@ const AdminLoginPage = () => {
         setAuth(token, user);
       }
 
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/admin/users', { replace: true });
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || t('common.error') || 'Something went wrong');
       setRedirecting(false);

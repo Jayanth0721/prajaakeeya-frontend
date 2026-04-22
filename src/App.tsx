@@ -95,7 +95,7 @@ const UserChatPage = lazy(() => import("./pages/UserChatPage"));
 const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated, isAdmin } = useAuthStore();
   if (isAuthenticated) {
-    if (isAdmin) return <Navigate to="/admin/dashboard" replace />;
+    if (isAdmin) return <Navigate to="/admin/users" replace />;
     return <Navigate to="/user/voters" replace />;
   }
   return children;
@@ -288,6 +288,7 @@ const App = () => {
             />
             <Route path="upload-sop" element={<AdminUploadSopPage />} />
             <Route path="registered-aspirants" element={<AdminAspirantListPage />} />
+            <Route path="registered-aspirants/:id" element={<AdminUserDetailsPage />} />
             <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
           </Route>
 
