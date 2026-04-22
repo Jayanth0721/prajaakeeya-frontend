@@ -15,27 +15,26 @@ import {
   Chip,
   IconButton,
   Button,
+  Tooltip,
   useMediaQuery,
   useTheme
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
   AddLocation as AddLocationIcon,
-  Upload as UploadIcon,
   Description as DescriptionIcon,
   People as PeopleIcon,
   HowToVote as HowToVoteIcon,
-  BarChart as BarChartIcon,
   Logout as LogoutIcon,
   Menu as MenuIcon,
-  VideoCall as VideoCallIcon,
-  LocationCity as LocationCityIcon,
-  Grass as GrassIcon
+LocationCity as LocationCityIcon,
+  Grass as GrassIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
+import useThemeStore from '../store/useThemeStore';
 import prajakeeyaLogo from '../assets/images/prajakeeya.png';
-import LanguageSelector from '../components/LanguageSelector';
 
 const drawerWidth = 280;
 
@@ -44,6 +43,7 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { logout, user } = useAuthStore();
+  const { mode, toggleTheme } = useThemeStore();
 
   // Dummy user for demo - bypass auth
   const displayUser = user || { name: 'Admin User', role: 'admin' };
@@ -53,22 +53,17 @@ const AdminLayout = () => {
 
   const navItems = useMemo(
     () => [
-      { label: t('adminDashboard.nav.dashboard'), to: '/admin/dashboard', icon: <DashboardIcon /> },
-      { label: t('adminDashboard.nav.createWard'), to: '/admin/wards/create', icon: <AddLocationIcon /> },
-      { label: t('adminDashboard.nav.upload'), to: '/admin/upload-pdfs', icon: <UploadIcon /> },
-      // { label: t('adminDashboard.nav.voterCount'), to: '/admin/voter-count', icon: <PeopleIcon /> }, // Temporarily commented out VoterCount nav bar
-      { label: t('adminDashboard.nav.users') ?? 'Users', to: '/admin/users', icon: <PeopleIcon /> },
-      { label: 'Meetings', to: '/admin/meetings', icon: <VideoCallIcon /> },
+      { label: 'User List', to: '/admin/users', icon: <PeopleIcon /> },
+      { label: 'Aspirant List', to: '/admin/registered-aspirants', icon: <PeopleIcon /> },
+      { label: 'Elections', to: '/admin/elections', icon: <HowToVoteIcon /> },
       { label: 'Voting Window', to: '/admin/voting-window', icon: <HowToVoteIcon /> },
-      { label: t('adminDashboard.nav.elections'), to: '/admin/elections', icon: <HowToVoteIcon /> },
-      { label: 'Municipalities', to: '/admin/municipalities', icon: <LocationCityIcon /> },
-      { label: 'Grama Panchayat', to: '/admin/grama-panchayat', icon: <GrassIcon /> },
-      { label: 'Parliament', to: '/admin/parliamentary', icon: <AddLocationIcon /> },
-      { label: 'Assembly', to: '/admin/assembly', icon: <AddLocationIcon /> },
-      { label: t('adminDashboard.nav.uploadSop', { defaultValue: 'Upload SOP' }), to: '/admin/upload-sop', icon: <DescriptionIcon /> },
-      { label: t('adminDashboard.nav.approvals'), to: '/admin/aspirants/approval', icon: <HowToVoteIcon /> },
-      { label: t('adminDashboard.nav.reports'), to: '/admin/reports', icon: <DescriptionIcon /> },
-      { label: t('adminDashboard.nav.results'), to: '/admin/voting-results', icon: <BarChartIcon /> }
+      { label: 'Create Parliament', to: '/admin/parliamentary', icon: <AddLocationIcon /> },
+      { label: 'Create Assembly', to: '/admin/assembly', icon: <AddLocationIcon /> },
+      { label: 'Create Municipality', to: '/admin/municipalities', icon: <LocationCityIcon /> },
+      { label: 'Create Ward', to: '/admin/wards/create', icon: <AddLocationIcon /> },
+      { label: 'Create Grama Panchayat', to: '/admin/grama-panchayat', icon: <GrassIcon /> },
+      { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
+      { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
     ],
     [t]
   );
@@ -247,11 +242,15 @@ const AdminLayout = () => {
                 />
               </Box>
             </Box>
-            <LanguageSelector
-              size="small"
-              variant="outlined"
-              sx={{ minWidth: 56, px: 1 }}
-            />
+            <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+              <IconButton
+                onClick={toggleTheme}
+                size="small"
+                sx={{ color: 'text.secondary' }}
+              >
+                {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+              </IconButton>
+            </Tooltip>
             <IconButton
               onClick={handleLogout}
               size="small"

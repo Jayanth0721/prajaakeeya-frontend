@@ -11,6 +11,7 @@ import {
     Grid,
     Button,
     Chip,
+    Avatar,
 } from '@mui/material';
 import { adminReportsService, Report, ReportStatus } from '../../services/adminReportsService';
 import ReportStatusModal from '../../components/admin/ReportStatusModal';
@@ -76,7 +77,7 @@ const ReportDetailsPage: React.FC = () => {
                             <Grid item>
                                 <Chip label={report.status} color={report.status === 'resolved' ? 'success' : 'warning'} />
                                 <Typography variant="body2" color="textSecondary">
-                                    {new Date(report.createdAt).toLocaleString()}
+                                    {new Date(report.createdAt).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -92,10 +93,21 @@ const ReportDetailsPage: React.FC = () => {
                                     <PersonIcon color="primary" /> Reported User
                                 </Typography>
                                 <Divider sx={{ my: 1 }} />
-                                <Typography>Name: {report.reportedUser?.nameEn || report.reportedUser?.name}</Typography>
-                                <Typography>Role: {report.reportedUser?.role}</Typography>
-                                <Typography>VOTER ID: {report.reportedUser?.epicId}</Typography>
-                                <Typography>Ward: {report.reportedUser?.wardName}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                                    <Avatar
+                                        src={report.reportedUser?.profilePicture || undefined}
+                                        alt={report.reportedUser?.nameEn || report.reportedUser?.name}
+                                        sx={{ width: 48, height: 48, bgcolor: 'primary.main' }}
+                                    >
+                                        {(report.reportedUser?.nameEn || report.reportedUser?.name)?.charAt(0).toUpperCase()}
+                                    </Avatar>
+                                    <Box>
+                                        <Typography fontWeight={500}>{report.reportedUser?.nameEn || report.reportedUser?.name}</Typography>
+                                        <Typography variant="body2" color="text.secondary">{report.reportedUser?.role}</Typography>
+                                    </Box>
+                                </Box>
+                                {report.reportedUser?.epicId && <Typography>VOTER ID: {report.reportedUser.epicId}</Typography>}
+                                {report.reportedUser?.wardName && <Typography>Ward: {report.reportedUser.wardName}</Typography>}
                             </CardContent>
                         </Card>
                     </Grid>
@@ -107,25 +119,38 @@ const ReportDetailsPage: React.FC = () => {
                                     <ReportProblemIcon color="error" /> Reported By
                                 </Typography>
                                 <Divider sx={{ my: 1 }} />
-                                <Typography>Name: {report.reportedBy?.nameEn}</Typography>
-                                <Typography>Role: {report.reportedBy?.role}</Typography>
-                                <Typography>VOTER ID: {report.reportedBy?.epicId}</Typography>
-                                <Typography>Ward: {report.reportedBy?.wardName}</Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+                                    <Avatar
+                                        src={report.reportedBy?.profilePicture || undefined}
+                                        alt={report.reportedBy?.nameEn || report.reportedBy?.name}
+                                        sx={{ width: 48, height: 48, bgcolor: 'error.main' }}
+                                    >
+                                        {(report.reportedBy?.nameEn || report.reportedBy?.name)?.charAt(0).toUpperCase()}
+                                    </Avatar>
+                                    <Box>
+                                        <Typography fontWeight={500}>{report.reportedBy?.nameEn || report.reportedBy?.name}</Typography>
+                                        <Typography variant="body2" color="text.secondary">{report.reportedBy?.role}</Typography>
+                                    </Box>
+                                </Box>
+                                {report.reportedBy?.epicId && <Typography>VOTER ID: {report.reportedBy.epicId}</Typography>}
+                                {report.reportedBy?.wardName && <Typography>Ward: {report.reportedBy.wardName}</Typography>}
                             </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
 
                 {/* Ward Details Section */}
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <LocationOnIcon color="action" /> Ward Details
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                        <Typography># Ward: {report.ward?.number} • {report.ward?.name} • {report.ward?.zone}</Typography>
-                    </CardContent>
-                </Card>
+                {report.ward && (report.ward.number || report.ward.name) && (
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <LocationOnIcon color="action" /> Ward Details
+                            </Typography>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography># Ward: {report.ward.number} • {report.ward.name}{report.ward.zone ? ` • ${report.ward.zone}` : ''}</Typography>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Admin Notes Section (moved below Ward Details) */}
                 {report.adminNotes && (

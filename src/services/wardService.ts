@@ -4,11 +4,13 @@ export interface WardInput {
   number: string;
   name: string;
   state: string;
-  parliamentary: string;
-  assembly: string;
+  category: string;
+  municipality: string;
+  parliamentary?: string;
+  assembly?: string;
 }
 
-export const createWard = (payload: WardInput) => apiClient.post('/wards', payload);
+export const createWard = (payload: WardInput) => apiClient.post('/admin/wards', payload);
 export const getWards = (state?: string, parliamentary?: string, assembly?: string) =>
   apiClient.get('/wards/list', { params: { ...(state && { state }), ...(parliamentary && { parliamentary }), ...(assembly && { assembly }) } });
 export const getWardById = (wardId: number) => apiClient.get(`/wards/${wardId}`);

@@ -20,11 +20,13 @@ import { wardSchema } from '../utils/validation';
 import { createWard, WardInput } from '../services/wardService';
 import { isMockMode } from '../config/appMode';
 import { getStates, getParliamentary, getAssembly } from '../services/geographyService';
+import adminMunicipalityService from '../services/adminMunicipalityService';
 
 const CreateWardPage = () => {
   const { t } = useTranslation();
   const [successOpen, setSuccessOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const {
     register,
     handleSubmit,
@@ -39,6 +41,7 @@ const CreateWardPage = () => {
   const [states, setStates] = useState<string[]>([]);
   const [parliaments, setParliaments] = useState<string[]>([]);
   const [assemblies, setAssemblies] = useState<string[]>([]);
+  const [municipalities, setMunicipalities] = useState<string[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
   // Load states on mount
@@ -89,6 +92,15 @@ const CreateWardPage = () => {
       .catch(() => setParliaments([]));
   }, [selectedState]);
 
+  // Load municipalities when state changes
+  useEffect(() => {
+    setMunicipalities([]);
+    if (!selectedState) return;
+    adminMunicipalityService.getAll(selectedState)
+      .then((resp) => setMunicipalities(resp.data.map((m) => m.name)))
+      .catch(() => setMunicipalities([]));
+  }, [selectedState]);
+
   // Load assemblies when state or parliamentary changes
   useEffect(() => {
     if (!selectedState) {
@@ -125,9 +137,18 @@ const CreateWardPage = () => {
       return;
     }
     try {
+      setSubmitError('');
       await createWard(values);
       setSuccessOpen(true);
       reset();
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const message = err?.response?.data?.message;
+      if (status === 409) {
+        setSubmitError('Ward number already exists. Please use a different ward number.');
+      } else {
+        setSubmitError(message || 'Failed to create ward. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -193,7 +214,7 @@ const CreateWardPage = () => {
                   placeholder="e.g., Central Ward"
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   select
                   fullWidth
@@ -211,14 +232,45 @@ const CreateWardPage = () => {
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  select
+                  fullWidth
+                  label={t('forms.ward.category') || 'Category'}
+                  {...register('category')}
+                  error={!!errors.category}
+                  helperText={errors.category && t(errors.category.message || 'validation.required')}
+                >
+                  {['General', 'General (Women)', 'OBC', 'OBC (Women)', 'SC', 'SC (Women)', 'ST', 'ST (Women)'].map((c) => (
+                    <MenuItem key={c} value={c}>{c}</MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextField
+                  select
+                  fullWidth
+                  label={t('forms.ward.municipality') || 'Municipality'}
+                  {...register('municipality')}
+                  error={!!errors.municipality}
+                  helperText={errors.municipality && t(errors.municipality.message || 'validation.required')}
+                  disabled={!selectedState || municipalities.length === 0}
+                >
+                  {municipalities.map((m) => (
+                    <MenuItem key={m} value={m}>{m}</MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid item xs={12} md={6}>
                 <TextField
                   select
                   fullWidth
                   label={t('forms.ward.parliamentary')}
                   {...register('parliamentary')}
                   error={!!errors.parliamentary}
-                  helperText={errors.parliamentary && t(errors.parliamentary.message || 'validation.required')}
+                  helperText={errors.parliamentary && t(errors.parliamentary.message || '')}
                   disabled={loadingOptions}
                 >
                   {parliaments.map((p) => (
@@ -229,14 +281,14 @@ const CreateWardPage = () => {
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   select
                   fullWidth
                   label={t('forms.ward.assembly')}
                   {...register('assembly')}
                   error={!!errors.assembly}
-                  helperText={errors.assembly && t(errors.assembly.message || 'validation.required')}
+                  helperText={errors.assembly && t(errors.assembly.message || '')}
                   disabled={loadingOptions}
                 >
                   {assemblies.map((a) => (
@@ -246,6 +298,11 @@ const CreateWardPage = () => {
                   ))}
                 </TextField>
               </Grid>
+              {submitError && (
+                <Grid item xs={12}>
+                  <Alert severity="error" onClose={() => setSubmitError('')}>{submitError}</Alert>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 <Stack direction="row" spacing={2} justifyContent="flex-end">
                   <Button

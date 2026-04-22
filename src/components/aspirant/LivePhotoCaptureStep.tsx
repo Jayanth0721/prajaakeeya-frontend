@@ -43,6 +43,7 @@ interface Props {
   onUploadSuccess?: (result: any) => void; // Called after successful auto-upload
   onUploadError?: (error: any) => void; // Called when auto-upload fails
   alreadyUploaded?: boolean; // True when photo was already uploaded in a previous session (draft restore)
+  uploadedPhotoUrl?: string | null; // Server URL of already-uploaded photo to show as preview
 }
 
 const LivePhotoCaptureStep = ({
@@ -64,6 +65,7 @@ const LivePhotoCaptureStep = ({
   onUploadSuccess,
   onUploadError,
   alreadyUploaded,
+  uploadedPhotoUrl,
 }: Props) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -117,6 +119,14 @@ const LivePhotoCaptureStep = ({
   // paths already called performUpload directly. Also set when the photo was
   // restored from a prior session so we don't re-upload on refresh.
   const uploadTriggeredRef = useRef(!!alreadyUploaded);
+
+  // Sync uploadStatus when alreadyUploaded changes (e.g. after async server fetch on mount)
+  useEffect(() => {
+    if (alreadyUploaded && uploadStatus === 'idle') {
+      setUploadStatus('success');
+      uploadTriggeredRef.current = true;
+    }
+  }, [alreadyUploaded]);
 
   // Validate file before upload — returns an i18n key on failure
   const validateFile = (file: File): string | null => {
@@ -268,7 +278,7 @@ const LivePhotoCaptureStep = ({
       <Box sx={{ px: { xs: 2, sm: 4 }, py: 2.8 }}>
         <Box sx={{ maxWidth: 600, mx: 'auto' }}>
           <Stack spacing={3} alignItems="center">
-            {!cameraActive && !capturedPhoto && !showLiveness && (
+            {!cameraActive && !capturedPhoto && !showLiveness && uploadStatus !== 'success' && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
                 <Stack spacing={2.2} alignItems="center">
                   <CameraAltIcon sx={{ fontSize: 80, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.5)' }} />
@@ -451,6 +461,54 @@ const LivePhotoCaptureStep = ({
                       {t('forms.aspirant.livePhoto.capture')}
                     </Button>
                   </Stack>
+                </Stack>
+              </motion.div>
+            )}
+
+            {uploadStatus === 'success' && !capturedPhoto && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                <Stack spacing={1.6} alignItems="center">
+                  <Box sx={{
+                    width: 200, height: 200, borderRadius: '50%',
+                    overflow: 'hidden',
+                    boxShadow: '0 0 0 2px rgba(43,180,104,0.45), 0 10px 30px rgba(0,0,0,0.35)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'rgba(0,0,0,0.3)',
+                  }}>
+                    {uploadedPhotoUrl ? (
+                      <img
+                        src={uploadedPhotoUrl}
+                        alt="Uploaded"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                    ) : (
+                      <CheckCircleIcon sx={{ fontSize: 80, color: '#4caf50' }} />
+                    )}
+                  </Box>
+                  <Stack direction="row" spacing={0.8} alignItems="center">
+                    <CheckCircleIcon sx={{ color: '#4caf50', fontSize: 18 }} />
+                    <Typography sx={{ fontFamily: FF, fontSize: '0.88rem', color: '#4caf50', fontWeight: 700 }}>
+                      {t('common.uploaded') || 'Uploaded!'}
+                    </Typography>
+                  </Stack>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<CameraswitchIcon />}
+                    onClick={() => {
+                      setUploadStatus('idle');
+                      uploadTriggeredRef.current = false;
+                      if (onSelfieCaptured && clearPhoto) { clearPhoto(); setShowLiveness(true); } else { retakePhoto?.(); }
+                    }}
+                    sx={{
+                      fontFamily: FF, fontWeight: 700,
+                      color: isDark ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.8)',
+                      borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(15,23,42,0.2)',
+                      '&:hover': { borderColor: GOLDD, color: GOLD, bgcolor: 'rgba(245,168,0,0.06)' },
+                    }}
+                  >
+                    {t('forms.aspirant.livePhoto.retake')}
+                  </Button>
                 </Stack>
               </motion.div>
             )}

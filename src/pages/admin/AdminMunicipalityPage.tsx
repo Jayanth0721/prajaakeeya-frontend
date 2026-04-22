@@ -48,10 +48,10 @@ const AdminMunicipalityPage: React.FC = () => {
 
   useEffect(() => {
     getStates()
-      .then((resp: { data: string[] }) => {
-        const extractNames = (data: string[]) => {
+      .then((resp: { data: any[] }) => {
+        const extractNames = (data: any[]) => {
           if (!Array.isArray(data)) return [];
-          return data.map((item) => (typeof item === 'string' ? item : String(item)));
+          return data.map((item) => (typeof item === 'string' ? item : item?.name || String(item)));
         };
         setStates(extractNames(resp.data));
       })
@@ -168,7 +168,7 @@ const AdminMunicipalityPage: React.FC = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>ID</TableCell>
+                      <TableCell>No</TableCell>
                       <TableCell>Name</TableCell>
                       <TableCell>State</TableCell>
                       <TableCell align="right">Actions</TableCell>
@@ -182,9 +182,9 @@ const AdminMunicipalityPage: React.FC = () => {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      items.map(it => (
+                      items.map((it, idx) => (
                         <TableRow key={it.id} hover>
-                          <TableCell>{it.id}</TableCell>
+                          <TableCell>{idx + 1}</TableCell>
                           <TableCell>{it.name}</TableCell>
                           <TableCell>{it.state}</TableCell>
                           <TableCell align="right">

@@ -30,6 +30,7 @@ import AdminAssemblyPage from "./pages/admin/AdminAssemblyPage";
 import AdminMunicipalityPage from "./pages/admin/AdminMunicipalityPage";
 import AdminGramaPanchayatPage from "./pages/admin/AdminGramaPanchayatPage";
 import AdminUploadSopPage from "./pages/admin/AdminUploadSopPage";
+import AdminAspirantListPage from "./pages/admin/AdminAspirantListPage";
 import UserLoginPage from "./pages/UserLoginPage";
 import UserRegisterPage from "./pages/UserRegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
@@ -42,6 +43,7 @@ import ReportIssuePage from "./pages/ReportIssuePage";
 import CivicIssueDetailPage from "./pages/CivicIssueDetailPage";
 import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
 import DocumentsUploadPage from "./pages/DocumentsUploadPage";
+import SopUploadPage from "./pages/SopUploadPage";
 import SopPage from "./pages/SopPage";
 import SignedSopPage from "./pages/SignedSopPage";
 import AspirantApprovalPage from "./pages/AspirantApprovalPage";
@@ -93,7 +95,7 @@ const UserChatPage = lazy(() => import("./pages/UserChatPage"));
 const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated, isAdmin } = useAuthStore();
   if (isAuthenticated) {
-    if (isAdmin) return <Navigate to="/admin/dashboard" replace />;
+    if (isAdmin) return <Navigate to="/admin/users" replace />;
     return <Navigate to="/user/voters" replace />;
   }
   return children;
@@ -285,6 +287,8 @@ const App = () => {
               element={<AdminGramaPanchayatPage />}
             />
             <Route path="upload-sop" element={<AdminUploadSopPage />} />
+            <Route path="registered-aspirants" element={<AdminAspirantListPage />} />
+            <Route path="registered-aspirants/:id" element={<AdminUserDetailsPage />} />
             <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
           </Route>
 
@@ -325,6 +329,10 @@ const App = () => {
             <Route
               path="aspirants/documents"
               element={<DocumentsUploadPage />}
+            />
+            <Route
+              path="aspirants/sop"
+              element={<SopUploadPage />}
             />
             <Route
               path="aspirants/verify-otp"
