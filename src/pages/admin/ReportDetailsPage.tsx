@@ -94,8 +94,8 @@ const ReportDetailsPage: React.FC = () => {
                                 <Divider sx={{ my: 1 }} />
                                 <Typography>Name: {report.reportedUser?.nameEn || report.reportedUser?.name}</Typography>
                                 <Typography>Role: {report.reportedUser?.role}</Typography>
-                                <Typography>VOTER ID: {report.reportedUser?.epicId}</Typography>
-                                <Typography>Ward: {report.reportedUser?.wardName}</Typography>
+                                {report.reportedUser?.epicId && <Typography>VOTER ID: {report.reportedUser.epicId}</Typography>}
+                                {report.reportedUser?.wardName && <Typography>Ward: {report.reportedUser.wardName}</Typography>}
                             </CardContent>
                         </Card>
                     </Grid>
@@ -107,25 +107,27 @@ const ReportDetailsPage: React.FC = () => {
                                     <ReportProblemIcon color="error" /> Reported By
                                 </Typography>
                                 <Divider sx={{ my: 1 }} />
-                                <Typography>Name: {report.reportedBy?.nameEn}</Typography>
+                                <Typography>Name: {report.reportedBy?.nameEn || report.reportedBy?.name}</Typography>
                                 <Typography>Role: {report.reportedBy?.role}</Typography>
-                                <Typography>VOTER ID: {report.reportedBy?.epicId}</Typography>
-                                <Typography>Ward: {report.reportedBy?.wardName}</Typography>
+                                {report.reportedBy?.epicId && <Typography>VOTER ID: {report.reportedBy.epicId}</Typography>}
+                                {report.reportedBy?.wardName && <Typography>Ward: {report.reportedBy.wardName}</Typography>}
                             </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
 
                 {/* Ward Details Section */}
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <LocationOnIcon color="action" /> Ward Details
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                        <Typography># Ward: {report.ward?.number} • {report.ward?.name} • {report.ward?.zone}</Typography>
-                    </CardContent>
-                </Card>
+                {report.ward && (report.ward.number || report.ward.name) && (
+                    <Card>
+                        <CardContent>
+                            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <LocationOnIcon color="action" /> Ward Details
+                            </Typography>
+                            <Divider sx={{ my: 1 }} />
+                            <Typography># Ward: {report.ward.number} • {report.ward.name}{report.ward.zone ? ` • ${report.ward.zone}` : ''}</Typography>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Admin Notes Section (moved below Ward Details) */}
                 {report.adminNotes && (

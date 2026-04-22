@@ -24,7 +24,7 @@ interface AdminLoginForm {
 
 const AdminLoginPage = () => {
   const { t, i18n } = useTranslation();
-  const { setAuth, logout } = useAuthStore();
+  const { setAuth, clearSession } = useAuthStore();
   const { mode, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -52,7 +52,7 @@ const AdminLoginPage = () => {
     setError('');
     setLoading(true);
     try {
-      logout();
+      clearSession();
       setRedirecting(true);
 
       if (isMockMode) {
