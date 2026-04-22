@@ -39,6 +39,7 @@ export const getAllAspirants = (page = 1, limit = 20, search?: string) =>
 
 export interface AdminAspirant {
   id: number;
+  userId: number;
   name: string;
   party: string;
   selfieUrl: string | null;
@@ -46,6 +47,7 @@ export interface AdminAspirant {
   electionName: string;
   constituencyId: number;
   constituencyName: string;
+  isBlocked?: boolean;
 }
 export const verifyAspirantRegistration = (verificationId: string, code: string) => 
   apiClient.post('/aspirants/verify-registration', { verificationId, code });

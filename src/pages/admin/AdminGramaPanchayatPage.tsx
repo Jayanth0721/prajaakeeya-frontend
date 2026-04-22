@@ -386,14 +386,8 @@ const AdminGramaPanchayatPage: React.FC = () => {
                   {formGPs.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
                 </TextField>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField label="Village Name" value={formData.villageName} onChange={handleField('villageName')} fullWidth size="small" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Village Code" value={formData.villageCode} onChange={handleField('villageCode')} fullWidth size="small" />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField label="Population" value={formData.population} onChange={handleField('population')} fullWidth size="small" />
               </Grid>
             </Grid>
           </Stack>
