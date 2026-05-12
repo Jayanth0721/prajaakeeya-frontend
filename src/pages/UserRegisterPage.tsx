@@ -48,7 +48,10 @@ const UserRegisterPage = () => {
     token: string;
     user: any;
   } | null>(null);
-  const [consented, setConsented] = useState(false);
+  const [consentIdentity, setConsentIdentity] = useState(false);
+  const [consentStats, setConsentStats] = useState(false);
+  const [consentPolicy, setConsentPolicy] = useState(false);
+  const consented = consentIdentity && consentStats && consentPolicy;
   const [firebaseIdToken, setFirebaseIdToken] = useState<string | null>(null);
 
   const fireworkShows = useMemo(() => {
@@ -292,36 +295,119 @@ const UserRegisterPage = () => {
                 {t("pages.register.registerWithSocial")}
               </Typography>
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={consented}
-                    onChange={(e) => setConsented(e.target.checked)}
+              <Box
+                sx={{
+                  border: `1px solid ${isDark ? "rgba(245,168,0,0.25)" : "rgba(245,168,0,0.4)"}`,
+                  borderRadius: 2,
+                  p: 2,
+                  background: isDark
+                    ? "rgba(245,168,0,0.04)"
+                    : "rgba(245,168,0,0.04)",
+                }}
+              >
+
+                {[
+                  {
+                    key: "identity",
+                    checked: consentIdentity,
+                    setChecked: setConsentIdentity,
+                    title: t("pages.register.consentIdentity") as React.ReactNode,
+                  },
+                  {
+                    key: "stats",
+                    checked: consentStats,
+                    setChecked: setConsentStats,
+                    title: t("pages.register.consentStats") as React.ReactNode,
+                  },
+                  {
+                    key: "policy",
+                    checked: consentPolicy,
+                    setChecked: setConsentPolicy,
+                    title: (
+                      <>
+                        {t("pages.register.consentPolicy")
+                          .split(/(Privacy Policy|Terms)/)
+                          .map((part, i) => {
+                            if (part === "Privacy Policy") {
+                              return (
+                                <Box
+                                  key={i}
+                                  component="a"
+                                  href="/privacy-policy"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  sx={{
+                                    color: "#F5A800",
+                                    textDecoration: "underline",
+                                  }}
+                                >
+                                  {part}
+                                </Box>
+                              );
+                            }
+                            if (part === "Terms") {
+                              return (
+                                <Box
+                                  key={i}
+                                  component="a"
+                                  href="/terms-and-conditions"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  sx={{
+                                    color: "#F5A800",
+                                    textDecoration: "underline",
+                                  }}
+                                >
+                                  {part}
+                                </Box>
+                              );
+                            }
+                            return part;
+                          })}
+                      </>
+                    ) as React.ReactNode,
+                  },
+                ].map((item) => (
+                  <FormControlLabel
+                    key={item.key}
+                    control={
+                      <Checkbox
+                        checked={item.checked}
+                        onChange={(e) => item.setChecked(e.target.checked)}
+                        sx={{
+                          color: isDark
+                            ? "rgba(255,255,255,0.35)"
+                            : "rgba(17,24,39,0.35)",
+                          "&.Mui-checked": { color: "#F5A800" },
+                          py: { xs: 1, sm: 0.25 },
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography
+                        sx={{
+                          fontSize: "0.85rem",
+                          fontWeight: 600,
+                          color: isDark
+                            ? "rgba(255,255,255,0.88)"
+                            : "rgba(17,24,39,0.88)",
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                    }
                     sx={{
-                      color: isDark
-                        ? "rgba(255,255,255,0.35)"
-                        : "rgba(17,24,39,0.35)",
-                      "&.Mui-checked": { color: "#F5A800" },
-                      pt: 0.5,
-                      alignSelf: "flex-start",
+                      alignItems: "center",
+                      mx: 0,
+                      mb: { xs: 0.75, sm: 0 },
+                      "&:last-of-type": { mb: 0 },
                     }}
                   />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontSize: "0.82rem",
-                      color: isDark
-                        ? "rgba(255,255,255,0.65)"
-                        : "rgba(17,24,39,0.7)",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {t("pages.register.consentText")}
-                  </Typography>
-                }
-                sx={{ alignItems: "flex-start", mx: 0 }}
-              />
+                ))}
+              </Box>
 
               <Button
                 variant="contained"
