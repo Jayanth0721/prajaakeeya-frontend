@@ -97,7 +97,7 @@ const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated, isAdmin } = useAuthStore();
   if (isAuthenticated) {
     if (isAdmin) return <Navigate to="/admin/users" replace />;
-    return <Navigate to="/user/voters" replace />;
+    return <Navigate to="/user/dashboard" replace />;
   }
   return children;
 };

@@ -1654,6 +1654,27 @@
       "resendOtpLink": "Resend",
       "bengaluruNotice": "Voter registration is currently open only for Bengaluru wards (GBA, BBMP).\nIt will be opened for citizens in other constituencies soon.",
       "ageConfirm": "I confirm that I am 18 years or older to use this platform."
+    },
+    "constituencyOnboarding": {
+      "leftTitle": "Tell us where you vote",
+      "leftSubtitle": "Help us tailor your civic feed to your constituency.",
+      "cardTitle": "Set up your area",
+      "stepCounter": "Step {{current}} of {{total}}",
+      "skip": "Skip",
+      "next": "Next",
+      "finish": "Finish",
+      "step1Title": "Lok Sabha Constituency",
+      "step1Question": "Which Lok Sabha constituency does your area belong to?",
+      "step1Placeholder": "Select your Lok Sabha constituency",
+      "step2Title": "State Assembly Constituency",
+      "step2Question": "Which Assembly constituency is your area under?",
+      "step2Placeholder": "Select your Assembly constituency",
+      "step3Title": "Municipal Corporation / Ward",
+      "step3Question": "Which Municipal Corporation or Ward do you belong to?",
+      "step3Placeholder": "Select your Ward / Municipal Corporation",
+      "step4Title": "Gram Panchayat",
+      "step4Question": "Which Gram Panchayat is your village under?",
+      "step4Placeholder": "Select your Gram Panchayat"
     }
   },
   "civicIssues": {

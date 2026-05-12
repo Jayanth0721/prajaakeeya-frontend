@@ -79,7 +79,7 @@ const UserConstituencyOnboardingPage = () => {
     } catch {
       // ignore storage failures
     }
-    navigate("/user/voters", { replace: true });
+    navigate("/user/dashboard", { replace: true });
   };
 
   const handleNext = () => {

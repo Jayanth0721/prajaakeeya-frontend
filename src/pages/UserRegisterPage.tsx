@@ -963,7 +963,7 @@ const UserRegisterPage = () => {
                       clearSession();
                       setAuth(pendingAuth.token, pendingAuth.user);
                       // New users land on the constituency onboarding wizard
-                      // before reaching /user/voters.
+                      // before reaching the dashboard.
                       navigate("/onboarding/location", { replace: true });
                     }
                   }}
