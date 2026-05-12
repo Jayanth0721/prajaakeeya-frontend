@@ -962,10 +962,9 @@ const UserRegisterPage = () => {
                       // which would re-show the index.html preloader.
                       clearSession();
                       setAuth(pendingAuth.token, pendingAuth.user);
-                      // RedirectIfAuth forces authenticated users to
-                      // /user/voters anyway, so navigate there directly to
-                      // avoid a flash through /user/civic-issues.
-                      navigate("/user/voters", { replace: true });
+                      // New users land on the constituency onboarding wizard
+                      // before reaching /user/voters.
+                      navigate("/onboarding/location", { replace: true });
                     }
                   }}
                   sx={{

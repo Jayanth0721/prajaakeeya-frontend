@@ -37,6 +37,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 import UserPledgePage from "./pages/UserPledgePage";
 import ProfileCompletionPage from "./pages/ProfileCompletionPage";
+import UserConstituencyOnboardingPage from "./pages/UserConstituencyOnboardingPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import CivicIssuesPage from "./pages/CivicIssuesPage";
 import ReportIssuePage from "./pages/ReportIssuePage";
@@ -291,6 +292,18 @@ const App = () => {
             <Route path="registered-aspirants/:id" element={<AdminUserDetailsPage />} />
             <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
           </Route>
+
+          {/* Standalone onboarding route — auth required, no UserLayout chrome */}
+          <Route
+            path="/onboarding/location"
+            element={
+              isAuthenticated ? (
+                <UserConstituencyOnboardingPage />
+              ) : (
+                <Navigate to="/register" />
+              )
+            }
+          />
 
           {/* User routes - auth required but API calls bypassed */}
           <Route
