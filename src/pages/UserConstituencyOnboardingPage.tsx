@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -7,7 +7,6 @@ import {
   Button,
   CircularProgress,
   LinearProgress,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -33,24 +32,17 @@ import {
   type Constituency,
   type GPVillage,
 } from "../services/electionService";
+import { updateUserConstituencies } from "../services/authService";
+import useAuthStore from "../store/useAuthStore";
 import { BRAND } from "../theme";
 import prajakeeyaLogo from "../assets/images/prajakeeya.png";
 
-type StepKey =
-  | "electionType"
-  | "constituency"
-  | "municipality"
-  | "cityWard"
-  | "gpState"
-  | "gpDistrict"
-  | "gpTaluk"
-  | "gpGram"
-  | "gpVillage";
+type Municipality = { id: number; name: string; state: string };
 
 interface OnboardingAnswers {
-  election?: Election;
-  constituency?: Constituency;
-  municipality?: { id: number; name: string; state: string };
+  lokSabha?: Constituency;
+  stateAssembly?: Constituency;
+  municipality?: Municipality;
   cityWard?: Constituency;
   gpState?: string;
   gpDistrict?: string;
@@ -61,87 +53,61 @@ interface OnboardingAnswers {
 
 const STORAGE_KEY = "__USER_LOCATION_ANSWERS__";
 
-const STEP_META: Record<
-  StepKey,
-  { icon: string; title: string; question: string; placeholder: string }
-> = {
-  electionType: {
-    icon: "🗳️",
-    title: "Election Type",
-    question: "Which election are you setting up?",
-    placeholder: "Select election type",
-  },
-  constituency: {
+const STEPS = [
+  {
+    type: "lok_sabha",
     icon: "📍",
-    title: "Constituency",
-    question: "Which constituency does your area belong to?",
-    placeholder: "Select your constituency",
+    title: "Lok Sabha Constituency",
+    question: "Which Lok Sabha constituency does your area belong to?",
   },
-  municipality: {
-    icon: "🏙️",
-    title: "Municipal Corporation",
-    question: "Which Municipal Corporation are you in?",
-    placeholder: "Select your Municipal Corporation",
+  {
+    type: "state_assembly",
+    icon: "🏛",
+    title: "State Assembly Constituency",
+    question: "Which Assembly constituency is your area under?",
   },
-  cityWard: {
-    icon: "🏘️",
-    title: "City Corporation Ward",
-    question: "Which ward do you belong to?",
-    placeholder: "Select your ward",
+  {
+    type: "municipal_corporation",
+    icon: "🏙",
+    title: "Municipal Corporation / Ward",
+    question: "Which Municipal Corporation and ward do you belong to?",
   },
-  gpState: {
-    icon: "🗺️",
-    title: "State",
-    question: "Which state is your village in?",
-    placeholder: "Select your state",
-  },
-  gpDistrict: {
-    icon: "🌐",
-    title: "District",
-    question: "Which district is your village under?",
-    placeholder: "Select your district",
-  },
-  gpTaluk: {
-    icon: "🏞️",
-    title: "Taluk",
-    question: "Which taluk does your village belong to?",
-    placeholder: "Select your taluk",
-  },
-  gpGram: {
+  {
+    type: "gram_panchayat",
     icon: "🌿",
     title: "Gram Panchayat",
-    question: "Which Gram Panchayat is your village under?",
-    placeholder: "Select your Gram Panchayat",
+    question:
+      "Which State, District, Taluk, Gram Panchayat and village do you live in?",
   },
-  gpVillage: {
-    icon: "🏡",
-    title: "Village",
-    question: "Which village do you live in?",
-    placeholder: "Select your village",
-  },
-};
+] as const;
+
+const TOTAL_STEPS = STEPS.length;
 
 const UserConstituencyOnboardingPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const token = useAuthStore((s) => s.token);
 
-  // ─── Step engine ────────────────────────────────────────────────
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState<OnboardingAnswers>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // ─── Source data ────────────────────────────────────────────────
-  const [elections, setElections] = useState<Election[]>([]);
+  // Data caches
+  const [, setElections] = useState<Election[]>([]);
   const [loadingElections, setLoadingElections] = useState(false);
 
-  const [constituencies, setConstituencies] = useState<Constituency[]>([]);
-  const [loadingConstituencies, setLoadingConstituencies] = useState(false);
-
-  const [municipalities, setMunicipalities] = useState<
-    { id: number; name: string; state: string }[]
+  const [lokSabhaOptions, setLokSabhaOptions] = useState<Constituency[]>([]);
+  const [loadingLokSabha, setLoadingLokSabha] = useState(false);
+  const [stateAssemblyOptions, setStateAssemblyOptions] = useState<
+    Constituency[]
   >([]);
-  const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
+  const [loadingStateAssembly, setLoadingStateAssembly] = useState(false);
 
+  const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+  const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
   const [cityWards, setCityWards] = useState<Constituency[]>([]);
   const [loadingCityWards, setLoadingCityWards] = useState(false);
 
@@ -150,58 +116,45 @@ const UserConstituencyOnboardingPage = () => {
   const [gpTaluks, setGpTaluks] = useState<string[]>([]);
   const [gpGrams, setGpGrams] = useState<string[]>([]);
   const [gpVillages, setGpVillages] = useState<GPVillage[]>([]);
-  const [loadingGp, setLoadingGp] = useState(false);
+  const [loadingGpStates, setLoadingGpStates] = useState(false);
+  const [loadingGpDistricts, setLoadingGpDistricts] = useState(false);
+  const [loadingGpTaluks, setLoadingGpTaluks] = useState(false);
+  const [loadingGpGrams, setLoadingGpGrams] = useState(false);
+  const [loadingGpVillages, setLoadingGpVillages] = useState(false);
 
-  // ─── Derive the dynamic step list from the chosen election ──────
-  const steps: StepKey[] = useMemo(() => {
-    const electionType = answers.election?.type;
-    if (!electionType) return ["electionType"];
-    if (electionType === "municipal_corporation") {
-      return ["electionType", "municipality", "cityWard"];
-    }
-    if (electionType === "gram_panchayat") {
-      return [
-        "electionType",
-        "gpState",
-        "gpDistrict",
-        "gpTaluk",
-        "gpGram",
-        "gpVillage",
-      ];
-    }
-    return ["electionType", "constituency"];
-  }, [answers.election?.type]);
+  const currentStep = STEPS[stepIdx];
+  const isLast = stepIdx === TOTAL_STEPS - 1;
+  const progress = ((stepIdx + 1) / TOTAL_STEPS) * 100;
 
-  const totalSteps = steps.length;
-  const currentStep = steps[stepIdx];
-  const isLast = stepIdx === totalSteps - 1;
-  const progress = ((stepIdx + 1) / totalSteps) * 100;
-
-  // ─── Load initial elections ────────────────────────────────────
+  // Load elections once (only used to know they exist; not displayed)
   useEffect(() => {
     setLoadingElections(true);
     fetchElections()
-      .then((resp) => {
-        const data = Array.isArray(resp.data) ? resp.data : [];
-        setElections(data);
-      })
-      .catch(() => {
-        // ignore; user can still skip
-      })
+      .then((resp) => setElections(Array.isArray(resp.data) ? resp.data : []))
+      .catch(() => setElections([]))
       .finally(() => setLoadingElections(false));
   }, []);
 
-  // ─── React to election type change ──────────────────────────────
+  // Lazy-load each step's primary options when the step is entered
   useEffect(() => {
-    const election = answers.election;
-    if (!election) {
-      setConstituencies([]);
-      setMunicipalities([]);
-      setCityWards([]);
-      setGpStates([]);
-      return;
+    const type = currentStep.type;
+    if (type === "lok_sabha" && lokSabhaOptions.length === 0) {
+      setLoadingLokSabha(true);
+      fetchConstituencies("lok_sabha")
+        .then((resp) => setLokSabhaOptions(resp.data?.constituencies ?? []))
+        .catch(() => setLokSabhaOptions([]))
+        .finally(() => setLoadingLokSabha(false));
     }
-    if (election.type === "municipal_corporation") {
+    if (type === "state_assembly" && stateAssemblyOptions.length === 0) {
+      setLoadingStateAssembly(true);
+      fetchConstituencies("state_assembly")
+        .then((resp) =>
+          setStateAssemblyOptions(resp.data?.constituencies ?? []),
+        )
+        .catch(() => setStateAssemblyOptions([]))
+        .finally(() => setLoadingStateAssembly(false));
+    }
+    if (type === "municipal_corporation" && municipalities.length === 0) {
       setLoadingMunicipalities(true);
       fetchMunicipalities()
         .then((resp) =>
@@ -209,24 +162,17 @@ const UserConstituencyOnboardingPage = () => {
         )
         .catch(() => setMunicipalities([]))
         .finally(() => setLoadingMunicipalities(false));
-      return;
     }
-    if (election.type === "gram_panchayat") {
-      setLoadingGp(true);
+    if (type === "gram_panchayat" && gpStates.length === 0) {
+      setLoadingGpStates(true);
       fetchGPStates()
         .then((resp) => setGpStates(Array.isArray(resp.data) ? resp.data : []))
         .catch(() => setGpStates([]))
-        .finally(() => setLoadingGp(false));
-      return;
+        .finally(() => setLoadingGpStates(false));
     }
-    setLoadingConstituencies(true);
-    fetchConstituencies(election.type)
-      .then((resp) => setConstituencies(resp.data?.constituencies ?? []))
-      .catch(() => setConstituencies([]))
-      .finally(() => setLoadingConstituencies(false));
-  }, [answers.election]);
+  }, [currentStep.type]);
 
-  // ─── React to municipality change ───────────────────────────────
+  // Municipality → city wards
   useEffect(() => {
     if (!answers.municipality) {
       setCityWards([]);
@@ -239,19 +185,19 @@ const UserConstituencyOnboardingPage = () => {
       .finally(() => setLoadingCityWards(false));
   }, [answers.municipality]);
 
-  // ─── GP cascading fetches ───────────────────────────────────────
+  // GP cascade
   useEffect(() => {
     if (!answers.gpState) {
       setGpDistricts([]);
       return;
     }
-    setLoadingGp(true);
+    setLoadingGpDistricts(true);
     fetchGPDistricts(answers.gpState)
       .then((resp) =>
         setGpDistricts(Array.isArray(resp.data) ? resp.data : []),
       )
       .catch(() => setGpDistricts([]))
-      .finally(() => setLoadingGp(false));
+      .finally(() => setLoadingGpDistricts(false));
   }, [answers.gpState]);
 
   useEffect(() => {
@@ -259,11 +205,11 @@ const UserConstituencyOnboardingPage = () => {
       setGpTaluks([]);
       return;
     }
-    setLoadingGp(true);
+    setLoadingGpTaluks(true);
     fetchGPTaluks(answers.gpState, answers.gpDistrict)
       .then((resp) => setGpTaluks(Array.isArray(resp.data) ? resp.data : []))
       .catch(() => setGpTaluks([]))
-      .finally(() => setLoadingGp(false));
+      .finally(() => setLoadingGpTaluks(false));
   }, [answers.gpState, answers.gpDistrict]);
 
   useEffect(() => {
@@ -271,11 +217,11 @@ const UserConstituencyOnboardingPage = () => {
       setGpGrams([]);
       return;
     }
-    setLoadingGp(true);
+    setLoadingGpGrams(true);
     fetchGPGrams(answers.gpState, answers.gpDistrict, answers.gpTaluk)
       .then((resp) => setGpGrams(Array.isArray(resp.data) ? resp.data : []))
       .catch(() => setGpGrams([]))
-      .finally(() => setLoadingGp(false));
+      .finally(() => setLoadingGpGrams(false));
   }, [answers.gpState, answers.gpDistrict, answers.gpTaluk]);
 
   useEffect(() => {
@@ -288,7 +234,7 @@ const UserConstituencyOnboardingPage = () => {
       setGpVillages([]);
       return;
     }
-    setLoadingGp(true);
+    setLoadingGpVillages(true);
     fetchGPVillages(
       answers.gpState,
       answers.gpDistrict,
@@ -297,98 +243,106 @@ const UserConstituencyOnboardingPage = () => {
     )
       .then((resp) => setGpVillages(Array.isArray(resp.data) ? resp.data : []))
       .catch(() => setGpVillages([]))
-      .finally(() => setLoadingGp(false));
+      .finally(() => setLoadingGpVillages(false));
   }, [answers.gpState, answers.gpDistrict, answers.gpTaluk, answers.gpGram]);
 
-  // ─── Per-step has-value check ───────────────────────────────────
-  const stepHasValue = (step: StepKey) => {
-    switch (step) {
-      case "electionType":
-        return !!answers.election;
-      case "constituency":
-        return !!answers.constituency;
-      case "municipality":
-        return !!answers.municipality;
-      case "cityWard":
-        return !!answers.cityWard;
-      case "gpState":
-        return !!answers.gpState;
-      case "gpDistrict":
-        return !!answers.gpDistrict;
-      case "gpTaluk":
-        return !!answers.gpTaluk;
-      case "gpGram":
-        return !!answers.gpGram;
-      case "gpVillage":
-        return !!answers.gpVillage;
+  // ── per-step "has any value" check (Next enabled) ──
+  const stepHasAnswer = (): boolean => {
+    switch (currentStep.type) {
+      case "lok_sabha":
+        return !!answers.lokSabha;
+      case "state_assembly":
+        return !!answers.stateAssembly;
+      case "municipal_corporation":
+        return !!answers.municipality || !!answers.cityWard;
+      case "gram_panchayat":
+        return (
+          !!answers.gpState ||
+          !!answers.gpDistrict ||
+          !!answers.gpTaluk ||
+          !!answers.gpGram ||
+          !!answers.gpVillage
+        );
     }
   };
 
-  // ─── Finish + step controls ─────────────────────────────────────
-  const finish = (finalAnswers: OnboardingAnswers) => {
+  // ── controls ──
+  const finish = async (final: OnboardingAnswers) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(finalAnswers));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(final));
     } catch {
       // ignore storage failures
     }
-    navigate("/user/dashboard", { replace: true });
-  };
 
-  const handleNext = () => {
-    if (!stepHasValue(currentStep)) return;
-    if (isLast) {
-      finish(answers);
-    } else {
-      setStepIdx(stepIdx + 1);
+    const payload = {
+      lokSabhaConstituencyId: final.lokSabha?.id ?? null,
+      stateAssemblyConstituencyId: final.stateAssembly?.id ?? null,
+      municipalCorporationConstituencyId: final.cityWard?.id ?? null,
+      gramPanchayatConstituencyId: final.gpVillage?.id
+        ? Number(final.gpVillage.id)
+        : null,
+    };
+
+    const hasAnything =
+      payload.lokSabhaConstituencyId != null ||
+      payload.stateAssemblyConstituencyId != null ||
+      payload.municipalCorporationConstituencyId != null ||
+      payload.gramPanchayatConstituencyId != null;
+
+    if (!hasAnything || !token) {
+      navigate("/user/dashboard", { replace: true });
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const { data } = await updateUserConstituencies(payload);
+      setAuth(token, data);
+      navigate("/user/dashboard", { replace: true });
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to save. Please try again.";
+      setSubmitError(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  const handleNext = () => {
+    if (submitting) return;
+    if (!stepHasAnswer()) return;
+    if (isLast) void finish(answers);
+    else setStepIdx(stepIdx + 1);
+  };
+
   const handleSkip = () => {
-    // Clear answer for the current step and any downstream answers
+    if (submitting) return;
     const next: OnboardingAnswers = { ...answers };
-    switch (currentStep) {
-      case "electionType":
-        // Skip all => finish with empty
-        finish({});
-        return;
-      case "constituency":
-        delete next.constituency;
+    switch (currentStep.type) {
+      case "lok_sabha":
+        delete next.lokSabha;
         break;
-      case "municipality":
+      case "state_assembly":
+        delete next.stateAssembly;
+        break;
+      case "municipal_corporation":
         delete next.municipality;
         delete next.cityWard;
         break;
-      case "cityWard":
-        delete next.cityWard;
-        break;
-      case "gpState":
+      case "gram_panchayat":
         delete next.gpState;
         delete next.gpDistrict;
         delete next.gpTaluk;
         delete next.gpGram;
         delete next.gpVillage;
         break;
-      case "gpDistrict":
-        delete next.gpDistrict;
-        delete next.gpTaluk;
-        delete next.gpGram;
-        delete next.gpVillage;
-        break;
-      case "gpTaluk":
-        delete next.gpTaluk;
-        delete next.gpGram;
-        delete next.gpVillage;
-        break;
-      case "gpGram":
-        delete next.gpGram;
-        delete next.gpVillage;
-        break;
-      case "gpVillage":
-        delete next.gpVillage;
-        break;
     }
     setAnswers(next);
-    if (isLast) finish(next);
+    if (isLast) void finish(next);
     else setStepIdx(stepIdx + 1);
   };
 
@@ -397,7 +351,7 @@ const UserConstituencyOnboardingPage = () => {
     setStepIdx(stepIdx - 1);
   };
 
-  // ─── Field styling ──────────────────────────────────────────────
+  // ── styling ──
   const fieldSx = {
     "& .MuiOutlinedInput-root": {
       borderRadius: 2,
@@ -405,9 +359,7 @@ const UserConstituencyOnboardingPage = () => {
       "& fieldset": {
         borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(17,24,39,0.18)",
       },
-      "&:hover fieldset": {
-        borderColor: "rgba(245,168,0,0.45)",
-      },
+      "&:hover fieldset": { borderColor: "rgba(245,168,0,0.45)" },
       "&.Mui-focused fieldset": {
         borderColor: BRAND.yellow,
         borderWidth: "1.5px",
@@ -420,7 +372,6 @@ const UserConstituencyOnboardingPage = () => {
     "& .MuiInputBase-input": {
       color: isDark ? "#fff" : "rgba(15,23,42,0.94)",
       fontSize: "1rem",
-      py: 1.3,
     },
   };
 
@@ -438,257 +389,211 @@ const UserConstituencyOnboardingPage = () => {
     },
   };
 
-  // ─── Render the input for the current step ──────────────────────
-  const renderField = () => {
-    switch (currentStep) {
-      case "electionType":
-        return (
-          <TextField
-            select
-            fullWidth
-            label={STEP_META.electionType.placeholder}
-            value={answers.election?.id ?? ""}
-            onChange={(e) => {
-              const id = Number(e.target.value);
-              const el = elections.find((x) => x.id === id) ?? undefined;
-              setAnswers({ election: el });
-            }}
-            disabled={loadingElections}
-            sx={fieldSx}
-            SelectProps={{
-              MenuProps: {
-                PaperProps: {
-                  sx: {
-                    bgcolor: isDark ? "#1a1515" : "#fff",
-                    "& .MuiMenuItem-root": {
-                      color: isDark
-                        ? "rgba(255,255,255,0.85)"
-                        : "rgba(15,23,42,0.9)",
-                    },
-                    "& .MuiMenuItem-root.Mui-selected": {
-                      bgcolor: isDark
-                        ? "rgba(245,168,0,0.18)"
-                        : "rgba(245,168,0,0.14)",
-                      color: BRAND.yellow,
-                    },
-                  },
-                },
-              },
-            }}
-          >
-            {elections.map((el) => (
-              <MenuItem key={el.id} value={el.id}>
-                {el.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        );
-      case "constituency":
+  // ── per-step content ──
+  const renderStepFields = () => {
+    switch (currentStep.type) {
+      case "lok_sabha":
         return (
           <Autocomplete
-            options={constituencies}
+            options={lokSabhaOptions}
             getOptionLabel={(o) =>
               `${o.number ? `${o.number} - ` : ""}${o.name}`
             }
             isOptionEqualToValue={(a, b) => a.id === b.id}
-            value={answers.constituency ?? null}
+            value={answers.lokSabha ?? null}
             onChange={(_, v) =>
-              setAnswers((p) => ({ ...p, constituency: v ?? undefined }))
+              setAnswers((p) => ({ ...p, lokSabha: v ?? undefined }))
             }
-            loading={loadingConstituencies}
+            loading={loadingLokSabha}
             ListboxProps={{ sx: listboxSx }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={STEP_META.constituency.placeholder}
+                label="Lok Sabha Constituency"
                 sx={fieldSx}
               />
             )}
           />
         );
-      case "municipality":
+      case "state_assembly":
         return (
           <Autocomplete
-            options={municipalities}
-            getOptionLabel={(o) => o.name}
-            isOptionEqualToValue={(a, b) => a.id === b.id}
-            value={answers.municipality ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({
-                ...p,
-                municipality: v ?? undefined,
-                cityWard: undefined,
-              }))
-            }
-            loading={loadingMunicipalities}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.municipality.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
-        );
-      case "cityWard":
-        return (
-          <Autocomplete
-            options={cityWards}
+            options={stateAssemblyOptions}
             getOptionLabel={(o) =>
               `${o.number ? `${o.number} - ` : ""}${o.name}`
             }
             isOptionEqualToValue={(a, b) => a.id === b.id}
-            value={answers.cityWard ?? null}
+            value={answers.stateAssembly ?? null}
             onChange={(_, v) =>
-              setAnswers((p) => ({ ...p, cityWard: v ?? undefined }))
+              setAnswers((p) => ({ ...p, stateAssembly: v ?? undefined }))
             }
-            loading={loadingCityWards}
-            disabled={!answers.municipality}
+            loading={loadingStateAssembly}
             ListboxProps={{ sx: listboxSx }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label={STEP_META.cityWard.placeholder}
+                label="Assembly Constituency"
                 sx={fieldSx}
               />
             )}
           />
         );
-      case "gpState":
+      case "municipal_corporation":
         return (
-          <Autocomplete
-            options={gpStates}
-            value={answers.gpState ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({
-                ...p,
-                gpState: v ?? undefined,
-                gpDistrict: undefined,
-                gpTaluk: undefined,
-                gpGram: undefined,
-                gpVillage: undefined,
-              }))
-            }
-            loading={loadingGp}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.gpState.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
+          <Stack spacing={2}>
+            <Autocomplete
+              options={municipalities}
+              getOptionLabel={(o) => o.name}
+              isOptionEqualToValue={(a, b) => a.id === b.id}
+              value={answers.municipality ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({
+                  ...p,
+                  municipality: v ?? undefined,
+                  cityWard: undefined,
+                }))
+              }
+              loading={loadingMunicipalities}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Corporation / Municipality"
+                  sx={fieldSx}
+                />
+              )}
+            />
+            <Autocomplete
+              options={cityWards}
+              getOptionLabel={(o) =>
+                `${o.number ? `${o.number} - ` : ""}${o.name}`
+              }
+              isOptionEqualToValue={(a, b) => a.id === b.id}
+              value={answers.cityWard ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({ ...p, cityWard: v ?? undefined }))
+              }
+              loading={loadingCityWards}
+              disabled={!answers.municipality}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="City Corporation Ward"
+                  sx={fieldSx}
+                />
+              )}
+            />
+          </Stack>
         );
-      case "gpDistrict":
+      case "gram_panchayat":
         return (
-          <Autocomplete
-            options={gpDistricts}
-            value={answers.gpDistrict ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({
-                ...p,
-                gpDistrict: v ?? undefined,
-                gpTaluk: undefined,
-                gpGram: undefined,
-                gpVillage: undefined,
-              }))
-            }
-            loading={loadingGp}
-            disabled={!answers.gpState}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.gpDistrict.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
-        );
-      case "gpTaluk":
-        return (
-          <Autocomplete
-            options={gpTaluks}
-            value={answers.gpTaluk ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({
-                ...p,
-                gpTaluk: v ?? undefined,
-                gpGram: undefined,
-                gpVillage: undefined,
-              }))
-            }
-            loading={loadingGp}
-            disabled={!answers.gpDistrict}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.gpTaluk.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
-        );
-      case "gpGram":
-        return (
-          <Autocomplete
-            options={gpGrams}
-            value={answers.gpGram ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({
-                ...p,
-                gpGram: v ?? undefined,
-                gpVillage: undefined,
-              }))
-            }
-            loading={loadingGp}
-            disabled={!answers.gpTaluk}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.gpGram.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
-        );
-      case "gpVillage":
-        return (
-          <Autocomplete
-            options={gpVillages}
-            getOptionLabel={(o) => o.villageName}
-            isOptionEqualToValue={(a, b) => a.id === b.id}
-            value={answers.gpVillage ?? null}
-            onChange={(_, v) =>
-              setAnswers((p) => ({ ...p, gpVillage: v ?? undefined }))
-            }
-            loading={loadingGp}
-            disabled={!answers.gpGram}
-            ListboxProps={{ sx: listboxSx }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={STEP_META.gpVillage.placeholder}
-                sx={fieldSx}
-              />
-            )}
-          />
+          <Stack spacing={2}>
+            <Autocomplete
+              options={gpStates}
+              value={answers.gpState ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({
+                  ...p,
+                  gpState: v ?? undefined,
+                  gpDistrict: undefined,
+                  gpTaluk: undefined,
+                  gpGram: undefined,
+                  gpVillage: undefined,
+                }))
+              }
+              loading={loadingGpStates}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField {...params} label="State" sx={fieldSx} />
+              )}
+            />
+            <Autocomplete
+              options={gpDistricts}
+              value={answers.gpDistrict ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({
+                  ...p,
+                  gpDistrict: v ?? undefined,
+                  gpTaluk: undefined,
+                  gpGram: undefined,
+                  gpVillage: undefined,
+                }))
+              }
+              loading={loadingGpDistricts}
+              disabled={!answers.gpState}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField {...params} label="District" sx={fieldSx} />
+              )}
+            />
+            <Autocomplete
+              options={gpTaluks}
+              value={answers.gpTaluk ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({
+                  ...p,
+                  gpTaluk: v ?? undefined,
+                  gpGram: undefined,
+                  gpVillage: undefined,
+                }))
+              }
+              loading={loadingGpTaluks}
+              disabled={!answers.gpDistrict}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField {...params} label="Taluk" sx={fieldSx} />
+              )}
+            />
+            <Autocomplete
+              options={gpGrams}
+              value={answers.gpGram ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({
+                  ...p,
+                  gpGram: v ?? undefined,
+                  gpVillage: undefined,
+                }))
+              }
+              loading={loadingGpGrams}
+              disabled={!answers.gpTaluk}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField {...params} label="Gram Panchayat" sx={fieldSx} />
+              )}
+            />
+            <Autocomplete
+              options={gpVillages}
+              getOptionLabel={(o) => o.villageName}
+              isOptionEqualToValue={(a, b) => a.id === b.id}
+              value={answers.gpVillage ?? null}
+              onChange={(_, v) =>
+                setAnswers((p) => ({ ...p, gpVillage: v ?? undefined }))
+              }
+              loading={loadingGpVillages}
+              disabled={!answers.gpGram}
+              ListboxProps={{ sx: listboxSx }}
+              renderInput={(params) => (
+                <TextField {...params} label="Village" sx={fieldSx} />
+              )}
+            />
+          </Stack>
         );
     }
   };
 
-  const stepLoading =
-    (currentStep === "electionType" && loadingElections) ||
-    (currentStep === "constituency" && loadingConstituencies) ||
-    (currentStep === "municipality" && loadingMunicipalities) ||
-    (currentStep === "cityWard" && loadingCityWards) ||
-    (currentStep.startsWith("gp") && loadingGp);
-
-  const meta = STEP_META[currentStep];
+  const anyLoading =
+    loadingElections ||
+    (currentStep.type === "lok_sabha" && loadingLokSabha) ||
+    (currentStep.type === "state_assembly" && loadingStateAssembly) ||
+    (currentStep.type === "municipal_corporation" &&
+      (loadingMunicipalities || loadingCityWards)) ||
+    (currentStep.type === "gram_panchayat" &&
+      (loadingGpStates ||
+        loadingGpDistricts ||
+        loadingGpTaluks ||
+        loadingGpGrams ||
+        loadingGpVillages));
 
   return (
     <Box
@@ -751,7 +656,7 @@ const UserConstituencyOnboardingPage = () => {
           p: { xs: 3, sm: 5 },
         }}
       >
-        {/* Progress header */}
+        {/* Step header */}
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -767,7 +672,7 @@ const UserConstituencyOnboardingPage = () => {
               textTransform: "uppercase",
             }}
           >
-            Step {stepIdx + 1} of {totalSteps}
+            Step {stepIdx + 1} of {TOTAL_STEPS}
           </Typography>
           <Typography
             sx={{
@@ -798,16 +703,20 @@ const UserConstituencyOnboardingPage = () => {
           }}
         />
 
-        {/* Question + field */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentStep}
+            key={currentStep.type}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
           >
-            <Stack direction="row" alignItems="center" spacing={1.4} sx={{ mb: 1 }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1.4}
+              sx={{ mb: 1 }}
+            >
               <Box
                 sx={{
                   width: 44,
@@ -822,7 +731,7 @@ const UserConstituencyOnboardingPage = () => {
                   border: "1px solid rgba(245,168,0,0.35)",
                 }}
               >
-                {meta.icon}
+                {currentStep.icon}
               </Box>
               <Typography
                 sx={{
@@ -832,7 +741,7 @@ const UserConstituencyOnboardingPage = () => {
                   letterSpacing: "-0.01em",
                 }}
               >
-                {meta.title}
+                {currentStep.title}
               </Typography>
             </Stack>
 
@@ -846,13 +755,18 @@ const UserConstituencyOnboardingPage = () => {
                 lineHeight: 1.55,
               }}
             >
-              {meta.question}
+              {currentStep.question}
             </Typography>
 
-            <Box sx={{ mb: 1.5 }}>{renderField()}</Box>
+            <Box sx={{ mb: 1.5 }}>{renderStepFields()}</Box>
 
-            {stepLoading && (
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+            {anyLoading && (
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1}
+                sx={{ mb: 1 }}
+              >
                 <CircularProgress size={14} sx={{ color: BRAND.yellow }} />
                 <Typography
                   sx={{
@@ -865,6 +779,23 @@ const UserConstituencyOnboardingPage = () => {
                   Loading options…
                 </Typography>
               </Stack>
+            )}
+
+            {submitError && (
+              <Typography
+                sx={{
+                  mt: 2,
+                  fontSize: "0.85rem",
+                  color: "#f87171",
+                  background: "rgba(200,24,10,0.10)",
+                  border: "1px solid rgba(200,24,10,0.28)",
+                  borderRadius: 1.5,
+                  px: 1.5,
+                  py: 1,
+                }}
+              >
+                {submitError}
+              </Typography>
             )}
           </motion.div>
         </AnimatePresence>
@@ -901,6 +832,7 @@ const UserConstituencyOnboardingPage = () => {
           <Button
             variant="outlined"
             onClick={handleSkip}
+            disabled={submitting}
             startIcon={<SkipNextIcon />}
             sx={{
               py: 1.25,
@@ -930,8 +862,16 @@ const UserConstituencyOnboardingPage = () => {
           <Button
             variant="contained"
             onClick={handleNext}
-            disabled={!stepHasValue(currentStep)}
-            endIcon={isLast ? <CheckCircleIcon /> : <ArrowForwardIcon />}
+            disabled={!stepHasAnswer() || submitting}
+            endIcon={
+              submitting ? (
+                <CircularProgress size={16} sx={{ color: "#fff" }} />
+              ) : isLast ? (
+                <CheckCircleIcon />
+              ) : (
+                <ArrowForwardIcon />
+              )
+            }
             sx={{
               py: 1.25,
               px: 4,
