@@ -166,6 +166,23 @@ const CivicIssuesPage: React.FC = () => {
   const textMid = isDark ? 'rgba(255,255,255,0.64)' : 'rgba(17,24,39,0.65)';
   const textDim = isDark ? 'rgba(255,255,255,0.42)' : 'rgba(17,24,39,0.46)';
 
+  // If the user arrived via the "Public Issue" button on the aspirants list,
+  // location.state carries filterElectionId. Map that election type back to
+  // the matching tab so the right one is highlighted and the right value
+  // cards render — without the user having to re-click.
+  useEffect(() => {
+    if (!filterElectionId || !elections.length) return;
+    const election = elections.find((e) => e.id === filterElectionId);
+    if (!election) return;
+    if (election.type === 'lok_sabha') setActiveTab('mp');
+    else if (election.type === 'state_assembly') setActiveTab('mla');
+    else if (
+      election.type === 'municipal_corporation' ||
+      election.type === 'gram_panchayat'
+    ) setActiveTab('ward_panchayat');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterElectionId, elections]);
+
   // Map active tab → election (id + type). Re-fires whenever the tab or the
   // user's saved IDs change so the right election context drives fetchData.
   useEffect(() => {
