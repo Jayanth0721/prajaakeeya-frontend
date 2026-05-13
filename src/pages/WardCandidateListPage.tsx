@@ -1048,11 +1048,8 @@ const WardCandidateListPage = () => {
 
   // In auto mode, once the constituency list loads for the chosen election type,
   // match the user's stored ID so the context header can show the name.
-  // Only applies to election types whose constituencies come straight from
-  // fetchConstituencies(type) (lok_sabha, state_assembly, …). Municipal
-  // corporation & gram panchayat use scoped/cascading endpoints, so the
-  // `constituencies` array isn't populated for them and we skip — the name
-  // requires a backend lookup-by-id that doesn't currently exist.
+  // Lok Sabha / State Assembly already fill `constituencies` via the existing
+  // effect, so we just look up the id there.
   useEffect(() => {
     if (!autoFilterMode || !autoUserConstituencyId) return;
     if (autoElectionType === 'municipal_corporation' || autoElectionType === 'gram_panchayat') return;
@@ -1061,6 +1058,55 @@ const WardCandidateListPage = () => {
     const match = constituencies.find((c) => c.id === autoUserConstituencyId);
     if (match) setSelectedConstituency(match);
   }, [autoFilterMode, autoUserConstituencyId, autoElectionType, constituencies, selectedConstituency]);
+
+  // Municipal corporation & gram panchayat auto-mode name resolution.
+  // The /elections/<type>/constituencies endpoint returns every ward/village
+  // with its parent metadata, so a single call resolves the user's saved id
+  // to the full Constituency object — letting the context strip display the
+  // proper name (e.g. "C-1 - Ramaswamy Palya"). For GP we also synthesize a
+  // GPVillage so the existing `selectedGpVillage?.villageName` render path
+  // picks it up.
+  const scopedAutoResolveRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!autoFilterMode || !autoUserConstituencyId) return;
+    if (
+      autoElectionType !== 'municipal_corporation' &&
+      autoElectionType !== 'gram_panchayat'
+    ) return;
+    const key = `${autoElectionType}:${autoUserConstituencyId}`;
+    if (scopedAutoResolveRef.current === key) return;
+    if (autoElectionType === 'municipal_corporation' && selectedConstituency?.id === autoUserConstituencyId) return;
+    if (autoElectionType === 'gram_panchayat' && selectedGpVillage?.id === String(autoUserConstituencyId)) return;
+
+    scopedAutoResolveRef.current = key;
+    let cancelled = false;
+    fetchConstituencies(autoElectionType)
+      .then((resp) => {
+        if (cancelled) return;
+        const list = resp.data?.constituencies ?? [];
+        const match = list.find((c) => c.id === autoUserConstituencyId);
+        if (!match) return;
+        if (autoElectionType === 'municipal_corporation') {
+          setSelectedConstituency(match);
+        } else {
+          // Synthesize a GPVillage shape from the matched constituency.
+          setSelectedGpVillage({
+            id: String(match.id),
+            villageName: match.name,
+            villageCode: '',
+            population: '',
+          });
+        }
+      })
+      .catch(() => {
+        // Reset so the user can retry by navigating again.
+        scopedAutoResolveRef.current = null;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [autoFilterMode, autoElectionType, autoUserConstituencyId, selectedConstituency, selectedGpVillage]);
 
   // Fetch aspirants only when constituency changes (election change resets constituency to null first)
   useEffect(() => {

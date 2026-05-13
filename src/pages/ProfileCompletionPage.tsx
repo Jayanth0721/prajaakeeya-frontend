@@ -170,6 +170,10 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     const [selectedGpGram, setSelectedGpGram] = useState<string | null>(null);
     const [selectedGpVillage, setSelectedGpVillage] = useState<GPVillage | null>(null);
 
+    // Local body choice — a person lives in either a municipality (urban) OR
+    // a gram panchayat (rural), never both, so we only let them edit one side.
+    const [localBody, setLocalBody] = useState<'municipality' | 'gram_panchayat' | null>(null);
+
     // Raw IDs from /auth/me — preserved if the user doesn't touch the cascade
     // so saving doesn't accidentally clear an existing value.
     const initialIdsRef = useRef<{
@@ -265,6 +269,13 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                         municipal: me.municipalCorporationConstituencyId ?? null,
                         gramPanchayat: me.gramPanchayatConstituencyId ?? null,
                     };
+                    // Pre-select the local body type from whichever ID is already
+                    // saved (a user can only have one — municipality OR GP).
+                    if (me.municipalCorporationConstituencyId != null) {
+                        setLocalBody('municipality');
+                    } else if (me.gramPanchayatConstituencyId != null) {
+                        setLocalBody('gram_panchayat');
+                    }
                 }
 
                 // Refresh the auth store in parallel
@@ -385,10 +396,13 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         };
     }, [selectedMunicipality]);
 
-    // Pre-fill the Municipal Corporation cascade from the saved leaf ID by
-    // brute-forcing across municipalities (no `/constituencies/{id}` endpoint
-    // exists yet). Runs once after municipalities load. If the backend later
-    // returns the full constituency object on `/auth/me`, this can be removed.
+    // Pre-fill the Municipal Corporation cascade from the saved leaf ID.
+    // `GET /elections/municipal_corporation/constituencies` returns every ward
+    // with its parent `municipality` name, so we can resolve in one request:
+    //   1. Find ward by id → get its municipality name
+    //   2. Match that name against the loaded municipalities list
+    //   3. Pre-select municipality + ward and seed the wards dropdown so the
+    //      existing scoped-fetch effect doesn't have to re-fetch first.
     const municipalResolvedRef = useRef(false);
     useEffect(() => {
         if (municipalResolvedRef.current) return;
@@ -400,30 +414,30 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         municipalResolvedRef.current = true;
         let cancelled = false;
         setLoadingCityWards(true);
-        Promise.all(
-            municipalities.map((m) =>
-                fetchConstituenciesByScope(m.name)
-                    .then((resp) => ({
-                        m,
-                        wards: Array.isArray(resp.data)
-                            ? (resp.data as Constituency[])
-                            : [],
-                    }))
-                    .catch(() => ({ m, wards: [] as Constituency[] })),
-            ),
-        )
-            .then((results) => {
+        fetchConstituencies('municipal_corporation')
+            .then((resp) => {
                 if (cancelled) return;
-                const match = results.find(({ wards }) =>
-                    wards.some((w) => w.id === savedId),
+                const wards = (resp.data?.constituencies ?? []) as Constituency[];
+                const match = wards.find((w) => w.id === savedId);
+                if (!match) return;
+                const munName = (match as any).municipality as string | undefined;
+                if (!munName) return;
+                const norm = (s: string) =>
+                    s.replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().toLowerCase();
+                const munObj = municipalities.find((m) => norm(m.name) === norm(munName));
+                if (!munObj) return;
+                setSelectedMunicipality(munObj);
+                // Seed the wards dropdown with this municipality's wards so the
+                // selected ward shows immediately, without waiting for the
+                // scoped fetch effect to re-run.
+                const munWards = wards.filter(
+                    (w) => norm(((w as any).municipality ?? '')) === norm(munName),
                 );
-                if (match) {
-                    setSelectedMunicipality(match.m);
-                    setCityWards(match.wards);
-                    setSelectedCityWard(
-                        match.wards.find((w) => w.id === savedId) ?? null,
-                    );
-                }
+                setCityWards(munWards);
+                setSelectedCityWard(match);
+            })
+            .catch(() => {
+                // ignore — user can still re-pick manually
             })
             .finally(() => {
                 if (!cancelled) setLoadingCityWards(false);
@@ -523,19 +537,39 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         }
     };
 
-    // Build the constituency payload. For Lok Sabha + State Assembly we send
-    // the picked value (or null if cleared). For Municipal Corporation and
-    // Gram Panchayat the user re-picks through cascades — if they haven't
-    // touched the cascade, we preserve whatever was saved on /auth/me.
-    const buildConstituencyPayload = () => ({
-        lokSabhaConstituencyId: lokSabhaConstituency?.id ?? null,
-        stateAssemblyConstituencyId: stateAssemblyConstituency?.id ?? null,
-        municipalCorporationConstituencyId:
-            selectedCityWard?.id ?? initialIdsRef.current.municipal ?? null,
-        gramPanchayatConstituencyId: selectedGpVillage?.id
-            ? Number(selectedGpVillage.id)
-            : (initialIdsRef.current.gramPanchayat ?? null),
-    });
+    // Build the constituency payload. A user lives in either a Municipality
+    // OR a Gram Panchayat — not both. The local-body picker decides which
+    // side gets updated; the other is explicitly nulled so stale data doesn't
+    // linger.
+    const buildConstituencyPayload = () => {
+        const base = {
+            lokSabhaConstituencyId: lokSabhaConstituency?.id ?? null,
+            stateAssemblyConstituencyId: stateAssemblyConstituency?.id ?? null,
+        };
+        if (localBody === 'municipality') {
+            return {
+                ...base,
+                municipalCorporationConstituencyId:
+                    selectedCityWard?.id ?? initialIdsRef.current.municipal ?? null,
+                gramPanchayatConstituencyId: null,
+            };
+        }
+        if (localBody === 'gram_panchayat') {
+            return {
+                ...base,
+                municipalCorporationConstituencyId: null,
+                gramPanchayatConstituencyId: selectedGpVillage?.id
+                    ? Number(selectedGpVillage.id)
+                    : (initialIdsRef.current.gramPanchayat ?? null),
+            };
+        }
+        // No local body picked — preserve whatever was already saved.
+        return {
+            ...base,
+            municipalCorporationConstituencyId: initialIdsRef.current.municipal ?? null,
+            gramPanchayatConstituencyId: initialIdsRef.current.gramPanchayat ?? null,
+        };
+    };
 
     // Form submission
     const onSubmit = async (data: ProfileForm) => {
@@ -1090,7 +1124,63 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                         )}
                                     />
                                 </Grid>
+                                {/* Local Body picker — a person lives in either
+                                    a Municipality (urban) OR a Gram Panchayat
+                                    (rural), so only one of the two cascades is
+                                    shown at a time. */}
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 0.5,
+                                            mb: 1,
+                                            fontSize: '0.72rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.06em',
+                                            color: isDark
+                                                ? 'rgba(255,255,255,0.55)'
+                                                : 'rgba(17,24,39,0.55)',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('pages.constituencyOnboarding.localBodyTitle') || 'Local Body'}
+                                    </Typography>
+                                    <TextField
+                                        select
+                                        size="small"
+                                        fullWidth
+                                        value={localBody ?? ''}
+                                        onChange={(e) => {
+                                            const v = e.target.value as 'municipality' | 'gram_panchayat' | '';
+                                            const next = v === '' ? null : v;
+                                            setLocalBody(next);
+                                            // Clear the *other* side's selection so it can't accidentally save.
+                                            if (next === 'municipality') {
+                                                setSelectedGpState(null);
+                                                setSelectedGpDistrict(null);
+                                                setSelectedGpTaluk(null);
+                                                setSelectedGpGram(null);
+                                                setSelectedGpVillage(null);
+                                            } else if (next === 'gram_panchayat') {
+                                                setSelectedMunicipality(null);
+                                                setSelectedCityWard(null);
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem value="municipality">
+                                            {t('pages.constituencyOnboarding.localBodyMunicipality') || 'Municipality'}
+                                            {' — '}
+                                            {t('pages.constituencyOnboarding.localBodyMunicipalityDesc') || 'I live in a city or town'}
+                                        </MenuItem>
+                                        <MenuItem value="gram_panchayat">
+                                            {t('pages.constituencyOnboarding.localBodyGramPanchayat') || 'Gram Panchayat'}
+                                            {' — '}
+                                            {t('pages.constituencyOnboarding.localBodyGramPanchayatDesc') || 'I live in a village'}
+                                        </MenuItem>
+                                    </TextField>
+                                </Grid>
+
                                 {/* Municipal Corporation cascade: Municipality → Ward */}
+                                {localBody === 'municipality' && (<>
                                 <Grid item xs={12}>
                                     <Typography
                                         sx={{
@@ -1163,8 +1253,10 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                         )}
                                     />
                                 </Grid>
+                                </>)}
 
                                 {/* Gram Panchayat cascade: State → District → Taluk → GP → Village */}
+                                {localBody === 'gram_panchayat' && (<>
                                 <Grid item xs={12}>
                                     <Typography
                                         sx={{
@@ -1299,6 +1391,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                         )}
                                     />
                                 </Grid>
+                                </>)}
                             </Grid>
 
                             {/* Submit Button (placed in Grid so widths align with inputs) */}
