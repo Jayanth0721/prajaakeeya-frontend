@@ -320,9 +320,8 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Fetch the flat lists for Lok Sabha + State Assembly and pre-select from
-    // the IDs captured in /auth/me. Municipal Corporation & Gram Panchayat use
-    // cascading dropdowns below — those load on demand.
+    // Fetch the flat lists for Lok Sabha + State Assembly once on mount.
+    // Municipal Corporation & Gram Panchayat use cascading dropdowns below.
     useEffect(() => {
         let cancelled = false;
         setLoadingConstituencies(true);
@@ -332,17 +331,8 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         ])
             .then(([ls, sa]) => {
                 if (cancelled) return;
-                const lsList = ls?.data?.constituencies ?? [];
-                const saList = sa?.data?.constituencies ?? [];
-                setLokSabhaOptions(lsList);
-                setStateAssemblyOptions(saList);
-                const ids = initialIdsRef.current;
-                if (ids.lokSabha != null) {
-                    setLokSabhaConstituency(lsList.find((c: Constituency) => c.id === ids.lokSabha) ?? null);
-                }
-                if (ids.stateAssembly != null) {
-                    setStateAssemblyConstituency(saList.find((c: Constituency) => c.id === ids.stateAssembly) ?? null);
-                }
+                setLokSabhaOptions(ls?.data?.constituencies ?? []);
+                setStateAssemblyOptions(sa?.data?.constituencies ?? []);
             })
             .finally(() => {
                 if (!cancelled) setLoadingConstituencies(false);
@@ -350,7 +340,28 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         return () => {
             cancelled = true;
         };
-    }, [user?.id]);
+    }, []);
+
+    // Pre-select Lok Sabha / State Assembly reactively. Reading from the auth
+    // store user avoids the race where the options fetch finished before
+    // /auth/me populated initialIdsRef.current — symptom: dropdowns showed
+    // their label but no value even though /auth/me had the ID.
+    const lokSabhaIdFromUser = (user as any)?.lokSabhaConstituencyId as number | null | undefined;
+    const stateAssemblyIdFromUser = (user as any)?.stateAssemblyConstituencyId as number | null | undefined;
+    useEffect(() => {
+        if (lokSabhaConstituency?.id === lokSabhaIdFromUser) return;
+        if (lokSabhaIdFromUser == null) return;
+        if (lokSabhaOptions.length === 0) return;
+        const m = lokSabhaOptions.find((c) => c.id === lokSabhaIdFromUser);
+        if (m) setLokSabhaConstituency(m);
+    }, [lokSabhaOptions, lokSabhaIdFromUser, lokSabhaConstituency]);
+    useEffect(() => {
+        if (stateAssemblyConstituency?.id === stateAssemblyIdFromUser) return;
+        if (stateAssemblyIdFromUser == null) return;
+        if (stateAssemblyOptions.length === 0) return;
+        const m = stateAssemblyOptions.find((c) => c.id === stateAssemblyIdFromUser);
+        if (m) setStateAssemblyConstituency(m);
+    }, [stateAssemblyOptions, stateAssemblyIdFromUser, stateAssemblyConstituency]);
 
     // Municipality list — loaded on mount so the dropdown is ready to use.
     useEffect(() => {
