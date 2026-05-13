@@ -492,9 +492,15 @@ const UserConstituencyOnboardingPage = () => {
           transition: "all 0.18s ease",
           "&:hover": {
             borderColor: BRAND.yellow,
-            background: isDark
-              ? "rgba(245,168,0,0.06)"
-              : "rgba(245,168,0,0.04)",
+            background:
+              "linear-gradient(135deg, rgba(245,168,0,0.10) 0%, rgba(224,32,16,0.06) 100%)",
+            "& .lb-arrow": {
+              background:
+                "linear-gradient(135deg, #F5A800 0%, #E02010 100%)",
+              color: "#fff",
+              boxShadow: "0 6px 18px rgba(224,32,16,0.35)",
+              transform: "scale(1.06)",
+            },
           },
         }}
       >
@@ -550,17 +556,28 @@ const UserConstituencyOnboardingPage = () => {
           </Typography>
         </Box>
         <Box
+          className="lb-arrow"
           sx={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: isDark
-              ? "rgba(255,255,255,0.06)"
-              : "rgba(17,24,39,0.06)",
-            color: isDark ? "rgba(255,255,255,0.65)" : "rgba(17,24,39,0.6)",
+            background: isSelected
+              ? "linear-gradient(135deg, #F5A800 0%, #E02010 100%)"
+              : isDark
+                ? "rgba(255,255,255,0.06)"
+                : "rgba(17,24,39,0.06)",
+            color: isSelected
+              ? "#fff"
+              : isDark
+                ? "rgba(255,255,255,0.65)"
+                : "rgba(17,24,39,0.6)",
+            boxShadow: isSelected
+              ? "0 6px 18px rgba(224,32,16,0.35)"
+              : "none",
+            transition: "all 0.18s ease",
             flexShrink: 0,
           }}
         >
