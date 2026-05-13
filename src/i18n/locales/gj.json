@@ -1683,7 +1683,24 @@
       "step3Placeholder": "તમારો વોર્ડ / મ્યુનિસિપલ કોર્પોરેશન પસંદ કરો",
       "step4Title": "ગ્રામ પંચાયત",
       "step4Question": "તમારું ગામ કઈ ગ્રામ પંચાયત હેઠળ છે?",
-      "step4Placeholder": "તમારી ગ્રામ પંચાયત પસંદ કરો"
+      "step4Placeholder": "તમારી ગ્રામ પંચાયત પસંદ કરો",
+      "back": "પાછળ",
+      "loadingOptions": "વિકલ્પો લોડ થઈ રહ્યા છે…",
+      "localBodyTitle": "સ્થાનિક સ્વરાજ્ય સંસ્થા",
+      "localBodyQuestion": "શું તમે શહેરી અથવા ગ્રામીણ વિસ્તારમાં રહો છો? જે લાગુ પડે તે પસંદ કરો.",
+      "localBodyMunicipality": "મ્યુનિસિપાલિટી",
+      "localBodyMunicipalityDesc": "હું શહેર અથવા નગરમાં રહું છું",
+      "localBodyUrban": "શહેરી",
+      "localBodyGramPanchayat": "ગ્રામ પંચાયત",
+      "localBodyGramPanchayatDesc": "હું ગામમાં રહું છું",
+      "localBodyRural": "ગ્રામીણ",
+      "corporationLabel": "કોર્પોરેશન / મ્યુનિસિપાલિટી",
+      "wardLabel": "કોર્પોરેશન વોર્ડ",
+      "stateLabel": "રાજ્ય",
+      "districtLabel": "જિલ્લો",
+      "talukLabel": "તાલુકો",
+      "gpLabel": "ગ્રામ પંચાયત",
+      "villageLabel": "ગામ"
     }
   },
   "civicIssues": {

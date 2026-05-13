@@ -1683,7 +1683,24 @@
       "step3Placeholder": "थारो वार्ड / नगर निगम चुणो",
       "step4Title": "ग्राम पंचायत",
       "step4Question": "थारो गांव कुण सी ग्राम पंचायत में आवै?",
-      "step4Placeholder": "थारी ग्राम पंचायत चुणो"
+      "step4Placeholder": "थारी ग्राम पंचायत चुणो",
+      "back": "पाछो",
+      "loadingOptions": "विकल्प लोड हो रहा है…",
+      "localBodyTitle": "स्थानीय निकाय",
+      "localBodyQuestion": "थें शहरी इलाका में रौ छो या गांव में? जको लागू हुवै उणनै चुणो।",
+      "localBodyMunicipality": "नगर निगम",
+      "localBodyMunicipalityDesc": "मैं शहर या कस्बा में रौ छूँ",
+      "localBodyUrban": "शहरी",
+      "localBodyGramPanchayat": "ग्राम पंचायत",
+      "localBodyGramPanchayatDesc": "मैं गांव में रौ छूँ",
+      "localBodyRural": "ग्रामीण",
+      "corporationLabel": "नगर निगम / नगरपालिका",
+      "wardLabel": "नगर निगम वार्ड",
+      "stateLabel": "राज्य",
+      "districtLabel": "जिलो",
+      "talukLabel": "तालुक",
+      "gpLabel": "ग्राम पंचायत",
+      "villageLabel": "गांव"
     }
   },
   "civicIssues": {

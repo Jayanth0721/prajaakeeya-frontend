@@ -1683,7 +1683,24 @@
       "step3Placeholder": "మీ వార్డు / మునిసిపల్ కార్పొరేషన్ ఎంచుకోండి",
       "step4Title": "గ్రామ పంచాయతీ",
       "step4Question": "మీ గ్రామం ఏ గ్రామ పంచాయతీ కింద ఉంది?",
-      "step4Placeholder": "మీ గ్రామ పంచాయతీని ఎంచుకోండి"
+      "step4Placeholder": "మీ గ్రామ పంచాయతీని ఎంచుకోండి",
+      "back": "వెనుకకు",
+      "loadingOptions": "ఎంపికలు లోడ్ అవుతున్నాయి…",
+      "localBodyTitle": "స్థానిక సంస్థ",
+      "localBodyQuestion": "మీరు పట్టణ ప్రాంతంలో నివసిస్తున్నారా లేదా గ్రామీణ ప్రాంతంలో? వర్తించే దానిని ఎంచుకోండి.",
+      "localBodyMunicipality": "మునిసిపల్ కార్పొరేషన్",
+      "localBodyMunicipalityDesc": "నేను నగరం లేదా పట్టణంలో నివసిస్తున్నాను",
+      "localBodyUrban": "పట్టణం",
+      "localBodyGramPanchayat": "గ్రామ పంచాయతీ",
+      "localBodyGramPanchayatDesc": "నేను గ్రామంలో నివసిస్తున్నాను",
+      "localBodyRural": "గ్రామీణం",
+      "corporationLabel": "కార్పొరేషన్ / మునిసిపాలిటీ",
+      "wardLabel": "కార్పొరేషన్ వార్డు",
+      "stateLabel": "రాష్ట్రం",
+      "districtLabel": "జిల్లా",
+      "talukLabel": "తాలూకా",
+      "gpLabel": "గ్రామ పంచాయతీ",
+      "villageLabel": "గ్రామం"
     }
   },
   "civicIssues": {

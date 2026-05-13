@@ -1683,7 +1683,24 @@
       "step3Placeholder": "अपना वार्ड / नगर निगम चुनें",
       "step4Title": "ग्राम पंचायत",
       "step4Question": "आपका गाँव किस ग्राम पंचायत के अधीन है?",
-      "step4Placeholder": "अपनी ग्राम पंचायत चुनें"
+      "step4Placeholder": "अपनी ग्राम पंचायत चुनें",
+      "back": "वापस",
+      "loadingOptions": "विकल्प लोड हो रहे हैं…",
+      "localBodyTitle": "स्थानीय निकाय",
+      "localBodyQuestion": "क्या आप शहरी या ग्रामीण क्षेत्र में रहते हैं? जो लागू हो उसे चुनें।",
+      "localBodyMunicipality": "नगर निगम",
+      "localBodyMunicipalityDesc": "मैं शहर या कस्बे में रहता/रहती हूँ",
+      "localBodyUrban": "शहरी",
+      "localBodyGramPanchayat": "ग्राम पंचायत",
+      "localBodyGramPanchayatDesc": "मैं गाँव में रहता/रहती हूँ",
+      "localBodyRural": "ग्रामीण",
+      "corporationLabel": "नगर निगम / नगरपालिका",
+      "wardLabel": "नगर निगम वार्ड",
+      "stateLabel": "राज्य",
+      "districtLabel": "जिला",
+      "talukLabel": "तालुक",
+      "gpLabel": "ग्राम पंचायत",
+      "villageLabel": "गाँव"
     }
   },
   "civicIssues": {

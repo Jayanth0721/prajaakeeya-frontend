@@ -1683,7 +1683,24 @@
       "step3Placeholder": "ଆପଣଙ୍କ ୱାର୍ଡ / ମ୍ୟୁନିସିପାଲ୍ କର୍ପୋରେସନ୍ ବାଛନ୍ତୁ",
       "step4Title": "ଗ୍ରାମ ପଞ୍ଚାୟତ",
       "step4Question": "ଆପଣଙ୍କ ଗ୍ରାମ କେଉଁ ଗ୍ରାମ ପଞ୍ଚାୟତ ଅଧୀନରେ?",
-      "step4Placeholder": "ଆପଣଙ୍କ ଗ୍ରାମ ପଞ୍ଚାୟତ ବାଛନ୍ତୁ"
+      "step4Placeholder": "ଆପଣଙ୍କ ଗ୍ରାମ ପଞ୍ଚାୟତ ବାଛନ୍ତୁ",
+      "back": "ପଛକୁ",
+      "loadingOptions": "ବିକଳ୍ପ ଲୋଡ୍ ହେଉଛି…",
+      "localBodyTitle": "ସ୍ଥାନୀୟ ସଂସ୍ଥା",
+      "localBodyQuestion": "ଆପଣ କଣ ସହର କିମ୍ବା ଗ୍ରାମାଞ୍ଚଳରେ ରୁହନ୍ତି? ଯାହା ପ୍ରଯୁଜ୍ୟ ତାହା ବାଛନ୍ତୁ।",
+      "localBodyMunicipality": "ମ୍ୟୁନିସିପାଲିଟି",
+      "localBodyMunicipalityDesc": "ମୁଁ ସହର କିମ୍ବା ନଗରରେ ରୁହେ",
+      "localBodyUrban": "ସହର",
+      "localBodyGramPanchayat": "ଗ୍ରାମ ପଞ୍ଚାୟତ",
+      "localBodyGramPanchayatDesc": "ମୁଁ ଗ୍ରାମରେ ରୁହେ",
+      "localBodyRural": "ଗ୍ରାମାଞ୍ଚଳ",
+      "corporationLabel": "କର୍ପୋରେସନ୍ / ମ୍ୟୁନିସିପାଲିଟି",
+      "wardLabel": "କର୍ପୋରେସନ୍ ୱାର୍ଡ",
+      "stateLabel": "ରାଜ୍ୟ",
+      "districtLabel": "ଜିଲ୍ଲା",
+      "talukLabel": "ତାଲୁକ",
+      "gpLabel": "ଗ୍ରାମ ପଞ୍ଚାୟତ",
+      "villageLabel": "ଗ୍ରାମ"
     }
   },
   "civicIssues": {

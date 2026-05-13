@@ -1683,7 +1683,24 @@
       "step3Placeholder": "നിങ്ങളുടെ വാർഡ് / മുനിസിപ്പൽ കോർപ്പറേഷൻ തിരഞ്ഞെടുക്കുക",
       "step4Title": "ഗ്രാമപഞ്ചായത്ത്",
       "step4Question": "നിങ്ങളുടെ ഗ്രാമം ഏത് ഗ്രാമപഞ്ചായത്തിന് കീഴിലാണ്?",
-      "step4Placeholder": "നിങ്ങളുടെ ഗ്രാമപഞ്ചായത്ത് തിരഞ്ഞെടുക്കുക"
+      "step4Placeholder": "നിങ്ങളുടെ ഗ്രാമപഞ്ചായത്ത് തിരഞ്ഞെടുക്കുക",
+      "back": "തിരികെ",
+      "loadingOptions": "ഓപ്ഷനുകൾ ലോഡ് ചെയ്യുന്നു…",
+      "localBodyTitle": "തദ്ദേശ സ്വയംഭരണ സ്ഥാപനം",
+      "localBodyQuestion": "നിങ്ങൾ നഗരപ്രദേശത്താണോ ഗ്രാമപ്രദേശത്താണോ താമസിക്കുന്നത്? ബാധകമായത് തിരഞ്ഞെടുക്കുക.",
+      "localBodyMunicipality": "മുനിസിപ്പാലിറ്റി",
+      "localBodyMunicipalityDesc": "ഞാൻ നഗരത്തിലോ പട്ടണത്തിലോ താമസിക്കുന്നു",
+      "localBodyUrban": "നഗരം",
+      "localBodyGramPanchayat": "ഗ്രാമപഞ്ചായത്ത്",
+      "localBodyGramPanchayatDesc": "ഞാൻ ഗ്രാമത്തിലാണ് താമസിക്കുന്നത്",
+      "localBodyRural": "ഗ്രാമം",
+      "corporationLabel": "കോർപ്പറേഷൻ / മുനിസിപ്പാലിറ്റി",
+      "wardLabel": "കോർപ്പറേഷൻ വാർഡ്",
+      "stateLabel": "സംസ്ഥാനം",
+      "districtLabel": "ജില്ല",
+      "talukLabel": "താലൂക്ക്",
+      "gpLabel": "ഗ്രാമപഞ്ചായത്ത്",
+      "villageLabel": "ഗ്രാമം"
     }
   },
   "civicIssues": {

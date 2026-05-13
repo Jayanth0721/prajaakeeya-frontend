@@ -1683,7 +1683,24 @@
       "step3Placeholder": "आपन वार्ड / नगर निगम चुनीं",
       "step4Title": "ग्राम पंचायत",
       "step4Question": "राउर गाँव कवन ग्राम पंचायत के अधीन बा?",
-      "step4Placeholder": "आपन ग्राम पंचायत चुनीं"
+      "step4Placeholder": "आपन ग्राम पंचायत चुनीं",
+      "back": "पाछा",
+      "loadingOptions": "विकल्प लोड हो रहल बा…",
+      "localBodyTitle": "स्थानीय निकाय",
+      "localBodyQuestion": "रउआ शहरी इलाका में रहत बानी कि गांव में? जे लागू होखे ओके चुनीं।",
+      "localBodyMunicipality": "नगर निगम",
+      "localBodyMunicipalityDesc": "हम शहर भा कस्बा में रहत बानी",
+      "localBodyUrban": "शहरी",
+      "localBodyGramPanchayat": "ग्राम पंचायत",
+      "localBodyGramPanchayatDesc": "हम गांव में रहत बानी",
+      "localBodyRural": "ग्रामीण",
+      "corporationLabel": "नगर निगम / नगर पालिका",
+      "wardLabel": "नगर निगम वार्ड",
+      "stateLabel": "राज्य",
+      "districtLabel": "जिला",
+      "talukLabel": "तालुक",
+      "gpLabel": "ग्राम पंचायत",
+      "villageLabel": "गांव"
     }
   },
   "civicIssues": {

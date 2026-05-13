@@ -1683,7 +1683,24 @@
       "step3Placeholder": "আপনার ওয়ার্ড / পৌর কর্পোরেশন নির্বাচন করুন",
       "step4Title": "গ্রাম পঞ্চায়েত",
       "step4Question": "আপনার গ্রাম কোন গ্রাম পঞ্চায়েতের অধীনে?",
-      "step4Placeholder": "আপনার গ্রাম পঞ্চায়েত নির্বাচন করুন"
+      "step4Placeholder": "আপনার গ্রাম পঞ্চায়েত নির্বাচন করুন",
+      "back": "পিছনে",
+      "loadingOptions": "বিকল্প লোড হচ্ছে…",
+      "localBodyTitle": "স্থানীয় সংস্থা",
+      "localBodyQuestion": "আপনি কি শহুরে নাকি গ্রামীণ এলাকায় বাস করেন? প্রযোজ্য বিকল্পটি বেছে নিন।",
+      "localBodyMunicipality": "পৌর কর্পোরেশন",
+      "localBodyMunicipalityDesc": "আমি শহর বা নগরে থাকি",
+      "localBodyUrban": "শহুরে",
+      "localBodyGramPanchayat": "গ্রাম পঞ্চায়েত",
+      "localBodyGramPanchayatDesc": "আমি গ্রামে থাকি",
+      "localBodyRural": "গ্রামীণ",
+      "corporationLabel": "পৌর কর্পোরেশন / পৌরসভা",
+      "wardLabel": "পৌর কর্পোরেশন ওয়ার্ড",
+      "stateLabel": "রাজ্য",
+      "districtLabel": "জেলা",
+      "talukLabel": "তালুক",
+      "gpLabel": "গ্রাম পঞ্চায়েত",
+      "villageLabel": "গ্রাম"
     }
   },
   "civicIssues": {

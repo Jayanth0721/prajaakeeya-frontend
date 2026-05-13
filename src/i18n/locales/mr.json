@@ -1683,7 +1683,24 @@
       "step3Placeholder": "तुमचा प्रभाग / महानगरपालिका निवडा",
       "step4Title": "ग्रामपंचायत",
       "step4Question": "तुमचे गाव कोणत्या ग्रामपंचायतीच्या अंतर्गत आहे?",
-      "step4Placeholder": "तुमची ग्रामपंचायत निवडा"
+      "step4Placeholder": "तुमची ग्रामपंचायत निवडा",
+      "back": "मागे",
+      "loadingOptions": "पर्याय लोड होत आहेत…",
+      "localBodyTitle": "स्थानिक स्वराज्य संस्था",
+      "localBodyQuestion": "तुम्ही शहरी की ग्रामीण भागात राहता? लागू असलेला पर्याय निवडा.",
+      "localBodyMunicipality": "महानगरपालिका",
+      "localBodyMunicipalityDesc": "मी शहरात किंवा गावात राहतो/राहते",
+      "localBodyUrban": "शहरी",
+      "localBodyGramPanchayat": "ग्रामपंचायत",
+      "localBodyGramPanchayatDesc": "मी गावात राहतो/राहते",
+      "localBodyRural": "ग्रामीण",
+      "corporationLabel": "महानगरपालिका / नगरपालिका",
+      "wardLabel": "महानगरपालिका प्रभाग",
+      "stateLabel": "राज्य",
+      "districtLabel": "जिल्हा",
+      "talukLabel": "तालुका",
+      "gpLabel": "ग्रामपंचायत",
+      "villageLabel": "गाव"
     }
   },
   "civicIssues": {

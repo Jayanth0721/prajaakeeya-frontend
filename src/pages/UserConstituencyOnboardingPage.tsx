@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,7 +17,11 @@ import {
   ArrowForward as ArrowForwardIcon,
   SkipNext as SkipNextIcon,
   CheckCircle as CheckCircleIcon,
+  LocationCity as LocationCityIcon,
+  Spa as SpaIcon,
+  AccountBalance as AccountBalanceIcon,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import {
   fetchElections,
   fetchConstituencies,
@@ -34,10 +38,18 @@ import {
 } from "../services/electionService";
 import { updateUserConstituencies } from "../services/authService";
 import useAuthStore from "../store/useAuthStore";
+import LanguageSelector from "../components/LanguageSelector";
 import { BRAND } from "../theme";
 import prajakeeyaLogo from "../assets/images/prajakeeya.png";
 
 type Municipality = { id: number; name: string; state: string };
+type LocalBody = "municipality" | "gram_panchayat" | null;
+type StepKey =
+  | "lok_sabha"
+  | "state_assembly"
+  | "local_body"
+  | "municipal_corporation"
+  | "gram_panchayat";
 
 interface OnboardingAnswers {
   lokSabha?: Constituency;
@@ -53,37 +65,8 @@ interface OnboardingAnswers {
 
 const STORAGE_KEY = "__USER_LOCATION_ANSWERS__";
 
-const STEPS = [
-  {
-    type: "lok_sabha",
-    icon: "📍",
-    title: "Lok Sabha Constituency",
-    question: "Which Lok Sabha constituency does your area belong to?",
-  },
-  {
-    type: "state_assembly",
-    icon: "🏛",
-    title: "State Assembly Constituency",
-    question: "Which Assembly constituency is your area under?",
-  },
-  {
-    type: "municipal_corporation",
-    icon: "🏙",
-    title: "Municipal Corporation / Ward",
-    question: "Which Municipal Corporation and ward do you belong to?",
-  },
-  {
-    type: "gram_panchayat",
-    icon: "🌿",
-    title: "Gram Panchayat",
-    question:
-      "Which State, District, Taluk, Gram Panchayat and village do you live in?",
-  },
-] as const;
-
-const TOTAL_STEPS = STEPS.length;
-
 const UserConstituencyOnboardingPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -92,10 +75,11 @@ const UserConstituencyOnboardingPage = () => {
 
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState<OnboardingAnswers>({});
+  const [localBody, setLocalBody] = useState<LocalBody>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Data caches
+  // ─── Source data ─────────────────────────────────────────
   const [, setElections] = useState<Election[]>([]);
   const [loadingElections, setLoadingElections] = useState(false);
 
@@ -122,11 +106,20 @@ const UserConstituencyOnboardingPage = () => {
   const [loadingGpGrams, setLoadingGpGrams] = useState(false);
   const [loadingGpVillages, setLoadingGpVillages] = useState(false);
 
-  const currentStep = STEPS[stepIdx];
+  // ─── Dynamic step list ────────────────────────────────────
+  // Always 4 steps total: Lok Sabha → State Assembly → Local Body → (Municipal | Gram Panchayat)
+  const steps: StepKey[] = useMemo(() => {
+    const fourth: StepKey =
+      localBody === "gram_panchayat" ? "gram_panchayat" : "municipal_corporation";
+    return ["lok_sabha", "state_assembly", "local_body", fourth];
+  }, [localBody]);
+
+  const TOTAL_STEPS = steps.length;
+  const currentStep = steps[stepIdx];
   const isLast = stepIdx === TOTAL_STEPS - 1;
   const progress = ((stepIdx + 1) / TOTAL_STEPS) * 100;
 
-  // Load elections once (only used to know they exist; not displayed)
+  // ─── Load elections once ─────────────────────────────────
   useEffect(() => {
     setLoadingElections(true);
     fetchElections()
@@ -135,17 +128,16 @@ const UserConstituencyOnboardingPage = () => {
       .finally(() => setLoadingElections(false));
   }, []);
 
-  // Lazy-load each step's primary options when the step is entered
+  // ─── Lazy-fetch options when entering each step ──────────
   useEffect(() => {
-    const type = currentStep.type;
-    if (type === "lok_sabha" && lokSabhaOptions.length === 0) {
+    if (currentStep === "lok_sabha" && lokSabhaOptions.length === 0) {
       setLoadingLokSabha(true);
       fetchConstituencies("lok_sabha")
         .then((resp) => setLokSabhaOptions(resp.data?.constituencies ?? []))
         .catch(() => setLokSabhaOptions([]))
         .finally(() => setLoadingLokSabha(false));
     }
-    if (type === "state_assembly" && stateAssemblyOptions.length === 0) {
+    if (currentStep === "state_assembly" && stateAssemblyOptions.length === 0) {
       setLoadingStateAssembly(true);
       fetchConstituencies("state_assembly")
         .then((resp) =>
@@ -154,7 +146,7 @@ const UserConstituencyOnboardingPage = () => {
         .catch(() => setStateAssemblyOptions([]))
         .finally(() => setLoadingStateAssembly(false));
     }
-    if (type === "municipal_corporation" && municipalities.length === 0) {
+    if (currentStep === "municipal_corporation" && municipalities.length === 0) {
       setLoadingMunicipalities(true);
       fetchMunicipalities()
         .then((resp) =>
@@ -163,14 +155,15 @@ const UserConstituencyOnboardingPage = () => {
         .catch(() => setMunicipalities([]))
         .finally(() => setLoadingMunicipalities(false));
     }
-    if (type === "gram_panchayat" && gpStates.length === 0) {
+    if (currentStep === "gram_panchayat" && gpStates.length === 0) {
       setLoadingGpStates(true);
       fetchGPStates()
         .then((resp) => setGpStates(Array.isArray(resp.data) ? resp.data : []))
         .catch(() => setGpStates([]))
         .finally(() => setLoadingGpStates(false));
     }
-  }, [currentStep.type]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
 
   // Municipality → city wards
   useEffect(() => {
@@ -246,13 +239,51 @@ const UserConstituencyOnboardingPage = () => {
       .finally(() => setLoadingGpVillages(false));
   }, [answers.gpState, answers.gpDistrict, answers.gpTaluk, answers.gpGram]);
 
-  // ── per-step "has any value" check (Next enabled) ──
+  // ─── Step meta (icon, title, question) ───────────────────
+  const stepMeta = (step: StepKey) => {
+    switch (step) {
+      case "lok_sabha":
+        return {
+          icon: "📍",
+          title: t("pages.constituencyOnboarding.step1Title"),
+          question: t("pages.constituencyOnboarding.step1Question"),
+        };
+      case "state_assembly":
+        return {
+          icon: "🏛",
+          title: t("pages.constituencyOnboarding.step2Title"),
+          question: t("pages.constituencyOnboarding.step2Question"),
+        };
+      case "local_body":
+        return {
+          icon: "🏛️",
+          title: t("pages.constituencyOnboarding.localBodyTitle"),
+          question: t("pages.constituencyOnboarding.localBodyQuestion"),
+        };
+      case "municipal_corporation":
+        return {
+          icon: "🏙",
+          title: t("pages.constituencyOnboarding.step3Title"),
+          question: t("pages.constituencyOnboarding.step3Question"),
+        };
+      case "gram_panchayat":
+        return {
+          icon: "🌿",
+          title: t("pages.constituencyOnboarding.step4Title"),
+          question: t("pages.constituencyOnboarding.step4Question"),
+        };
+    }
+  };
+
+  // ─── "has any value" per step ────────────────────────────
   const stepHasAnswer = (): boolean => {
-    switch (currentStep.type) {
+    switch (currentStep) {
       case "lok_sabha":
         return !!answers.lokSabha;
       case "state_assembly":
         return !!answers.stateAssembly;
+      case "local_body":
+        return !!localBody;
       case "municipal_corporation":
         return !!answers.municipality || !!answers.cityWard;
       case "gram_panchayat":
@@ -266,12 +297,12 @@ const UserConstituencyOnboardingPage = () => {
     }
   };
 
-  // ── controls ──
+  // ─── Finish / submit ─────────────────────────────────────
   const finish = async (final: OnboardingAnswers) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(final));
     } catch {
-      // ignore storage failures
+      // ignore
     }
 
     const payload = {
@@ -305,7 +336,7 @@ const UserConstituencyOnboardingPage = () => {
         err?.response?.data?.message ||
         err?.response?.data?.error ||
         err?.message ||
-        "Failed to save. Please try again.";
+        t("common.error", { defaultValue: "Failed to save. Please try again." });
       setSubmitError(msg);
     } finally {
       setSubmitting(false);
@@ -322,13 +353,31 @@ const UserConstituencyOnboardingPage = () => {
   const handleSkip = () => {
     if (submitting) return;
     const next: OnboardingAnswers = { ...answers };
-    switch (currentStep.type) {
+    switch (currentStep) {
       case "lok_sabha":
         delete next.lokSabha;
         break;
       case "state_assembly":
         delete next.stateAssembly;
         break;
+      case "local_body":
+        // Skipping the local body picker also skips step 4
+        setLocalBody(null);
+        delete next.municipality;
+        delete next.cityWard;
+        delete next.gpState;
+        delete next.gpDistrict;
+        delete next.gpTaluk;
+        delete next.gpGram;
+        delete next.gpVillage;
+        setAnswers(next);
+        if (isLast) {
+          void finish(next);
+        } else {
+          // Jump straight to finish — there's no meaningful step 4 without a local body
+          void finish(next);
+        }
+        return;
       case "municipal_corporation":
         delete next.municipality;
         delete next.cityWard;
@@ -347,11 +396,30 @@ const UserConstituencyOnboardingPage = () => {
   };
 
   const handleBack = () => {
-    if (stepIdx === 0) return;
+    if (stepIdx === 0 || submitting) return;
     setStepIdx(stepIdx - 1);
   };
 
-  // ── styling ──
+  const pickLocalBody = (choice: NonNullable<LocalBody>) => {
+    if (submitting) return;
+    if (localBody !== choice) {
+      // changing choice resets the step-4 selections so old data doesn't leak
+      setAnswers((p) => ({
+        ...p,
+        municipality: undefined,
+        cityWard: undefined,
+        gpState: undefined,
+        gpDistrict: undefined,
+        gpTaluk: undefined,
+        gpGram: undefined,
+        gpVillage: undefined,
+      }));
+    }
+    setLocalBody(choice);
+    setStepIdx(stepIdx + 1);
+  };
+
+  // ─── styling ──────────────────────────────────────────────
   const fieldSx = {
     "& .MuiOutlinedInput-root": {
       borderRadius: 2,
@@ -389,9 +457,122 @@ const UserConstituencyOnboardingPage = () => {
     },
   };
 
-  // ── per-step content ──
+  // ─── Local body card renderer ─────────────────────────────
+  const renderLocalBodyCard = (
+    choice: NonNullable<LocalBody>,
+    title: string,
+    badge: string,
+    desc: string,
+    IconComp: React.ComponentType<{ sx?: any }>,
+    iconBg: string,
+    iconBorder: string,
+    iconColor: string,
+    badgeBg: string,
+    badgeColor: string,
+  ) => {
+    const isSelected = localBody === choice;
+    return (
+      <Box
+        onClick={() => pickLocalBody(choice)}
+        sx={{
+          cursor: "pointer",
+          borderRadius: 2.5,
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          border: isSelected
+            ? `1.5px solid ${BRAND.yellow}`
+            : `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(17,24,39,0.12)"}`,
+          background: isSelected
+            ? "linear-gradient(135deg, rgba(245,168,0,0.10) 0%, rgba(224,32,16,0.06) 100%)"
+            : isDark
+              ? "rgba(255,255,255,0.03)"
+              : "rgba(17,24,39,0.02)",
+          transition: "all 0.18s ease",
+          "&:hover": {
+            borderColor: BRAND.yellow,
+            background: isDark
+              ? "rgba(245,168,0,0.06)"
+              : "rgba(245,168,0,0.04)",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            width: 56,
+            height: 56,
+            borderRadius: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: iconBg,
+            border: `1px solid ${iconBorder}`,
+            flexShrink: 0,
+          }}
+        >
+          <IconComp sx={{ fontSize: 30, color: iconColor }} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+            <Typography
+              sx={{
+                fontSize: { xs: "1rem", sm: "1.1rem" },
+                fontWeight: 700,
+                color: isDark ? "#fff" : "rgba(17,24,39,0.92)",
+              }}
+            >
+              {title}
+            </Typography>
+            <Box
+              component="span"
+              sx={{
+                px: 0.8,
+                py: 0.2,
+                borderRadius: 0.8,
+                fontSize: "0.65rem",
+                fontWeight: 800,
+                letterSpacing: "0.08em",
+                color: badgeColor,
+                background: badgeBg,
+              }}
+            >
+              {badge}
+            </Box>
+          </Stack>
+          <Typography
+            sx={{
+              fontSize: "0.85rem",
+              color: isDark ? "rgba(255,255,255,0.6)" : "rgba(17,24,39,0.6)",
+            }}
+          >
+            {desc}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: isDark
+              ? "rgba(255,255,255,0.06)"
+              : "rgba(17,24,39,0.06)",
+            color: isDark ? "rgba(255,255,255,0.65)" : "rgba(17,24,39,0.6)",
+            flexShrink: 0,
+          }}
+        >
+          <ArrowForwardIcon fontSize="small" />
+        </Box>
+      </Box>
+    );
+  };
+
+  // ─── per-step fields ─────────────────────────────────────
   const renderStepFields = () => {
-    switch (currentStep.type) {
+    switch (currentStep) {
       case "lok_sabha":
         return (
           <Autocomplete
@@ -409,7 +590,7 @@ const UserConstituencyOnboardingPage = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Lok Sabha Constituency"
+                label={t("pages.constituencyOnboarding.step1Placeholder")}
                 sx={fieldSx}
               />
             )}
@@ -432,11 +613,40 @@ const UserConstituencyOnboardingPage = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Assembly Constituency"
+                label={t("pages.constituencyOnboarding.step2Placeholder")}
                 sx={fieldSx}
               />
             )}
           />
+        );
+      case "local_body":
+        return (
+          <Stack spacing={2}>
+            {renderLocalBodyCard(
+              "municipality",
+              t("pages.constituencyOnboarding.localBodyMunicipality"),
+              t("pages.constituencyOnboarding.localBodyUrban"),
+              t("pages.constituencyOnboarding.localBodyMunicipalityDesc"),
+              LocationCityIcon,
+              "linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(59,130,246,0.10) 100%)",
+              "rgba(96,165,250,0.45)",
+              "#60a5fa",
+              isDark ? "rgba(96,165,250,0.18)" : "rgba(59,130,246,0.14)",
+              "#60a5fa",
+            )}
+            {renderLocalBodyCard(
+              "gram_panchayat",
+              t("pages.constituencyOnboarding.localBodyGramPanchayat"),
+              t("pages.constituencyOnboarding.localBodyRural"),
+              t("pages.constituencyOnboarding.localBodyGramPanchayatDesc"),
+              SpaIcon,
+              "linear-gradient(135deg, rgba(74,222,128,0.18) 0%, rgba(34,197,94,0.10) 100%)",
+              "rgba(74,222,128,0.45)",
+              "#4ade80",
+              isDark ? "rgba(74,222,128,0.18)" : "rgba(34,197,94,0.14)",
+              "#22c55e",
+            )}
+          </Stack>
         );
       case "municipal_corporation":
         return (
@@ -458,7 +668,7 @@ const UserConstituencyOnboardingPage = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Corporation / Municipality"
+                  label={t("pages.constituencyOnboarding.corporationLabel")}
                   sx={fieldSx}
                 />
               )}
@@ -479,7 +689,7 @@ const UserConstituencyOnboardingPage = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="City Corporation Ward"
+                  label={t("pages.constituencyOnboarding.wardLabel")}
                   sx={fieldSx}
                 />
               )}
@@ -505,7 +715,11 @@ const UserConstituencyOnboardingPage = () => {
               loading={loadingGpStates}
               ListboxProps={{ sx: listboxSx }}
               renderInput={(params) => (
-                <TextField {...params} label="State" sx={fieldSx} />
+                <TextField
+                  {...params}
+                  label={t("pages.constituencyOnboarding.stateLabel")}
+                  sx={fieldSx}
+                />
               )}
             />
             <Autocomplete
@@ -524,7 +738,11 @@ const UserConstituencyOnboardingPage = () => {
               disabled={!answers.gpState}
               ListboxProps={{ sx: listboxSx }}
               renderInput={(params) => (
-                <TextField {...params} label="District" sx={fieldSx} />
+                <TextField
+                  {...params}
+                  label={t("pages.constituencyOnboarding.districtLabel")}
+                  sx={fieldSx}
+                />
               )}
             />
             <Autocomplete
@@ -542,7 +760,11 @@ const UserConstituencyOnboardingPage = () => {
               disabled={!answers.gpDistrict}
               ListboxProps={{ sx: listboxSx }}
               renderInput={(params) => (
-                <TextField {...params} label="Taluk" sx={fieldSx} />
+                <TextField
+                  {...params}
+                  label={t("pages.constituencyOnboarding.talukLabel")}
+                  sx={fieldSx}
+                />
               )}
             />
             <Autocomplete
@@ -559,7 +781,11 @@ const UserConstituencyOnboardingPage = () => {
               disabled={!answers.gpTaluk}
               ListboxProps={{ sx: listboxSx }}
               renderInput={(params) => (
-                <TextField {...params} label="Gram Panchayat" sx={fieldSx} />
+                <TextField
+                  {...params}
+                  label={t("pages.constituencyOnboarding.gpLabel")}
+                  sx={fieldSx}
+                />
               )}
             />
             <Autocomplete
@@ -574,7 +800,11 @@ const UserConstituencyOnboardingPage = () => {
               disabled={!answers.gpGram}
               ListboxProps={{ sx: listboxSx }}
               renderInput={(params) => (
-                <TextField {...params} label="Village" sx={fieldSx} />
+                <TextField
+                  {...params}
+                  label={t("pages.constituencyOnboarding.villageLabel")}
+                  sx={fieldSx}
+                />
               )}
             />
           </Stack>
@@ -584,16 +814,18 @@ const UserConstituencyOnboardingPage = () => {
 
   const anyLoading =
     loadingElections ||
-    (currentStep.type === "lok_sabha" && loadingLokSabha) ||
-    (currentStep.type === "state_assembly" && loadingStateAssembly) ||
-    (currentStep.type === "municipal_corporation" &&
+    (currentStep === "lok_sabha" && loadingLokSabha) ||
+    (currentStep === "state_assembly" && loadingStateAssembly) ||
+    (currentStep === "municipal_corporation" &&
       (loadingMunicipalities || loadingCityWards)) ||
-    (currentStep.type === "gram_panchayat" &&
+    (currentStep === "gram_panchayat" &&
       (loadingGpStates ||
         loadingGpDistricts ||
         loadingGpTaluks ||
         loadingGpGrams ||
         loadingGpVillages));
+
+  const meta = stepMeta(currentStep);
 
   return (
     <Box
@@ -609,32 +841,48 @@ const UserConstituencyOnboardingPage = () => {
         py: { xs: 3, sm: 5 },
       }}
     >
-      {/* Brand strip */}
+      {/* Header strip — logo + brand on the left, language selector on the right */}
       <Stack
         direction="row"
         alignItems="center"
-        spacing={1.2}
-        sx={{ mb: { xs: 3, sm: 5 } }}
+        justifyContent="space-between"
+        sx={{ width: "100%", maxWidth: 720, mb: { xs: 3, sm: 4 } }}
       >
-        <Box
-          component="img"
-          src={prajakeeyaLogo}
-          alt="Prajaakeeya"
-          sx={{ height: 36, objectFit: "contain" }}
-        />
-        <Typography
+        <Stack direction="row" alignItems="center" spacing={1.2}>
+          <Box
+            component="img"
+            src={prajakeeyaLogo}
+            alt="Prajaakeeya"
+            sx={{ height: 36, objectFit: "contain" }}
+          />
+          <Typography
+            sx={{
+              fontFamily: '"Bebas Neue", "Impact", sans-serif',
+              fontSize: { xs: "1.05rem", sm: "1.2rem" },
+              letterSpacing: "0.08em",
+              background:
+                "linear-gradient(135deg, #E02010 0%, #FFCB00 45%, #F5A800 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            PRAJAAKEEYA
+          </Typography>
+        </Stack>
+        <LanguageSelector
+          variant="outlined"
           sx={{
-            fontFamily: '"Bebas Neue", "Impact", sans-serif',
-            fontSize: { xs: "1.05rem", sm: "1.2rem" },
-            letterSpacing: "0.08em",
-            background:
-              "linear-gradient(135deg, #E02010 0%, #FFCB00 45%, #F5A800 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
+            borderRadius: 3,
+            borderColor: isDark
+              ? "rgba(245,168,0,0.4)"
+              : "rgba(245,168,0,0.5)",
+            color: BRAND.yellow,
+            "&:hover": {
+              borderColor: BRAND.yellow,
+              bgcolor: "rgba(245,168,0,0.08)",
+            },
           }}
-        >
-          PRAJAAKEEYA
-        </Typography>
+        />
       </Stack>
 
       {/* Card */}
@@ -672,7 +920,10 @@ const UserConstituencyOnboardingPage = () => {
               textTransform: "uppercase",
             }}
           >
-            Step {stepIdx + 1} of {TOTAL_STEPS}
+            {t("pages.constituencyOnboarding.stepCounter", {
+              current: stepIdx + 1,
+              total: TOTAL_STEPS,
+            })}
           </Typography>
           <Typography
             sx={{
@@ -705,7 +956,7 @@ const UserConstituencyOnboardingPage = () => {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentStep.type}
+            key={currentStep}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -731,7 +982,13 @@ const UserConstituencyOnboardingPage = () => {
                   border: "1px solid rgba(245,168,0,0.35)",
                 }}
               >
-                {currentStep.icon}
+                {currentStep === "local_body" ? (
+                  <AccountBalanceIcon
+                    sx={{ fontSize: 24, color: BRAND.yellow }}
+                  />
+                ) : (
+                  meta.icon
+                )}
               </Box>
               <Typography
                 sx={{
@@ -741,7 +998,7 @@ const UserConstituencyOnboardingPage = () => {
                   letterSpacing: "-0.01em",
                 }}
               >
-                {currentStep.title}
+                {meta.title}
               </Typography>
             </Stack>
 
@@ -755,7 +1012,7 @@ const UserConstituencyOnboardingPage = () => {
                 lineHeight: 1.55,
               }}
             >
-              {currentStep.question}
+              {meta.question}
             </Typography>
 
             <Box sx={{ mb: 1.5 }}>{renderStepFields()}</Box>
@@ -776,7 +1033,7 @@ const UserConstituencyOnboardingPage = () => {
                       : "rgba(17,24,39,0.55)",
                   }}
                 >
-                  Loading options…
+                  {t("pages.constituencyOnboarding.loadingOptions")}
                 </Typography>
               </Stack>
             )}
@@ -825,82 +1082,88 @@ const UserConstituencyOnboardingPage = () => {
                 },
               }}
             >
-              Back
+              {t("pages.constituencyOnboarding.back")}
             </Button>
           )}
           <Box sx={{ flex: 1 }} />
-          <Button
-            variant="outlined"
-            onClick={handleSkip}
-            disabled={submitting}
-            startIcon={<SkipNextIcon />}
-            sx={{
-              py: 1.25,
-              px: 3,
-              borderRadius: 2.5,
-              fontWeight: 700,
-              textTransform: "none",
-              fontSize: "0.95rem",
-              borderColor: isDark
-                ? "rgba(255,255,255,0.18)"
-                : "rgba(17,24,39,0.2)",
-              color: isDark
-                ? "rgba(255,255,255,0.75)"
-                : "rgba(17,24,39,0.72)",
-              "&:hover": {
+          {currentStep !== "local_body" && (
+            <Button
+              variant="outlined"
+              onClick={handleSkip}
+              disabled={submitting}
+              startIcon={<SkipNextIcon />}
+              sx={{
+                py: 1.25,
+                px: 3,
+                borderRadius: 2.5,
+                fontWeight: 700,
+                textTransform: "none",
+                fontSize: "0.95rem",
                 borderColor: isDark
-                  ? "rgba(255,255,255,0.32)"
-                  : "rgba(17,24,39,0.38)",
-                bgcolor: isDark
-                  ? "rgba(255,255,255,0.04)"
-                  : "rgba(17,24,39,0.04)",
-              },
-            }}
-          >
-            Skip
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleNext}
-            disabled={!stepHasAnswer() || submitting}
-            endIcon={
-              submitting ? (
-                <CircularProgress size={16} sx={{ color: "#fff" }} />
-              ) : isLast ? (
-                <CheckCircleIcon />
-              ) : (
-                <ArrowForwardIcon />
-              )
-            }
-            sx={{
-              py: 1.25,
-              px: 4,
-              borderRadius: 2.5,
-              fontWeight: 800,
-              textTransform: "none",
-              fontSize: "0.95rem",
-              color: "#fff",
-              background:
-                "linear-gradient(135deg, #C8180A 0%, #E02010 100%)",
-              boxShadow: "0 6px 20px rgba(200,24,10,0.35)",
-              "&:hover": {
-                background:
-                  "linear-gradient(135deg, #E02010 0%, #C8180A 100%)",
-                boxShadow: "0 8px 26px rgba(200,24,10,0.5)",
-              },
-              "&.Mui-disabled": {
-                background: isDark
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(17,24,39,0.08)",
+                  ? "rgba(255,255,255,0.18)"
+                  : "rgba(17,24,39,0.2)",
                 color: isDark
-                  ? "rgba(255,255,255,0.3)"
-                  : "rgba(17,24,39,0.35)",
-                boxShadow: "none",
-              },
-            }}
-          >
-            {isLast ? "Finish" : "Next"}
-          </Button>
+                  ? "rgba(255,255,255,0.75)"
+                  : "rgba(17,24,39,0.72)",
+                "&:hover": {
+                  borderColor: isDark
+                    ? "rgba(255,255,255,0.32)"
+                    : "rgba(17,24,39,0.38)",
+                  bgcolor: isDark
+                    ? "rgba(255,255,255,0.04)"
+                    : "rgba(17,24,39,0.04)",
+                },
+              }}
+            >
+              {t("pages.constituencyOnboarding.skip")}
+            </Button>
+          )}
+          {currentStep !== "local_body" && (
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              disabled={!stepHasAnswer() || submitting}
+              endIcon={
+                submitting ? (
+                  <CircularProgress size={16} sx={{ color: "#fff" }} />
+                ) : isLast ? (
+                  <CheckCircleIcon />
+                ) : (
+                  <ArrowForwardIcon />
+                )
+              }
+              sx={{
+                py: 1.25,
+                px: 4,
+                borderRadius: 2.5,
+                fontWeight: 800,
+                textTransform: "none",
+                fontSize: "0.95rem",
+                color: "#fff",
+                background:
+                  "linear-gradient(135deg, #C8180A 0%, #E02010 100%)",
+                boxShadow: "0 6px 20px rgba(200,24,10,0.35)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #E02010 0%, #C8180A 100%)",
+                  boxShadow: "0 8px 26px rgba(200,24,10,0.5)",
+                },
+                "&.Mui-disabled": {
+                  background: isDark
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(17,24,39,0.08)",
+                  color: isDark
+                    ? "rgba(255,255,255,0.3)"
+                    : "rgba(17,24,39,0.35)",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              {isLast
+                ? t("pages.constituencyOnboarding.finish")
+                : t("pages.constituencyOnboarding.next")}
+            </Button>
+          )}
         </Stack>
       </Box>
     </Box>

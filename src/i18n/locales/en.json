@@ -1673,7 +1673,9 @@
       "stepCounter": "Step {{current}} of {{total}}",
       "skip": "Skip",
       "next": "Next",
+      "back": "Back",
       "finish": "Finish",
+      "loadingOptions": "Loading options…",
       "step1Title": "Lok Sabha Constituency",
       "step1Question": "Which Lok Sabha constituency does your area belong to?",
       "step1Placeholder": "Select your Lok Sabha constituency",
@@ -1685,7 +1687,22 @@
       "step3Placeholder": "Select your Ward / Municipal Corporation",
       "step4Title": "Gram Panchayat",
       "step4Question": "Which Gram Panchayat is your village under?",
-      "step4Placeholder": "Select your Gram Panchayat"
+      "step4Placeholder": "Select your Gram Panchayat",
+      "localBodyTitle": "Local Body",
+      "localBodyQuestion": "Do you live in an urban or rural area? Pick the one that applies to you.",
+      "localBodyMunicipality": "Municipality",
+      "localBodyMunicipalityDesc": "I live in a city or town",
+      "localBodyUrban": "URBAN",
+      "localBodyGramPanchayat": "Gram Panchayat",
+      "localBodyGramPanchayatDesc": "I live in a village",
+      "localBodyRural": "RURAL",
+      "corporationLabel": "Corporation / Municipality",
+      "wardLabel": "City Corporation Ward",
+      "stateLabel": "State",
+      "districtLabel": "District",
+      "talukLabel": "Taluk",
+      "gpLabel": "Gram Panchayat",
+      "villageLabel": "Village"
     }
   },
   "civicIssues": {

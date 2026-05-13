@@ -837,7 +837,24 @@
 
     "step4Title": "ಗ್ರಾಮ ಪಂಚಾಯತ್",
     "step4Question": "ನಿಮ್ಮ ಊರು ಯಾವ ಗ್ರಾಮ ಪಂಚಾಯತ್‌ಗೆ ಸೇರಿದೆ?",
-    "step4Placeholder": "ನಿಮ್ಮ ಗ್ರಾಮ ಪಂಚಾಯತ್ ಆಯ್ಕೆಮಾಡಿ"
+    "step4Placeholder": "ನಿಮ್ಮ ಗ್ರಾಮ ಪಂಚಾಯತ್ ಆಯ್ಕೆಮಾಡಿ",
+    "back": "ಹಿಂದೆ",
+    "loadingOptions": "ಆಯ್ಕೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…",
+    "localBodyTitle": "ಸ್ಥಳೀಯ ಸಂಸ್ಥೆ",
+    "localBodyQuestion": "ನೀವು ನಗರ ಅಥವಾ ಗ್ರಾಮೀಣ ಪ್ರದೇಶದಲ್ಲಿ ವಾಸಿಸುತ್ತೀರಾ? ನಿಮಗೆ ಅನ್ವಯವಾಗುವದನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+    "localBodyMunicipality": "ಮಹಾನಗರ ಪಾಲಿಕೆ",
+    "localBodyMunicipalityDesc": "ನಾನು ನಗರ ಅಥವಾ ಪಟ್ಟಣದಲ್ಲಿ ವಾಸಿಸುತ್ತಿದ್ದೇನೆ",
+    "localBodyUrban": "ನಗರ",
+    "localBodyGramPanchayat": "ಗ್ರಾಮ ಪಂಚಾಯತ್",
+    "localBodyGramPanchayatDesc": "ನಾನು ಹಳ್ಳಿಯಲ್ಲಿ ವಾಸಿಸುತ್ತಿದ್ದೇನೆ",
+    "localBodyRural": "ಗ್ರಾಮೀಣ",
+    "corporationLabel": "ಪಾಲಿಕೆ / ಮಹಾನಗರ ಪಾಲಿಕೆ",
+    "wardLabel": "ಮಹಾನಗರ ಪಾಲಿಕೆ ವಾರ್ಡ್",
+    "stateLabel": "ರಾಜ್ಯ",
+    "districtLabel": "ಜಿಲ್ಲೆ",
+    "talukLabel": "ತಾಲೂಕು",
+    "gpLabel": "ಗ್ರಾಮ ಪಂಚಾಯತ್",
+    "villageLabel": "ಗ್ರಾಮ"
   },
     "landing": {
       "kicker": "ಪ್ರಜಾಕೀಯ",
