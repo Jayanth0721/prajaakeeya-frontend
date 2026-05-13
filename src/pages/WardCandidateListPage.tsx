@@ -934,7 +934,9 @@ const WardCandidateListPage = () => {
       .finally(() => setLoadingGpVillages(false));
   }, [selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram, getSavedFilters]);
 
-  const autoLoadFiredRef = useRef(false);
+  // Tracks the election type the auto-load effect has already handled, so it
+  // re-fires when the user navigates between dashboard tiles (different ?type=).
+  const lastAutoLoadedTypeRef = useRef<string | null>(null);
 
   // Load aspirants – called only when both election AND constituency/GP village are set
   const loadAspirants = useCallback(async (electionId: number, constituencyId: number) => {
@@ -1007,14 +1009,25 @@ const WardCandidateListPage = () => {
   }, []);
 
   // Auto-load aspirants when arriving from a dashboard tile with ?type=<election_type>.
-  // Triggered once elections finish loading and the user has a stored constituency
-  // ID for that election type — bypasses the filter dropdowns entirely.
+  // Re-fires whenever the URL ?type= changes so navigating between tiles
+  // (e.g. state_assembly → municipal_corporation) loads the right data and
+  // clears any stale selections from the previous type.
   useEffect(() => {
-    if (!autoFilterMode || autoLoadFiredRef.current) return;
+    if (!autoFilterMode) return;
+    if (lastAutoLoadedTypeRef.current === autoElectionType) return;
     if (!elections.length || !autoUserConstituencyId) return;
     const election = elections.find((e) => e.type === autoElectionType);
     if (!election) return;
-    autoLoadFiredRef.current = true;
+
+    // Clear stale per-election state so the context strip and results don't
+    // briefly show data from the previously-loaded tile.
+    setSelectedConstituency(null);
+    setSelectedGpVillage(null);
+    setSelectedMunicipality(null);
+    setCityConstituencies([]);
+    setCandidates([]);
+
+    lastAutoLoadedTypeRef.current = autoElectionType;
     setSelectedElectionId(election.id);
     void loadAspirants(election.id, autoUserConstituencyId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
