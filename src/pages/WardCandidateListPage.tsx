@@ -380,6 +380,27 @@ const WardCandidateListPage = () => {
   const isMunicipalElection = selectedElection?.type === 'municipal_corporation';
   const isGramPanchayat = selectedElection?.type === 'gram_panchayat';
 
+  // ── Auto-filter mode: dashboard tiles deep-link with ?type=<election_type>
+  // and we auto-load aspirants for the user's saved constituency for that type,
+  // hiding the filter dropdowns entirely.
+  const autoElectionType = searchParams.get('type');
+  const autoUserConstituencyId = (() => {
+    if (!user) return null;
+    switch (autoElectionType) {
+      case 'lok_sabha':
+        return user.lokSabhaConstituencyId ?? null;
+      case 'state_assembly':
+        return user.stateAssemblyConstituencyId ?? null;
+      case 'municipal_corporation':
+        return user.municipalCorporationConstituencyId ?? null;
+      case 'gram_panchayat':
+        return user.gramPanchayatConstituencyId ?? null;
+      default:
+        return null;
+    }
+  })();
+  const autoFilterMode = Boolean(autoElectionType && autoUserConstituencyId);
+
   // ── Gram Panchayat filter state ──
   const [gpStates, setGpStates] = useState<string[]>([]);
   const [gpDistricts, setGpDistricts] = useState<string[]>([]);
@@ -888,6 +909,8 @@ const WardCandidateListPage = () => {
       .finally(() => setLoadingGpVillages(false));
   }, [selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram, getSavedFilters]);
 
+  const autoLoadFiredRef = useRef(false);
+
   // Load aspirants – called only when both election AND constituency/GP village are set
   const loadAspirants = useCallback(async (electionId: number, constituencyId: number) => {
       try {
@@ -957,6 +980,20 @@ const WardCandidateListPage = () => {
         setLoading(false);
       }
   }, []);
+
+  // Auto-load aspirants when arriving from a dashboard tile with ?type=<election_type>.
+  // Triggered once elections finish loading and the user has a stored constituency
+  // ID for that election type — bypasses the filter dropdowns entirely.
+  useEffect(() => {
+    if (!autoFilterMode || autoLoadFiredRef.current) return;
+    if (!elections.length || !autoUserConstituencyId) return;
+    const election = elections.find((e) => e.type === autoElectionType);
+    if (!election) return;
+    autoLoadFiredRef.current = true;
+    setSelectedElectionId(election.id);
+    void loadAspirants(election.id, autoUserConstituencyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFilterMode, elections, autoUserConstituencyId, autoElectionType, loadAspirants]);
 
   // Fetch aspirants only when constituency changes (election change resets constituency to null first)
   useEffect(() => {
@@ -1147,6 +1184,9 @@ const WardCandidateListPage = () => {
           </Stack>
         )}
 
+        {/* Filters are hidden in auto mode (dashboard tile deep-link with ?type=) */}
+        {!autoFilterMode && (
+        <>
         {/* GP / Village not found help message - mobile: above filters */}
         {isGramPanchayat && (
           <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' }, color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mb: 0.5 }}>
@@ -1434,6 +1474,8 @@ const WardCandidateListPage = () => {
           <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' }, color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mt: 0.5 }}>
             {t('civicIssues.gpVillageNotFound')}
           </Typography>
+        )}
+        </>
         )}
 
         {/* If server reports user has voted, show a green notice */}
