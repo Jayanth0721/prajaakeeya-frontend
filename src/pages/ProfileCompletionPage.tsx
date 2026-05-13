@@ -57,7 +57,9 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Autocomplete,
 } from '@mui/material';
+import { fetchConstituencies, type Constituency } from '../services/electionService';
 import { BRAND } from '../theme';
 import {
     Person as PersonIcon,
@@ -122,6 +124,24 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     const [contactChat, setContactChat] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Constituency selections (Lok Sabha / State Assembly / Municipal Corporation / Gram Panchayat)
+    const [lokSabhaOptions, setLokSabhaOptions] = useState<Constituency[]>([]);
+    const [stateAssemblyOptions, setStateAssemblyOptions] = useState<Constituency[]>([]);
+    const [municipalOptions, setMunicipalOptions] = useState<Constituency[]>([]);
+    const [gramPanchayatOptions, setGramPanchayatOptions] = useState<Constituency[]>([]);
+    const [lokSabhaConstituency, setLokSabhaConstituency] = useState<Constituency | null>(null);
+    const [stateAssemblyConstituency, setStateAssemblyConstituency] = useState<Constituency | null>(null);
+    const [municipalConstituency, setMunicipalConstituency] = useState<Constituency | null>(null);
+    const [gramPanchayatConstituency, setGramPanchayatConstituency] = useState<Constituency | null>(null);
+    const [loadingConstituencies, setLoadingConstituencies] = useState(false);
+    // Raw IDs from /auth/me, used to pre-select once options finish loading
+    const initialIdsRef = useRef<{
+        lokSabha?: number | null;
+        stateAssembly?: number | null;
+        municipal?: number | null;
+        gramPanchayat?: number | null;
+    }>({});
 
     // Form validation schema
     const schema = useMemo(() => yup.object({
@@ -203,6 +223,12 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 if (me) {
                     setValue('name', me.name || me.nameEn || me.nameKn || '');
                     setPhotoPreview(me.profilePicture || null);
+                    initialIdsRef.current = {
+                        lokSabha: me.lokSabhaConstituencyId ?? null,
+                        stateAssembly: me.stateAssemblyConstituencyId ?? null,
+                        municipal: me.municipalCorporationConstituencyId ?? null,
+                        gramPanchayat: me.gramPanchayatConstituencyId ?? null,
+                    };
                 }
 
                 // Refresh the auth store in parallel
@@ -246,6 +272,49 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Fetch constituency lists for all four election types and pre-select
+    // based on the IDs we captured from /auth/me.
+    useEffect(() => {
+        let cancelled = false;
+        setLoadingConstituencies(true);
+        Promise.all([
+            fetchConstituencies('lok_sabha').catch(() => ({ data: { constituencies: [] } as any })),
+            fetchConstituencies('state_assembly').catch(() => ({ data: { constituencies: [] } as any })),
+            fetchConstituencies('municipal_corporation').catch(() => ({ data: { constituencies: [] } as any })),
+            fetchConstituencies('gram_panchayat').catch(() => ({ data: { constituencies: [] } as any })),
+        ])
+            .then(([ls, sa, mc, gp]) => {
+                if (cancelled) return;
+                const lsList = ls?.data?.constituencies ?? [];
+                const saList = sa?.data?.constituencies ?? [];
+                const mcList = mc?.data?.constituencies ?? [];
+                const gpList = gp?.data?.constituencies ?? [];
+                setLokSabhaOptions(lsList);
+                setStateAssemblyOptions(saList);
+                setMunicipalOptions(mcList);
+                setGramPanchayatOptions(gpList);
+                const ids = initialIdsRef.current;
+                if (ids.lokSabha != null) {
+                    setLokSabhaConstituency(lsList.find((c: Constituency) => c.id === ids.lokSabha) ?? null);
+                }
+                if (ids.stateAssembly != null) {
+                    setStateAssemblyConstituency(saList.find((c: Constituency) => c.id === ids.stateAssembly) ?? null);
+                }
+                if (ids.municipal != null) {
+                    setMunicipalConstituency(mcList.find((c: Constituency) => c.id === ids.municipal) ?? null);
+                }
+                if (ids.gramPanchayat != null) {
+                    setGramPanchayatConstituency(gpList.find((c: Constituency) => c.id === ids.gramPanchayat) ?? null);
+                }
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingConstituencies(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [user?.id]);
 
     // Delete profile picture
     const handleDeletePhoto = async () => {
@@ -299,7 +368,25 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                     allowChat: contactChat,
                 });
             } else {
-                await apiClient.put('/users/me', { name: data.name });
+                await apiClient.put('/users/me', {
+                    name: data.name,
+                    lokSabhaConstituencyId: lokSabhaConstituency?.id ?? null,
+                    stateAssemblyConstituencyId: stateAssemblyConstituency?.id ?? null,
+                    municipalCorporationConstituencyId: municipalConstituency?.id ?? null,
+                    gramPanchayatConstituencyId: gramPanchayatConstituency?.id ?? null,
+                });
+            }
+
+            // For both aspirants and non-aspirants, the constituency IDs live on
+            // the user record, so send them via /users/me. (Aspirants already
+            // hit the aspirant PATCH above; this is a separate, additive call.)
+            if (isAspirant) {
+                await apiClient.put('/users/me', {
+                    lokSabhaConstituencyId: lokSabhaConstituency?.id ?? null,
+                    stateAssemblyConstituencyId: stateAssemblyConstituency?.id ?? null,
+                    municipalCorporationConstituencyId: municipalConstituency?.id ?? null,
+                    gramPanchayatConstituencyId: gramPanchayatConstituency?.id ?? null,
+                });
             }
 
             // Refresh profile to get updated data
@@ -750,6 +837,102 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                         disabled
                                     />
                                 </Grid> */}
+
+                                {/* Constituencies section */}
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 1,
+                                            fontSize: '0.78rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.08em',
+                                            color: '#F5A800',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('profile.myConstituencies') || 'My Constituencies'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={lokSabhaOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={lokSabhaConstituency}
+                                        onChange={(_, v) => setLokSabhaConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.lokSabhaConstituency') || 'Lok Sabha Constituency'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={stateAssemblyOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={stateAssemblyConstituency}
+                                        onChange={(_, v) => setStateAssemblyConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.stateAssemblyConstituency') || 'State Assembly Constituency'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={municipalOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={municipalConstituency}
+                                        onChange={(_, v) => setMunicipalConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.municipalCorporationConstituency') || 'Municipal Corporation / Ward'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gramPanchayatOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={gramPanchayatConstituency}
+                                        onChange={(_, v) => setGramPanchayatConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.gramPanchayatConstituency') || 'Gram Panchayat'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
                             </Grid>
 
                             {/* Submit Button (placed in Grid so widths align with inputs) */}
