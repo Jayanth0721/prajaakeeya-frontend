@@ -1183,11 +1183,17 @@ const WardCandidateListPage = () => {
           </Button>
 
           {(() => {
-            const allFiltersSelected = isGramPanchayat
-              ? !!(selectedElectionId && selectedGpState && selectedGpDistrict && selectedGpTaluk && selectedGpGram && selectedGpVillage)
-              : isMunicipalElection
-                ? !!(selectedElectionId && selectedMunicipality && selectedConstituency)
-                : !!(selectedElectionId && selectedConstituency);
+            // In auto-mode (dashboard tile deep-link) the user's constituency
+            // comes from /auth/me — selectedMunicipality and the GP cascade
+            // are never populated, so the original check hid the button on
+            // municipal/GP tiles. Relax the gate when autoFilterMode is on.
+            const allFiltersSelected = autoFilterMode
+              ? !!autoUserConstituencyId && !!selectedElectionId
+              : isGramPanchayat
+                ? !!(selectedElectionId && selectedGpState && selectedGpDistrict && selectedGpTaluk && selectedGpGram && selectedGpVillage)
+                : isMunicipalElection
+                  ? !!(selectedElectionId && selectedMunicipality && selectedConstituency)
+                  : !!(selectedElectionId && selectedConstituency);
 
             if (!allFiltersSelected) return null;
 
