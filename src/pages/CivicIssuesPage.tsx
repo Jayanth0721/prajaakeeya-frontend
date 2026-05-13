@@ -54,6 +54,7 @@ import waterTapImg from '../assets/images/water-tap.png';
 import garbageImg from '../assets/images/garbage.png';
 import streetLightImg from '../assets/images/street-light.png';
 import savePlanetImg from '../assets/images/save-the-planet.png';
+import swingVoteImg from '../assets/images/swing-vote.png';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -557,11 +558,11 @@ const CivicIssuesPage: React.FC = () => {
             <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
               {(
                 [
-                  { key: 'mp' as const, label: t('civicIssues.tabMp', { defaultValue: 'MP Constituency' }), Icon: MPIcon },
-                  { key: 'mla' as const, label: t('civicIssues.tabMla', { defaultValue: 'MLA Constituency' }), Icon: MLAIcon },
-                  { key: 'ward_panchayat' as const, label: t('civicIssues.tabWardPanchayat', { defaultValue: 'Ward / Panchayat' }), Icon: WardPinIcon },
+                  { key: 'mp' as const, label: t('civicIssues.tabMp', { defaultValue: 'MP Constituency' }), Icon: MPIcon, imgSrc: undefined as string | undefined },
+                  { key: 'mla' as const, label: t('civicIssues.tabMla', { defaultValue: 'MLA Constituency' }), Icon: MLAIcon, imgSrc: swingVoteImg },
+                  { key: 'ward_panchayat' as const, label: t('civicIssues.tabWardPanchayat', { defaultValue: 'Ward / Panchayat' }), Icon: WardPinIcon, imgSrc: undefined as string | undefined },
                 ]
-              ).map(({ key, label, Icon }) => {
+              ).map(({ key, label, Icon, imgSrc }) => {
                 const isActive = activeTab === key;
                 return (
                   <Box
@@ -597,12 +598,25 @@ const CivicIssuesPage: React.FC = () => {
                           },
                     }}
                   >
-                    <Icon
-                      sx={{
-                        fontSize: { xs: 24, sm: 26 },
-                        color: isActive ? '#fff' : BRAND.yellow,
-                      }}
-                    />
+                    {imgSrc ? (
+                      <Box
+                        component="img"
+                        src={imgSrc}
+                        alt={label}
+                        sx={{
+                          width: { xs: 26, sm: 30 },
+                          height: { xs: 26, sm: 30 },
+                          objectFit: 'contain',
+                        }}
+                      />
+                    ) : (
+                      <Icon
+                        sx={{
+                          fontSize: { xs: 24, sm: 26 },
+                          color: isActive ? '#fff' : BRAND.yellow,
+                        }}
+                      />
+                    )}
                     <Typography
                       sx={{
                         fontFamily: FF,
