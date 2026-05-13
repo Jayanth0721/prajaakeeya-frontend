@@ -848,6 +848,8 @@
     "localBodyGramPanchayat": "ಗ್ರಾಮ ಪಂಚಾಯತ್",
     "localBodyGramPanchayatDesc": "ನಾನು ಹಳ್ಳಿಯಲ್ಲಿ ವಾಸಿಸುತ್ತಿದ್ದೇನೆ",
     "localBodyRural": "ಗ್ರಾಮೀಣ",
+    "localBodyNeitherApplies": "ಯಾವುದೂ ಅನ್ವಯವಾಗದು",
+    "localBodySkipLabel": "ಸ್ಕಿಪ್ — ನಾನು ಎರಡಕ್ಕೂ ಸೇರಿಲ್ಲ",
     "corporationLabel": "ಪಾಲಿಕೆ / ಮಹಾನಗರ ಪಾಲಿಕೆ",
     "wardLabel": "ಮಹಾನಗರ ಪಾಲಿಕೆ ವಾರ್ಡ್",
     "stateLabel": "ರಾಜ್ಯ",

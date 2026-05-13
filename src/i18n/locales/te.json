@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "గ్రామ పంచాయతీ",
       "localBodyGramPanchayatDesc": "నేను గ్రామంలో నివసిస్తున్నాను",
       "localBodyRural": "గ్రామీణం",
+      "localBodyNeitherApplies": "ఏదీ వర్తించదు",
+      "localBodySkipLabel": "దాటవేయండి — నేను ఎందులోనూ చేరను",
       "corporationLabel": "కార్పొరేషన్ / మునిసిపాలిటీ",
       "wardLabel": "కార్పొరేషన్ వార్డు",
       "stateLabel": "రాష్ట్రం",

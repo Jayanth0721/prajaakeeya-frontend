@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "கிராம பஞ்சாயத்து",
       "localBodyGramPanchayatDesc": "நான் கிராமத்தில் வசிக்கிறேன்",
       "localBodyRural": "கிராமப்புறம்",
+      "localBodyNeitherApplies": "எதுவும் பொருந்தாது",
+      "localBodySkipLabel": "தவிர் — நான் இரண்டிற்கும் சொந்தம் இல்லை",
       "corporationLabel": "மாநகராட்சி / நகராட்சி",
       "wardLabel": "மாநகராட்சி வார்டு",
       "stateLabel": "மாநிலம்",

@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "ഗ്രാമപഞ്ചായത്ത്",
       "localBodyGramPanchayatDesc": "ഞാൻ ഗ്രാമത്തിലാണ് താമസിക്കുന്നത്",
       "localBodyRural": "ഗ്രാമം",
+      "localBodyNeitherApplies": "ഒന്നും ബാധകമല്ല",
+      "localBodySkipLabel": "ഒഴിവാക്കുക — ഞാൻ ഇവ രണ്ടിലും ഉൾപ്പെടുന്നില്ല",
       "corporationLabel": "കോർപ്പറേഷൻ / മുനിസിപ്പാലിറ്റി",
       "wardLabel": "കോർപ്പറേഷൻ വാർഡ്",
       "stateLabel": "സംസ്ഥാനം",

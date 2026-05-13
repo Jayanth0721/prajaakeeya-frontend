@@ -695,6 +695,81 @@ const UserConstituencyOnboardingPage = () => {
               isDark ? "rgba(74,222,128,0.18)" : "rgba(34,197,94,0.14)",
               "#22c55e",
             )}
+
+            {/* "Neither applies" divider + skip — for users who belong to
+                neither a municipality nor a gram panchayat, or want to skip
+                the local body section entirely. */}
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1.5}
+              sx={{ pt: 1 }}
+            >
+              <Box
+                sx={{
+                  flex: 1,
+                  height: 1,
+                  bgcolor: isDark
+                    ? "rgba(255,255,255,0.10)"
+                    : "rgba(17,24,39,0.10)",
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  color: isDark
+                    ? "rgba(255,255,255,0.45)"
+                    : "rgba(17,24,39,0.5)",
+                  textTransform: "uppercase",
+                }}
+              >
+                {t("pages.constituencyOnboarding.localBodyNeitherApplies", {
+                  defaultValue: "Neither applies",
+                })}
+              </Typography>
+              <Box
+                sx={{
+                  flex: 1,
+                  height: 1,
+                  bgcolor: isDark
+                    ? "rgba(255,255,255,0.10)"
+                    : "rgba(17,24,39,0.10)",
+                }}
+              />
+            </Stack>
+            <Button
+              variant="outlined"
+              onClick={handleSkip}
+              disabled={submitting}
+              startIcon={<SkipNextIcon />}
+              sx={{
+                py: 1.25,
+                borderRadius: 2.5,
+                fontWeight: 700,
+                textTransform: "none",
+                fontSize: "0.95rem",
+                borderColor: isDark
+                  ? "rgba(255,255,255,0.18)"
+                  : "rgba(17,24,39,0.2)",
+                color: isDark
+                  ? "rgba(255,255,255,0.78)"
+                  : "rgba(17,24,39,0.75)",
+                "&:hover": {
+                  borderColor: isDark
+                    ? "rgba(255,255,255,0.32)"
+                    : "rgba(17,24,39,0.38)",
+                  bgcolor: isDark
+                    ? "rgba(255,255,255,0.04)"
+                    : "rgba(17,24,39,0.04)",
+                },
+              }}
+            >
+              {t("pages.constituencyOnboarding.localBodySkipLabel", {
+                defaultValue: "Skip — I don't belong to either",
+              })}
+            </Button>
           </Stack>
         );
       case "municipal_corporation":

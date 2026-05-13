@@ -1699,6 +1699,8 @@
       "localBodyGramPanchayat": "Gram Panchayat",
       "localBodyGramPanchayatDesc": "I live in a village",
       "localBodyRural": "RURAL",
+      "localBodyNeitherApplies": "Neither applies",
+      "localBodySkipLabel": "Skip — I don't belong to either",
       "corporationLabel": "Corporation / Municipality",
       "wardLabel": "City Corporation Ward",
       "stateLabel": "State",
@@ -1711,6 +1713,7 @@
   "civicIssues": {
     "title": "Public Issues",
     "subtitle": "Report Your Ward Issues Now",
+    "noElectionsAvailable": "No election types available. Update your profile first.",
     "ward": "Ward",
     "error": "Error",
     "failedToLoad": "Failed to load issues.",

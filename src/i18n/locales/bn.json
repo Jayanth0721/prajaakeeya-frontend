@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "গ্রাম পঞ্চায়েত",
       "localBodyGramPanchayatDesc": "আমি গ্রামে থাকি",
       "localBodyRural": "গ্রামীণ",
+      "localBodyNeitherApplies": "কোনটিই প্রযোজ্য নয়",
+      "localBodySkipLabel": "বাদ দিন — আমি কোনটির অন্তর্ভুক্ত নই",
       "corporationLabel": "পৌর কর্পোরেশন / পৌরসভা",
       "wardLabel": "পৌর কর্পোরেশন ওয়ার্ড",
       "stateLabel": "রাজ্য",

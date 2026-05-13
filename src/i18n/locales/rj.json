@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "ग्राम पंचायत",
       "localBodyGramPanchayatDesc": "मैं गांव में रौ छूँ",
       "localBodyRural": "ग्रामीण",
+      "localBodyNeitherApplies": "कुणसो भी लागू नी",
+      "localBodySkipLabel": "छोड़ो — मैं किणसी सूं भी नी हूं",
       "corporationLabel": "नगर निगम / नगरपालिका",
       "wardLabel": "नगर निगम वार्ड",
       "stateLabel": "राज्य",

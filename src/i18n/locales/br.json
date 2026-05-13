@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "ग्राम पंचायत",
       "localBodyGramPanchayatDesc": "हम गांव में रहत बानी",
       "localBodyRural": "ग्रामीण",
+      "localBodyNeitherApplies": "कवनो लागू नइखे",
+      "localBodySkipLabel": "छोड़ीं — हम दूनो में से कवनो में नइखीं",
       "corporationLabel": "नगर निगम / नगर पालिका",
       "wardLabel": "नगर निगम वार्ड",
       "stateLabel": "राज्य",

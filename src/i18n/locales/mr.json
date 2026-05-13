@@ -1697,6 +1697,8 @@
       "localBodyGramPanchayat": "ग्रामपंचायत",
       "localBodyGramPanchayatDesc": "मी गावात राहतो/राहते",
       "localBodyRural": "ग्रामीण",
+      "localBodyNeitherApplies": "दोन्ही लागू नाहीत",
+      "localBodySkipLabel": "वगळा — मी कोणत्याहीशी संबंधित नाही",
       "corporationLabel": "महानगरपालिका / नगरपालिका",
       "wardLabel": "महानगरपालिका प्रभाग",
       "stateLabel": "राज्य",
