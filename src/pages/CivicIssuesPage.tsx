@@ -509,7 +509,10 @@ const CivicIssuesPage: React.FC = () => {
                 <Typography sx={{ fontFamily: FF, fontWeight: 800, fontSize: { xs: '1.15rem', sm: '1.4rem' }, color: textPrimary, lineHeight: 1.1 }}>
                   {t('civicIssues.title')}
                 </Typography>
-                {filterElectionName && filterConstituencyName ? (
+                {/* Election + constituency sub-line removed — the same info is
+                    already shown by the tab-section's value cards below, so it
+                    was rendering twice on /user/civic-issues. */}
+                {/* {filterElectionName && filterConstituencyName ? (
                   <Box>
                     <Typography sx={{ fontFamily: FF, fontSize: '0.9rem', color: isDark ? '#fff' : 'text.primary', mt: 0.5, fontWeight: 800 }}>
                       {filterElectionName}
@@ -538,7 +541,7 @@ const CivicIssuesPage: React.FC = () => {
                       </Typography>
                     )}
                   </Box>
-                ) : null}
+                ) : null} */}
               </Box>
             </Box>
           </Box>
