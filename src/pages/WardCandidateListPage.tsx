@@ -411,6 +411,11 @@ const WardCandidateListPage = () => {
   })();
   const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromUrl);
   const autoElectionType = urlType ?? tabToElectionType(activeTab);
+  // Path passed to the aspirant-register page — carries the current election
+  // type so the CandidateInformationStep can pre-select the matching tab.
+  const registerPath = autoElectionType
+    ? `/user/aspirants/register?type=${encodeURIComponent(autoElectionType)}`
+    : '/user/aspirants/register';
   const autoUserConstituencyId = (() => {
     if (!user) return null;
     switch (autoElectionType) {
@@ -1903,7 +1908,7 @@ const WardCandidateListPage = () => {
                   {(
                     <Button
                       variant="contained"
-                      onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate('/user/aspirants/register')}
+                      onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate(registerPath)}
                       sx={{
                         alignSelf: { xs: 'stretch', sm: 'flex-start' }, fontWeight: 700, borderRadius: '8px', textTransform: 'none',
                         color: '#fff', background: `linear-gradient(135deg, ${BRAND.red} 0%, ${BRAND.red2} 100%)`,
@@ -2901,7 +2906,7 @@ const WardCandidateListPage = () => {
             {(
               <Button
                 variant="contained"
-                onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate('/user/aspirants/register')}
+                onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate(registerPath)}
                 disabled={votingWindowActive}
                 sx={{
                   flexShrink: 0, fontWeight: 700, borderRadius: '8px', textTransform: 'none', whiteSpace: 'nowrap',
@@ -3528,7 +3533,7 @@ const WardCandidateListPage = () => {
                       size="large"
                       onClick={() => {
                         setShowAspirantPrompt(false);
-                        navigate('/user/aspirants/register');
+                        navigate(registerPath);
                       }}
                       sx={{
                         py: 1.2, px: 4, borderRadius: 3, fontWeight: 700, fontSize: '1rem',

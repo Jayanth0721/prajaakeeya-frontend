@@ -40,6 +40,7 @@ import {
   type Constituency,
   type GPVillage,
 } from '../../services/electionService';
+import { useSearchParams } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import ConstituencyPickerDialog from '../ConstituencyPickerDialog';
 
@@ -438,7 +439,18 @@ const CandidateInformationStep = ({
     if (storeUser?.gramPanchayatConstituency != null) return 'gram_panchayat';
     return null;
   };
-  const [activeTab, setActiveTab] = useState<AspirantTab>('mp');
+  // Initial tab — driven by `?type=` query param so that clicking
+  // "Register as Aspirant" from the aspirants list on a specific tab opens
+  // the registration form already focused on that election type.
+  const [searchParams] = useSearchParams();
+  const initialTabFromQuery: AspirantTab = (() => {
+    const ty = searchParams.get('type');
+    if (ty === 'lok_sabha') return 'mp';
+    if (ty === 'state_assembly') return 'mla';
+    if (ty === 'municipal_corporation' || ty === 'gram_panchayat') return 'ward_panchayat';
+    return 'mp';
+  })();
+  const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromQuery);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   // Derive what the active tab resolves to.
