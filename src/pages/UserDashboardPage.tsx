@@ -180,7 +180,7 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const
     }] : []),
-    ...((user as any)?.gramPanchayatConstituency?.id != null ? [{
+    ...((user as any)?.gramPanchayatConstituency != null ? [{
       title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
       description: t('userDashboard.actions.myGramPanchayatAspirantsDesc') || 'Aspirants in your Gram Panchayat',
       icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
@@ -274,7 +274,7 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const,
     }] : []),
-    ...((user as any)?.gramPanchayatConstituency?.id != null ? [{
+    ...((user as any)?.gramPanchayatConstituency != null ? [{
       title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
       icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
       path: `/user/aspirantslist?type=gram_panchayat`,

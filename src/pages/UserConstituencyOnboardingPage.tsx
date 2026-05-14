@@ -98,7 +98,7 @@ const UserConstituencyOnboardingPage = () => {
           (u.lokSabhaConstituency?.id != null ||
             u.stateAssemblyConstituency?.id != null ||
             u.municipalCorporationConstituency?.id != null ||
-            u.gramPanchayatConstituency?.id != null);
+            u.gramPanchayatConstituency != null);
         if (hasAny) {
           navigate("/user/dashboard", { replace: true });
         } else {

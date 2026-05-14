@@ -69,9 +69,14 @@ export interface AuthUser {
     state?: string;
     category?: string | null;
   } | null;
+  // Gram Panchayat uses a different shape from the other constituencies —
+  // identified by `srNo` (village serial number) plus the parent hierarchy.
   gramPanchayatConstituency?: {
-    id: number;
-    name?: string;
+    srNo: number;
+    villageName?: string; 
+    gpName?: string;
+    taluk?: string;
+    district?: string;
     state?: string;
   } | null;
 }

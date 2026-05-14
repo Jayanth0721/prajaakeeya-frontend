@@ -395,7 +395,8 @@ const WardCandidateListPage = () => {
       case 'municipal_corporation':
         return user.municipalCorporationConstituency?.id ?? null;
       case 'gram_panchayat':
-        return user.gramPanchayatConstituency?.id ?? null;
+        // GP villages are identified by `srNo` on the nested object.
+        return user.gramPanchayatConstituency?.srNo ?? null;
       default:
         return null;
     }
@@ -1046,67 +1047,62 @@ const WardCandidateListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFilterMode, elections, autoUserConstituencyId, autoElectionType, loadAspirants]);
 
-  // In auto mode, once the constituency list loads for the chosen election type,
-  // match the user's stored ID so the context header can show the name.
-  // Lok Sabha / State Assembly already fill `constituencies` via the existing
-  // effect, so we just look up the id there.
+  // In auto mode, resolve the context-strip name directly from the nested
+  // constituency object on /auth/me — it already carries id + name + parent
+  // metadata, so we don't need to wait for `constituencies` to load or hit
+  // /elections/<type>/constituencies a second time just to look up a name.
   useEffect(() => {
     if (!autoFilterMode || !autoUserConstituencyId) return;
     if (autoElectionType === 'municipal_corporation' || autoElectionType === 'gram_panchayat') return;
-    if (!constituencies.length) return;
     if (selectedConstituency?.id === autoUserConstituencyId) return;
+    const nested =
+      autoElectionType === 'lok_sabha'
+        ? (user as any)?.lokSabhaConstituency
+        : autoElectionType === 'state_assembly'
+          ? (user as any)?.stateAssemblyConstituency
+          : null;
+    if (nested?.id === autoUserConstituencyId && nested?.name) {
+      setSelectedConstituency(nested as Constituency);
+      return;
+    }
+    // Fallback: if /auth/me hasn't delivered the nested object yet, fall back
+    // to the already-loaded constituencies list.
+    if (!constituencies.length) return;
     const match = constituencies.find((c) => c.id === autoUserConstituencyId);
     if (match) setSelectedConstituency(match);
-  }, [autoFilterMode, autoUserConstituencyId, autoElectionType, constituencies, selectedConstituency]);
+  }, [autoFilterMode, autoUserConstituencyId, autoElectionType, constituencies, selectedConstituency, user]);
 
-  // Municipal corporation & gram panchayat auto-mode name resolution.
-  // The /elections/<type>/constituencies endpoint returns every ward/village
-  // with its parent metadata, so a single call resolves the user's saved id
-  // to the full Constituency object — letting the context strip display the
-  // proper name (e.g. "C-1 - Ramaswamy Palya"). For GP we also synthesize a
-  // GPVillage so the existing `selectedGpVillage?.villageName` render path
-  // picks it up.
-  const scopedAutoResolveRef = useRef<string | null>(null);
+  // Municipal corporation & gram panchayat auto-mode name resolution — same
+  // idea, sourced from the nested object on /auth/me.
   useEffect(() => {
     if (!autoFilterMode || !autoUserConstituencyId) return;
     if (
       autoElectionType !== 'municipal_corporation' &&
       autoElectionType !== 'gram_panchayat'
     ) return;
-    const key = `${autoElectionType}:${autoUserConstituencyId}`;
-    if (scopedAutoResolveRef.current === key) return;
     if (autoElectionType === 'municipal_corporation' && selectedConstituency?.id === autoUserConstituencyId) return;
     if (autoElectionType === 'gram_panchayat' && selectedGpVillage?.id === String(autoUserConstituencyId)) return;
 
-    scopedAutoResolveRef.current = key;
-    let cancelled = false;
-    fetchConstituencies(autoElectionType)
-      .then((resp) => {
-        if (cancelled) return;
-        const list = resp.data?.constituencies ?? [];
-        const match = list.find((c) => c.id === autoUserConstituencyId);
-        if (!match) return;
-        if (autoElectionType === 'municipal_corporation') {
-          setSelectedConstituency(match);
-        } else {
-          // Synthesize a GPVillage shape from the matched constituency.
-          setSelectedGpVillage({
-            id: String(match.id),
-            villageName: match.name,
-            villageCode: '',
-            population: '',
-          });
-        }
-      })
-      .catch(() => {
-        // Reset so the user can retry by navigating again.
-        scopedAutoResolveRef.current = null;
-      });
+    const nested =
+      autoElectionType === 'municipal_corporation'
+        ? (user as any)?.municipalCorporationConstituency
+        : (user as any)?.gramPanchayatConstituency;
+    if (!nested) return;
 
-    return () => {
-      cancelled = true;
-    };
-  }, [autoFilterMode, autoElectionType, autoUserConstituencyId, selectedConstituency, selectedGpVillage]);
+    if (autoElectionType === 'municipal_corporation') {
+      if (nested.id !== autoUserConstituencyId) return;
+      setSelectedConstituency(nested as Constituency);
+    } else {
+      // GP nested object uses `srNo` + `villageName` (no `id`/`name`).
+      if (nested.srNo !== autoUserConstituencyId) return;
+      setSelectedGpVillage({
+        id: String(nested.srNo),
+        villageName: nested.villageName ?? '',
+        villageCode: '',
+        population: '',
+      });
+    }
+  }, [autoFilterMode, autoElectionType, autoUserConstituencyId, selectedConstituency, selectedGpVillage, user]);
 
   // Fetch aspirants only when constituency changes (election change resets constituency to null first)
   useEffect(() => {

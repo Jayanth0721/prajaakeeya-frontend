@@ -271,14 +271,15 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                         lokSabha: me.lokSabhaConstituency?.id ?? null,
                         stateAssembly: me.stateAssemblyConstituency?.id ?? null,
                         municipal: me.municipalCorporationConstituency?.id ?? null,
-                        gramPanchayat: me.gramPanchayatConstituency?.id ?? null,
+                        // GP uses `srNo` rather than `id` as the village identifier.
+                        gramPanchayat: me.gramPanchayatConstituency?.srNo ?? null,
                     };
                     initialMunicipalRef.current = me.municipalCorporationConstituency ?? null;
-                    // Pre-select the local body type from whichever ID is already
+                    // Pre-select the local body type from whichever side is
                     // saved (a user can only have one — municipality OR GP).
-                    if (me.municipalCorporationConstituency?.id != null) {
+                    if (me.municipalCorporationConstituency != null) {
                         setLocalBody('municipality');
-                    } else if (me.gramPanchayatConstituency?.id != null) {
+                    } else if (me.gramPanchayatConstituency != null) {
                         setLocalBody('gram_panchayat');
                     }
                 }
