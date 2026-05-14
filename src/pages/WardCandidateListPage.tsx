@@ -389,13 +389,13 @@ const WardCandidateListPage = () => {
     if (!user) return null;
     switch (autoElectionType) {
       case 'lok_sabha':
-        return user.lokSabhaConstituencyId ?? null;
+        return user.lokSabhaConstituency?.id ?? null;
       case 'state_assembly':
-        return user.stateAssemblyConstituencyId ?? null;
+        return user.stateAssemblyConstituency?.id ?? null;
       case 'municipal_corporation':
-        return user.municipalCorporationConstituencyId ?? null;
+        return user.municipalCorporationConstituency?.id ?? null;
       case 'gram_panchayat':
-        return user.gramPanchayatConstituencyId ?? null;
+        return user.gramPanchayatConstituency?.id ?? null;
       default:
         return null;
     }

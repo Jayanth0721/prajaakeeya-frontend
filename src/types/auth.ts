@@ -47,8 +47,31 @@ export interface AuthUser {
   electionName?: string;
   constituencyId?: number;
   constituencyName?: string;
-  lokSabhaConstituencyId?: number | null;
-  stateAssemblyConstituencyId?: number | null;
-  municipalCorporationConstituencyId?: number | null;
-  gramPanchayatConstituencyId?: number | null;
+  lokSabhaConstituency?: {
+    id: number;
+    name?: string;
+    state?: string;
+  } | null;
+  stateAssemblyConstituency?: {
+    id: number;
+    name?: string;
+    state?: string;
+    parliamentary?: string;
+  } | null;
+  municipalCorporationConstituency?: {
+    id: number;
+    number?: string;
+    name?: string;
+    municipality?: string;
+    zone?: string;
+    assembly?: string;
+    parliamentary?: string;
+    state?: string;
+    category?: string | null;
+  } | null;
+  gramPanchayatConstituency?: {
+    id: number;
+    name?: string;
+    state?: string;
+  } | null;
 }

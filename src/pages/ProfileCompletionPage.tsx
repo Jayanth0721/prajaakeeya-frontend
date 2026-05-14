@@ -264,16 +264,16 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                     setValue('name', me.name || me.nameEn || me.nameKn || '');
                     setPhotoPreview(me.profilePicture || null);
                     initialIdsRef.current = {
-                        lokSabha: me.lokSabhaConstituencyId ?? null,
-                        stateAssembly: me.stateAssemblyConstituencyId ?? null,
-                        municipal: me.municipalCorporationConstituencyId ?? null,
-                        gramPanchayat: me.gramPanchayatConstituencyId ?? null,
+                        lokSabha: me.lokSabhaConstituency?.id ?? null,
+                        stateAssembly: me.stateAssemblyConstituency?.id ?? null,
+                        municipal: me.municipalCorporationConstituency?.id ?? null,
+                        gramPanchayat: me.gramPanchayatConstituency?.id ?? null,
                     };
                     // Pre-select the local body type from whichever ID is already
                     // saved (a user can only have one — municipality OR GP).
-                    if (me.municipalCorporationConstituencyId != null) {
+                    if (me.municipalCorporationConstituency?.id != null) {
                         setLocalBody('municipality');
-                    } else if (me.gramPanchayatConstituencyId != null) {
+                    } else if (me.gramPanchayatConstituency?.id != null) {
                         setLocalBody('gram_panchayat');
                     }
                 }
@@ -346,8 +346,8 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     // store user avoids the race where the options fetch finished before
     // /auth/me populated initialIdsRef.current — symptom: dropdowns showed
     // their label but no value even though /auth/me had the ID.
-    const lokSabhaIdFromUser = (user as any)?.lokSabhaConstituencyId as number | null | undefined;
-    const stateAssemblyIdFromUser = (user as any)?.stateAssemblyConstituencyId as number | null | undefined;
+    const lokSabhaIdFromUser = (user as any)?.lokSabhaConstituency?.id as number | null | undefined;
+    const stateAssemblyIdFromUser = (user as any)?.stateAssemblyConstituency?.id as number | null | undefined;
     useEffect(() => {
         if (lokSabhaConstituency?.id === lokSabhaIdFromUser) return;
         if (lokSabhaIdFromUser == null) return;

@@ -121,13 +121,13 @@ const CivicIssuesPage: React.FC = () => {
     if (!type || !user) return null;
     switch (type) {
       case 'lok_sabha':
-        return (user as any).lokSabhaConstituencyId ?? null;
+        return (user as any).lokSabhaConstituency?.id ?? null;
       case 'state_assembly':
-        return (user as any).stateAssemblyConstituencyId ?? null;
+        return (user as any).stateAssemblyConstituency?.id ?? null;
       case 'municipal_corporation':
-        return (user as any).municipalCorporationConstituencyId ?? null;
+        return (user as any).municipalCorporationConstituency?.id ?? null;
       case 'gram_panchayat':
-        return (user as any).gramPanchayatConstituencyId ?? null;
+        return (user as any).gramPanchayatConstituency?.id ?? null;
       default:
         return null;
     }
@@ -149,8 +149,8 @@ const CivicIssuesPage: React.FC = () => {
   const tabToElectionType = (tab: CivicTab): string | null => {
     if (tab === 'mp') return 'lok_sabha';
     if (tab === 'mla') return 'state_assembly';
-    if ((user as any)?.municipalCorporationConstituencyId != null) return 'municipal_corporation';
-    if ((user as any)?.gramPanchayatConstituencyId != null) return 'gram_panchayat';
+    if ((user as any)?.municipalCorporationConstituency?.id != null) return 'municipal_corporation';
+    if ((user as any)?.gramPanchayatConstituency?.id != null) return 'gram_panchayat';
     return null;
   };
   const [activeTab, setActiveTab] = useState<CivicTab>('mp');

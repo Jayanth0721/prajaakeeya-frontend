@@ -95,10 +95,10 @@ const UserConstituencyOnboardingPage = () => {
         const u = useAuthStore.getState().user;
         const hasAny =
           u != null &&
-          (u.lokSabhaConstituencyId != null ||
-            u.stateAssemblyConstituencyId != null ||
-            u.municipalCorporationConstituencyId != null ||
-            u.gramPanchayatConstituencyId != null);
+          (u.lokSabhaConstituency?.id != null ||
+            u.stateAssemblyConstituency?.id != null ||
+            u.municipalCorporationConstituency?.id != null ||
+            u.gramPanchayatConstituency?.id != null);
         if (hasAny) {
           navigate("/user/dashboard", { replace: true });
         } else {
