@@ -43,6 +43,8 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import ConstituencyPickerDialog from '../ConstituencyPickerDialog';
+import capitolInactiveImg from '../../assets/images/capitol1.png';
+import capitolActiveImg from '../../assets/images/capitol.png';
 
 // ── Theme constants — sourced from central BRAND palette ──────────────────
 const GOLD = BRAND.yellow;                    // '#F5A800'
@@ -489,21 +491,38 @@ const CandidateInformationStep = ({
   })();
 
   // Push the resolved electionId + constituencyId into the form whenever the
-  // tab, elections list, or saved user data changes. `shouldValidate: true`
-  // re-runs the validator and `clearErrors` removes any stale "required"
-  // error left over from a prior submit attempt.
+  // tab, elections list, or saved user data changes. `shouldDirty/Touch` mark
+  // the fields as user-set so react-hook-form treats them as valid input
+  // rather than untouched defaults; `clearErrors` purges any stale "required"
+  // error from a prior submit attempt, and `trigger` re-runs the validator
+  // synchronously so handleNext()'s subsequent trigger() sees the new values.
   useEffect(() => {
-    if (activeElection?.id != null) {
-      setValue('electionId', activeElection.id, { shouldValidate: true });
-      clearErrors?.('electionId');
+    if (activeElection?.id != null && activeConstituencyForUser?.id != null) {
+      setValue('electionId', activeElection.id, {
+        shouldValidate: true, shouldDirty: true, shouldTouch: true,
+      });
+      setValue('constituencyId', activeConstituencyForUser.id, {
+        shouldValidate: true, shouldDirty: true, shouldTouch: true,
+      });
+      clearErrors?.(['electionId', 'constituencyId']);
+      // Belt-and-suspenders: force a validation pass so any stuck error
+      // tied to the prior empty value is reconciled before the user clicks
+      // Next.
+      trigger?.(['electionId', 'constituencyId']).catch(() => {});
     } else {
-      setValue('electionId', '', { shouldValidate: true });
-    }
-    if (activeConstituencyForUser?.id != null) {
-      setValue('constituencyId', activeConstituencyForUser.id, { shouldValidate: true });
-      clearErrors?.('constituencyId');
-    } else {
-      setValue('constituencyId', '', { shouldValidate: true });
+      // Only one side resolved (or neither) — clear the form values without
+      // emitting a fresh validation error. The empty-state CTA already tells
+      // the user what to do.
+      if (activeElection?.id != null) {
+        setValue('electionId', activeElection.id);
+      } else {
+        setValue('electionId', '');
+      }
+      if (activeConstituencyForUser?.id != null) {
+        setValue('constituencyId', activeConstituencyForUser.id);
+      } else {
+        setValue('constituencyId', '');
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, activeElection?.id, activeConstituencyForUser?.id]);
@@ -699,9 +718,17 @@ const CandidateInformationStep = ({
             ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
             : (t('forms.aspirant.tabWardPanchayat') || 'Municipal / Gram Panchayat');
         const wardTabIcon = hasGp && !hasMunicipal ? AgricultureIcon : LocationCityIcon;
-        const tabs: { key: AspirantTab; label: string; Icon: typeof AccountBalanceIcon }[] = [
+        // MLA tab uses image assets (capitol1.png inactive, capitol.png active)
+        // matching the Civic Issues page; the others stay on SvgIcons.
+        const tabs: {
+          key: AspirantTab;
+          label: string;
+          Icon: typeof AccountBalanceIcon;
+          inactiveImg?: string;
+          activeImg?: string;
+        }[] = [
           { key: 'mp', label: t('userDashboard.actions.myLokSabhaAspirants') || 'Lok Sabha (MP)', Icon: AccountBalanceIcon },
-          { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'State Assembly (MLA)', Icon: GavelIcon },
+          { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'State Assembly (MLA)', Icon: GavelIcon, inactiveImg: capitolInactiveImg, activeImg: capitolActiveImg },
           { key: 'ward_panchayat', label: wardTabLabel, Icon: wardTabIcon },
         ];
         const missing = !activeConstituencyForUser;
@@ -722,8 +749,9 @@ const CandidateInformationStep = ({
             </Typography>
 
             <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
-              {tabs.map(({ key, label, Icon }) => {
+              {tabs.map(({ key, label, Icon, inactiveImg, activeImg }) => {
                 const isActive = activeTab === key;
+                const imgSrc = isActive ? activeImg : inactiveImg;
                 return (
                   <Box
                     key={key}
@@ -752,7 +780,20 @@ const CandidateInformationStep = ({
                           },
                     }}
                   >
-                    <Icon sx={{ fontSize: { xs: 24, sm: 26 }, color: isActive ? '#fff' : GOLD }} />
+                    {imgSrc ? (
+                      <Box
+                        component="img"
+                        src={imgSrc}
+                        alt={label}
+                        sx={{
+                          width: { xs: 26, sm: 30 },
+                          height: { xs: 26, sm: 30 },
+                          objectFit: 'contain',
+                        }}
+                      />
+                    ) : (
+                      <Icon sx={{ fontSize: { xs: 24, sm: 26 }, color: isActive ? '#fff' : GOLD }} />
+                    )}
                     <Typography sx={{
                       fontFamily: FF, fontWeight: 700, fontSize: { xs: '0.78rem', sm: '0.88rem' },
                       lineHeight: 1.15,

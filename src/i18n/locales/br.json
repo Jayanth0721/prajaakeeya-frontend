@@ -1357,6 +1357,7 @@
     "wardCandidates": {
       "title": "उम्मीदवार",
       "subtitle": "अपन वार्ड में चुनाव लड़ रहल उम्मीदवार लोग से मिलीं",
+      "tabWardPanchayat": "हमार वार्ड / पंचायत उम्मीदवार",
       "missingConstituencyTitle": "इच्छुकन के देखे खातिर अपन {{type}} सेट करीं",
       "missingConstituencyBody": "अपन इलाका के इच्छुकन के देखे खातिर प्रोफाइल में अपन {{type}} अपडेट करीं।",
       "updateProfileCta": "प्रोफाइल अपडेट करीं",
