@@ -54,8 +54,8 @@ import waterTapImg from '../assets/images/water-tap.png';
 import garbageImg from '../assets/images/garbage.png';
 import streetLightImg from '../assets/images/street-light.png';
 import savePlanetImg from '../assets/images/save-the-planet.png';
-import capitolInactiveImg from '../assets/images/capitol1.png';
-import capitolActiveImg from '../assets/images/capitol.png';
+import capitolInactiveImg from '../assets/images/capitol.png';
+import capitolActiveImg from '../assets/images/capitol1.png';
 
 const FF = "'Baloo 2', sans-serif";
 
