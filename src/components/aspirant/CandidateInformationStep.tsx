@@ -19,6 +19,11 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import GavelIcon from '@mui/icons-material/Gavel';
+import LocationCityIcon from '@mui/icons-material/LocationCity';
+import AgricultureIcon from '@mui/icons-material/Agriculture';
+import EditIcon from '@mui/icons-material/Edit';
 import { BRAND } from '../../theme';
 import { getMinAgeForElectionType } from '../../utils/validation';
 import {
@@ -35,6 +40,8 @@ import {
   type Constituency,
   type GPVillage,
 } from '../../services/electionService';
+import useAuthStore from '../../store/useAuthStore';
+import ConstituencyPickerDialog from '../ConstituencyPickerDialog';
 
 // ── Theme constants — sourced from central BRAND palette ──────────────────
 const GOLD = BRAND.yellow;                    // '#F5A800'
@@ -417,6 +424,74 @@ const CandidateInformationStep = ({
   const { onChange: phoneOnChange, ...phoneRest } = register('phone');
   const electionReg = register('electionId');
 
+  // ── Tab-driven election + constituency selection ─────────────────────
+  // Reads the user's saved constituencies from /auth/me (auth store), maps
+  // the active tab to an election type, and auto-fills the form's
+  // `electionId` + `constituencyId`. If the user has nothing saved for the
+  // active tab, the "Update Profile" button opens ConstituencyPickerDialog.
+  type AspirantTab = 'mp' | 'mla' | 'ward_panchayat';
+  const storeUser = useAuthStore((s) => s.user) as any;
+  const tabToElectionType = (tab: AspirantTab): string | null => {
+    if (tab === 'mp') return 'lok_sabha';
+    if (tab === 'mla') return 'state_assembly';
+    if (storeUser?.municipalCorporationConstituency?.id != null) return 'municipal_corporation';
+    if (storeUser?.gramPanchayatConstituency != null) return 'gram_panchayat';
+    return null;
+  };
+  const [activeTab, setActiveTab] = useState<AspirantTab>('mp');
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Derive what the active tab resolves to.
+  const activeElectionType = tabToElectionType(activeTab);
+  const activeElection = activeElectionType
+    ? elections.find((e) => e.type === activeElectionType) ?? null
+    : null;
+  const activeConstituencyForUser = (() => {
+    if (!storeUser || !activeElectionType) return null as
+      | { id: number; name: string; subLabel?: string }
+      | null;
+    switch (activeElectionType) {
+      case 'lok_sabha': {
+        const c = storeUser.lokSabhaConstituency;
+        return c?.id ? { id: c.id, name: c.name ?? '', subLabel: c.state } : null;
+      }
+      case 'state_assembly': {
+        const c = storeUser.stateAssemblyConstituency;
+        return c?.id ? { id: c.id, name: c.name ?? '', subLabel: c.parliamentary } : null;
+      }
+      case 'municipal_corporation': {
+        const c = storeUser.municipalCorporationConstituency;
+        return c?.id
+          ? { id: c.id, name: `${c.number ? `${c.number} - ` : ''}${c.name ?? ''}`, subLabel: c.municipality }
+          : null;
+      }
+      case 'gram_panchayat': {
+        const c = storeUser.gramPanchayatConstituency;
+        return c?.srNo
+          ? { id: c.srNo, name: c.villageName ?? '', subLabel: `${c.gpName ?? ''}${c.taluk ? `, ${c.taluk}` : ''}` }
+          : null;
+      }
+      default:
+        return null;
+    }
+  })();
+
+  // Push the resolved electionId + constituencyId into the form whenever the
+  // tab, elections list, or saved user data changes.
+  useEffect(() => {
+    if (activeElection?.id != null) {
+      setValue('electionId', activeElection.id);
+    } else {
+      setValue('electionId', '');
+    }
+    if (activeConstituencyForUser?.id != null) {
+      setValue('constituencyId', activeConstituencyForUser.id);
+    } else {
+      setValue('constituencyId', '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, activeElection?.id, activeConstituencyForUser?.id]);
+
   // Ordered field groups for animated rendering
   const fields: Array<{ id: string; colXs: number; colMd: number; node: React.ReactNode }> = [
     {
@@ -598,253 +673,153 @@ const CandidateInformationStep = ({
       ),
     },
     {
-      id: 'electionType', colXs: 12, colMd: 6,
-      node: (
-        <>
-          <TextField
-            fullWidth
-            select
-            label={
-              <>
-                <span>{t('forms.aspirant.electionType', { defaultValue: 'Election Type' })}</span>
-                <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
-              </>
-            }
-            {...electionReg}
-            value={watchedElectionId || ''}
-            onChange={(e) => {
-              try { electionReg.onChange?.(e as any); } catch (err) { /* ignore */ }
-              const val = e.target.value;
-              setValue('electionId', val === '' ? '' : Number(val));
-            }}
-            disabled={loading}
-            error={!!errors.electionId}
-            helperText={errors.electionId && t((errors.electionId as any).message || 'validation.required')}
-            sx={{
-              ...darkFieldSx,
-              '& .MuiSelect-select': { color: watchedElectionId ? (isDark ? '#fff' : 'rgba(15,23,42,0.9)') : (isDark ? 'rgba(255,255,255,0.35)' : 'rgba(15,23,42,0.5)'), fontFamily: FF },
-            }}
-            SelectProps={{
-              MenuProps: {
-                PaperProps: {
-                  sx: {
-                    bgcolor: isDark ? '#1a1515' : '#ffffff',
-                    '& .MuiMenuItem-root': { color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(15,23,42,0.85)', fontFamily: FF },
-                    '& .MuiMenuItem-root:hover': { bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.1)' },
-                    '& .MuiMenuItem-root.Mui-selected': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.2)', color: GOLD },
-                  },
-                },
-              },
-            }}
-          >
-            {elections.map((el) => (
-              <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
-            ))}
-          </TextField>
-          {selectedElectionForAge?.type === 'gram_panchayat' && (
-            <Typography variant="body2" sx={{ color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mt: 1, fontFamily: FF, fontSize: '0.78rem' }}>
-              {t('civicIssues.gpVillageNotFound')}
-            </Typography>
-          )}
-        </>
-      ),
-    },
-    {
-      id: 'constituency', colXs: 12, colMd: 6,
+      id: 'constituencyTabs', colXs: 12, colMd: 12,
       node: (() => {
-        const selectedElection = elections.find((e) => String(e.id) === String(watchedElectionId));
-        const isMunicipal = selectedElection?.type === 'municipal_corporation';
-        const isGP = selectedElection?.type === 'gram_panchayat';
-
-        if (isGP) {
-          return (
-            <Stack spacing={1}>
-              <Autocomplete
-                options={gpStates}
-                value={selectedGpState}
-                onChange={(_, val) => setSelectedGpState(val)}
-                disabled={loading || !watchedElectionId}
-                loading={loadingGpStates}
-                renderInput={(params) => (
-                  <TextField {...params} label={<><span>State</span><Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box></>} sx={darkFieldSx} />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-              <Autocomplete
-                options={gpDistricts}
-                value={selectedGpDistrict}
-                onChange={(_, val) => setSelectedGpDistrict(val)}
-                disabled={loading || !selectedGpState}
-                loading={loadingGpDistricts}
-                renderInput={(params) => (
-                  <TextField {...params} label={<><span>District</span><Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box></>} sx={darkFieldSx} />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-              <Autocomplete
-                options={gpTaluks}
-                value={selectedGpTaluk}
-                onChange={(_, val) => setSelectedGpTaluk(val)}
-                disabled={loading || !selectedGpDistrict}
-                loading={loadingGpTaluks}
-                renderInput={(params) => (
-                  <TextField {...params} label={<><span>Taluk</span><Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box></>} sx={darkFieldSx} />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-              <Autocomplete
-                options={gpGrams}
-                value={selectedGpGram}
-                onChange={(_, val) => setSelectedGpGram(val)}
-                disabled={loading || !selectedGpTaluk}
-                loading={loadingGpGrams}
-                renderInput={(params) => (
-                  <TextField {...params} label={<><span>Gram Panchayat</span><Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box></>} sx={darkFieldSx} />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-              <Autocomplete
-                options={gpVillages}
-                getOptionLabel={(option) => option.villageName}
-                value={selectedGpVillage}
-                onChange={(_, val) => {
-                  setSelectedGpVillage(val);
-                  setValue('constituencyId', val ? Number(val.id) : '');
-                }}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                disabled={loading || !selectedGpGram}
-                loading={loadingGpVillages}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={<><span>Village</span><Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box></>}
-                    error={!!errors.constituencyId}
-                    helperText={errors.constituencyId && t((errors.constituencyId as any).message || 'validation.required')}
-                    sx={darkFieldSx}
-                  />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-            </Stack>
-          );
-        }
-
-        if (isMunicipal) {
-          return (
-            <>
-              <Autocomplete
-                options={municipalities}
-                getOptionLabel={(option) => option.name}
-                getOptionDisabled={(option) => !/greater bengaluru authority/i.test(option.name)}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={selectedMunicipality}
-                onChange={(_, selected) => {
-                  setSelectedMunicipality(selected);
-                }}
-                disabled={loading || !watchedElectionId}
-                loading={loadingMunicipalities}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={
-                      <>
-                        <span>{t('forms.aspirant.municipality', { defaultValue: 'Corporation / Municipality' })}</span>
-                        <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
-                      </>
-                    }
-                    sx={darkFieldSx}
-                  />
-                )}
-                sx={{ mb: 1 }}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-
-              <Autocomplete
-                options={cityConstituencies}
-                getOptionLabel={(option) => `${option.number} - ${option.name}`}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                value={selectedCityConstituency}
-                onChange={(_, selected) => {
-                  setSelectedCityConstituency(selected);
-                  setValue('constituencyId', selected ? selected.id : '');
-                }}
-                disabled={loading || !selectedMunicipality}
-                loading={loadingCityConstituencies}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={
-                      <>
-                        <span>{t('forms.aspirant.cityCorporationName', { defaultValue: 'City Corporation Ward' })}</span>
-                        <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
-                      </>
-                    }
-                    error={!!errors.constituencyId}
-                    helperText={errors.constituencyId && t((errors.constituencyId as any).message || 'validation.required')}
-                    sx={darkFieldSx}
-                  />
-                )}
-                ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-              />
-
-              {selectedCityConstituency?.category && (
-                <Alert
-                  severity="info"
-                  icon={<InfoOutlinedIcon />}
-                  sx={{ mt: 1 }}
-                >
-                  <Typography variant="body2">
-                    <strong>{t('forms.aspirant.reservedCategory', { defaultValue: 'Reserved Category' })}:</strong>{' '}
-                    {selectedCityConstituency.category}
-                  </Typography>
-                </Alert>
-              )}
-            </>
-          );
-        }
-
+        const hasMunicipal = storeUser?.municipalCorporationConstituency?.id != null;
+        const hasGp = storeUser?.gramPanchayatConstituency != null;
+        const wardTabLabel = hasMunicipal
+          ? (t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Aspirants')
+          : hasGp
+            ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
+            : (t('forms.aspirant.tabWardPanchayat') || 'Municipal / Gram Panchayat');
+        const wardTabIcon = hasGp && !hasMunicipal ? AgricultureIcon : LocationCityIcon;
+        const tabs: { key: AspirantTab; label: string; Icon: typeof AccountBalanceIcon }[] = [
+          { key: 'mp', label: t('userDashboard.actions.myLokSabhaAspirants') || 'Lok Sabha (MP)', Icon: AccountBalanceIcon },
+          { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'State Assembly (MLA)', Icon: GavelIcon },
+          { key: 'ward_panchayat', label: wardTabLabel, Icon: wardTabIcon },
+        ];
+        const missing = !activeConstituencyForUser;
+        const missingTypeLabel =
+          activeTab === 'mp'
+            ? (t('profile.lokSabhaConstituency') || 'Lok Sabha')
+            : activeTab === 'mla'
+              ? (t('profile.stateAssemblyConstituency') || 'State Assembly')
+              : (t('forms.aspirant.tabWardPanchayat') || 'Municipal / Gram Panchayat');
         return (
-          <Autocomplete
-            options={constituencies}
-            getOptionLabel={(option) => option.name}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            value={selectedConstituency}
-            onChange={(_, selected) => {
-              setSelectedConstituency(selected);
-              setValue('constituencyId', selected ? selected.id : '');
-            }}
-            disabled={loading || !watchedElectionId}
-            loading={loadingConstituencies}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={
-                  <>
-                    <span>{t('forms.aspirant.constituency', { defaultValue: 'Constituency' })}</span>
-                    <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
-                  </>
-                }
-                error={!!errors.constituencyId}
-                helperText={errors.constituencyId && t((errors.constituencyId as any).message || 'validation.required')}
-                sx={darkFieldSx}
-              />
+          <Stack spacing={1.75}>
+            <Typography sx={{
+              fontFamily: FF, fontSize: '0.75rem', fontWeight: 700, color: GOLD,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+            }}>
+              {t('forms.aspirant.electionContext', { defaultValue: 'Election & Constituency' })}
+              <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>*</Box>
+            </Typography>
+
+            <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
+              {tabs.map(({ key, label, Icon }) => {
+                const isActive = activeTab === key;
+                return (
+                  <Box
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    sx={{
+                      flex: 1,
+                      cursor: 'pointer',
+                      px: { xs: 1, sm: 1.5 },
+                      py: { xs: 1.4, sm: 1.6 },
+                      borderRadius: 2,
+                      border: isActive
+                        ? '1.5px solid rgba(245,168,0,0.55)'
+                        : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.08)'}`,
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(245,168,0,0.95) 0%, rgba(224,32,16,0.85) 100%)'
+                        : isDark ? 'rgba(255,255,255,0.03)' : 'rgba(17,24,39,0.02)',
+                      color: isActive ? '#fff' : isDark ? 'rgba(255,255,255,0.78)' : 'rgba(17,24,39,0.78)',
+                      transition: 'all 0.18s ease',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      gap: 0.4, textAlign: 'center', minWidth: 0,
+                      '&:hover': isActive
+                        ? {}
+                        : {
+                            borderColor: 'rgba(245,168,0,0.45)',
+                            background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.06)',
+                          },
+                    }}
+                  >
+                    <Icon sx={{ fontSize: { xs: 24, sm: 26 }, color: isActive ? '#fff' : GOLD }} />
+                    <Typography sx={{
+                      fontFamily: FF, fontWeight: 700, fontSize: { xs: '0.78rem', sm: '0.88rem' },
+                      lineHeight: 1.15,
+                    }}>
+                      {label}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Stack>
+
+            {/* Saved-value display OR empty-state CTA for the active tab */}
+            {activeConstituencyForUser ? (
+              <Box sx={{
+                p: { xs: 1.25, sm: 1.5 },
+                borderRadius: 2,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(17,24,39,0.10)'}`,
+                bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(17,24,39,0.02)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1,
+              }}>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography sx={{ fontFamily: FF, fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.10em', color: GOLD, textTransform: 'uppercase' }}>
+                    {t('forms.aspirant.savedConstituency', { defaultValue: 'Saved Constituency' })}
+                  </Typography>
+                  <Typography sx={{ fontFamily: FF, fontSize: '0.95rem', fontWeight: 700, color: textPrimary, lineHeight: 1.25, wordBreak: 'break-word' }}>
+                    {activeConstituencyForUser.name}
+                  </Typography>
+                  {activeConstituencyForUser.subLabel && (
+                    <Typography sx={{ fontFamily: FF, fontSize: '0.78rem', color: textSecondary, mt: 0.2 }}>
+                      {activeConstituencyForUser.subLabel}
+                    </Typography>
+                  )}
+                </Box>
+                <Button
+                  size="small"
+                  startIcon={<EditIcon sx={{ fontSize: '0.95rem' }} />}
+                  onClick={() => setPickerOpen(true)}
+                  sx={{
+                    color: GOLD, fontFamily: FF, fontWeight: 700, textTransform: 'none',
+                    border: `1px solid ${GOLD}`, borderRadius: '8px', px: 1.5,
+                    flexShrink: 0,
+                    '&:hover': { background: 'rgba(245,168,0,0.08)' },
+                  }}
+                >
+                  {t('forms.aspirant.updateProfile', { defaultValue: 'Update Profile' })}
+                </Button>
+              </Box>
+            ) : (
+              <Box sx={{
+                p: { xs: 1.5, sm: 2 },
+                borderRadius: 2,
+                border: `1px dashed ${isDark ? 'rgba(245,168,0,0.45)' : 'rgba(245,168,0,0.55)'}`,
+                bgcolor: isDark ? 'rgba(245,168,0,0.04)' : 'rgba(245,168,0,0.05)',
+                textAlign: 'center',
+              }}>
+                <Typography sx={{ fontFamily: FF, fontSize: '0.88rem', color: textPrimary, mb: 1 }}>
+                  {t('forms.aspirant.constituencyMissing', {
+                    type: missingTypeLabel,
+                    defaultValue: `If you want to contest, update your ${missingTypeLabel} constituency in your profile.`,
+                  })}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<EditIcon sx={{ fontSize: '0.95rem' }} />}
+                  onClick={() => setPickerOpen(true)}
+                  sx={{
+                    color: GOLD, borderColor: GOLD,
+                    fontFamily: FF, fontWeight: 700, textTransform: 'none',
+                    '&:hover': { borderColor: GOLD, background: 'rgba(245,168,0,0.08)' },
+                  }}
+                >
+                  {t('forms.aspirant.updateProfile', { defaultValue: 'Update Profile' })}
+                </Button>
+              </Box>
             )}
-            sx={{
-              '& .MuiAutocomplete-popupIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
-              '& .MuiAutocomplete-clearIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
-            }}
-            ListboxProps={{
-              sx: {
-                bgcolor: isDark ? '#1a1515' : '#fff',
-                '& .MuiAutocomplete-option': {
-                  color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(15,23,42,0.9)',
-                  fontFamily: FF,
-                  '&[aria-selected="true"]': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.1)' },
-                  '&.Mui-focused': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(17,24,39,0.04)' },
-                },
-              },
-            }}
-          />
+
+            {errors.constituencyId && !missing && (
+              <Typography sx={{ color: 'rgba(255,80,80,0.85)', fontSize: '0.72rem', fontFamily: FF }}>
+                {t((errors.constituencyId as any).message || 'validation.required')}
+              </Typography>
+            )}
+          </Stack>
         );
       })(),
     },
@@ -1175,6 +1150,14 @@ const CandidateInformationStep = ({
       <Box sx={{ display: 'flex', height: '3px' }}>
         {['#6B3A00', '#253A9A', '#C8180A'].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
       </Box>
+
+      {/* Constituency-picker modal — opened from the tab strip's
+          "Update Profile" CTA. After save it updates the auth store, and the
+          tab-strip effect picks up the new electionId + constituencyId. */}
+      <ConstituencyPickerDialog
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+      />
     </Box>
   );
 };
