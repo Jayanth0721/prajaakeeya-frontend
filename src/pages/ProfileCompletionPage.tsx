@@ -351,22 +351,33 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     // store user avoids the race where the options fetch finished before
     // /auth/me populated initialIdsRef.current — symptom: dropdowns showed
     // their label but no value even though /auth/me had the ID.
+    // One-shot refs ensure the pre-fill runs only until the saved value is
+    // applied; otherwise the effect re-runs on every user pick and snaps the
+    // dropdown back to the saved ID.
     const lokSabhaIdFromUser = (user as any)?.lokSabhaConstituency?.id as number | null | undefined;
     const stateAssemblyIdFromUser = (user as any)?.stateAssemblyConstituency?.id as number | null | undefined;
+    const lokSabhaResolvedRef = useRef(false);
+    const stateAssemblyResolvedRef = useRef(false);
     useEffect(() => {
-        if (lokSabhaConstituency?.id === lokSabhaIdFromUser) return;
+        if (lokSabhaResolvedRef.current) return;
         if (lokSabhaIdFromUser == null) return;
         if (lokSabhaOptions.length === 0) return;
         const m = lokSabhaOptions.find((c) => c.id === lokSabhaIdFromUser);
-        if (m) setLokSabhaConstituency(m);
-    }, [lokSabhaOptions, lokSabhaIdFromUser, lokSabhaConstituency]);
+        if (m) {
+            setLokSabhaConstituency(m);
+            lokSabhaResolvedRef.current = true;
+        }
+    }, [lokSabhaOptions, lokSabhaIdFromUser]);
     useEffect(() => {
-        if (stateAssemblyConstituency?.id === stateAssemblyIdFromUser) return;
+        if (stateAssemblyResolvedRef.current) return;
         if (stateAssemblyIdFromUser == null) return;
         if (stateAssemblyOptions.length === 0) return;
         const m = stateAssemblyOptions.find((c) => c.id === stateAssemblyIdFromUser);
-        if (m) setStateAssemblyConstituency(m);
-    }, [stateAssemblyOptions, stateAssemblyIdFromUser, stateAssemblyConstituency]);
+        if (m) {
+            setStateAssemblyConstituency(m);
+            stateAssemblyResolvedRef.current = true;
+        }
+    }, [stateAssemblyOptions, stateAssemblyIdFromUser]);
 
     // Municipality list — loaded on mount so the dropdown is ready to use.
     useEffect(() => {
@@ -414,15 +425,20 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
 
     // Pre-fill the Municipal Corporation cascade from the saved nested object
     // on /auth/me — it already carries `municipality`, `name`, `number`, etc.,
-    // so we can resolve without an extra wards-list fetch.
+    // so we can resolve without an extra wards-list fetch. Read from the auth
+    // store user (reactive) rather than initialMunicipalRef so the effect
+    // re-runs when /auth/me lands after the municipalities list does.
+    const savedMunicipal =
+        (initialMunicipalRef.current as any) ??
+        ((user as any)?.municipalCorporationConstituency as any) ??
+        null;
     const municipalResolvedRef = useRef(false);
     useEffect(() => {
         if (municipalResolvedRef.current) return;
         if (selectedMunicipality || selectedCityWard) return;
-        const saved = initialMunicipalRef.current;
-        if (!saved || saved.id == null) return;
+        if (!savedMunicipal || savedMunicipal.id == null) return;
         if (!municipalities.length) return;
-        const munName = saved.municipality as string | undefined;
+        const munName = savedMunicipal.municipality as string | undefined;
         if (!munName) return;
 
         const norm = (s: string) =>
@@ -435,9 +451,9 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         // The scoped-fetch effect on `selectedMunicipality` will load the full
         // wards list; meanwhile seed the dropdown with the saved ward so it
         // displays immediately.
-        setCityWards([saved as Constituency]);
-        setSelectedCityWard(saved as Constituency);
-    }, [municipalities, selectedMunicipality, selectedCityWard]);
+        setCityWards([savedMunicipal as Constituency]);
+        setSelectedCityWard(savedMunicipal as Constituency);
+    }, [municipalities, selectedMunicipality, selectedCityWard, savedMunicipal]);
 
     // Gram Panchayat cascade — load states up front; the rest cascade on demand.
     useEffect(() => {
