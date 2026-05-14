@@ -490,6 +490,42 @@ const CandidateInformationStep = ({
     }
   })();
 
+  // Guard: wrap parent's onNext so that *just before* validation runs we
+  // synchronously (re)set electionId + constituencyId from the active tab and
+  // saved user data, and clear stale errors. If the elections list is still
+  // pending we fetch once more so a fast user click doesn't hit an empty
+  // election list. Without this, the parent's trigger() can see a stale
+  // empty electionId and refuse to advance even when /auth/me already has
+  // the saved value populated in the UI.
+  const handleNextClick = async () => {
+    let resolved = activeElection;
+    if (!resolved?.id && activeElectionType) {
+      try {
+        const resp = await fetchElections();
+        const data = Array.isArray(resp.data) ? resp.data : [];
+        setElections(data);
+        resolved = data.find((e) => e.type === activeElectionType) ?? null;
+      } catch {
+        // ignore — fall through and let parent's trigger surface the error.
+      }
+    }
+    if (resolved?.id != null) {
+      setValue('electionId', resolved.id, {
+        shouldValidate: true, shouldDirty: true, shouldTouch: true,
+      });
+    }
+    if (activeConstituencyForUser?.id != null) {
+      setValue('constituencyId', activeConstituencyForUser.id, {
+        shouldValidate: true, shouldDirty: true, shouldTouch: true,
+      });
+    }
+    clearErrors?.(['electionId', 'constituencyId']);
+    // Yield a microtask so the form-state writes commit before the parent's
+    // trigger() reads them.
+    await Promise.resolve();
+    onNext();
+  };
+
   // Push the resolved electionId + constituencyId into the form whenever the
   // tab, elections list, or saved user data changes. `shouldDirty/Touch` mark
   // the fields as user-set so react-hook-form treats them as valid input
@@ -1172,7 +1208,7 @@ const CandidateInformationStep = ({
               <Button
                 variant="contained"
                 endIcon={loading ? <CircularProgress size={16} sx={{ color: '#fff' }} /> : <ArrowForwardIcon />}
-                onClick={onNext}
+                onClick={handleNextClick}
                 disabled={loading}
                 sx={{
                   ...commonBtnSx,
