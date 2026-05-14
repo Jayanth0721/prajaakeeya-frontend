@@ -428,8 +428,10 @@ const CivicIssuesPage: React.FC = () => {
   }, [selectedElectionId, selectedElectionType, filterElectionId]);
 
   // Resolve the user's constituency name for display (chip / sub-header).
-  // /elections/<type>/constituencies returns every ward/village with parent
-  // metadata, so a single call finds the saved id.
+  // /auth/me now returns the full nested constituency object for each type, so
+  // we can short-circuit the resolution without an extra fetch. GP nested
+  // uses `srNo` + `villageName` (no id/name), so we synthesize a Constituency
+  // shape from those fields.
   useEffect(() => {
     if (!selectedElectionType) {
       setSelectedConstituency(null);
@@ -440,21 +442,26 @@ const CivicIssuesPage: React.FC = () => {
       setSelectedConstituency(null);
       return;
     }
-    let cancelled = false;
-    fetchConstituencies(selectedElectionType)
-      .then((resp) => {
-        if (cancelled) return;
-        const list = resp.data?.constituencies ?? [];
-        const match = list.find((c) => c.id === userId);
-        if (match) setSelectedConstituency(match);
-        else setSelectedConstituency(null);
-      })
-      .catch(() => {
-        if (!cancelled) setSelectedConstituency(null);
-      });
-    return () => {
-      cancelled = true;
-    };
+    const u = user as any;
+    const nested =
+      selectedElectionType === 'lok_sabha' ? u?.lokSabhaConstituency :
+      selectedElectionType === 'state_assembly' ? u?.stateAssemblyConstituency :
+      selectedElectionType === 'municipal_corporation' ? u?.municipalCorporationConstituency :
+      selectedElectionType === 'gram_panchayat' ? u?.gramPanchayatConstituency :
+      null;
+    if (nested) {
+      if (selectedElectionType === 'gram_panchayat') {
+        setSelectedConstituency({
+          id: nested.srNo,
+          name: nested.villageName ?? '',
+          state: nested.state ?? '',
+        } as Constituency);
+      } else {
+        setSelectedConstituency(nested as Constituency);
+      }
+      return;
+    }
+    setSelectedConstituency(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedElectionType, user]);
 
