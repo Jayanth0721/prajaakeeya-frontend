@@ -166,8 +166,8 @@ const UserLayout = () => {
                 }}
               />
 
-              {/* Notifications bell */}
-              <NotificationBell onViewAll={() => navigate('/user/notifications')} />
+              {/* Notifications bell — opens /user/notifications */}
+              <NotificationBell count={2} />
 
               <Box sx={{ width: { xs: 4, sm: 8 } }} />
 

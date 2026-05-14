@@ -46,6 +46,7 @@ import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
 import DocumentsUploadPage from "./pages/DocumentsUploadPage";
 import SopUploadPage from "./pages/SopUploadPage";
 import SopPage from "./pages/SopPage";
+import NotificationsPage from "./pages/NotificationsPage";
 import SignedSopPage from "./pages/SignedSopPage";
 import AspirantApprovalPage from "./pages/AspirantApprovalPage";
 import WardCandidateListPage from "./pages/WardCandidateListPage";
@@ -374,6 +375,7 @@ const App = () => {
             <Route path="vote" element={<VotingPage />} />
             <Route path="discussions" element={<WardDiscussionPage />} />
             <Route path="sop" element={<SopPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
           </Route>
 
           {/* Guest routes — no auth required */}
