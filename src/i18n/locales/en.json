@@ -1562,7 +1562,7 @@
       },
       "votersCanLoginWithGoogle": "Citizens can sign in with Google",
       "verifyOtp": "Verify OTP",
-      "continueAsGuest": "Continue as Guest",
+      "continueAsGuest": "Continue as Guest (Read only)",
       "bengaluruNotice": "Voter registration is currently open only for Bengaluru wards (GBA, BBMP).\nIt will be opened for citizens in other constituencies soon."
     },
     "register": {
@@ -1586,7 +1586,7 @@
       "selfieVerification": "Selfie Verification",
       "captureYourSelfie": "Capture your selfie for verification",
       "openCamera": "Open Camera",
-      "continueAsGuest": "Continue as Guest",
+      "continueAsGuest": "Continue as Guest (Read only)",
       "consentText": "I confirm that my registration on Prajaakeeya is done voluntarily and with my consent.",
       "consentHeading": "DPDP ACT 2023 · SECTION 6 COMPLIANT",
       "consentCombined": "I voluntarily consent to store my identity for constituency verification and confirm that I have read and accepted the Privacy Policy & Terms.",
@@ -1709,6 +1709,32 @@
       "talukLabel": "Taluk",
       "gpLabel": "Gram Panchayat",
       "villageLabel": "Village"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Stay updated on your ward, issues, and aspirants.",
+    "new": "new",
+    "markAllRead": "Mark all read",
+    "clearAll": "Clear all",
+    "emptyTitle": "You're all caught up",
+    "emptyUnreadTitle": "No unread notifications",
+    "emptyBody": "New activity will show up here.",
+    "endOfList": "You're all caught up",
+    "tabs": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "sections": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier"
+    },
+    "kinds": {
+      "vote": "Voting",
+      "issue": "Public Issue",
+      "aspirant": "Aspirant",
+      "announcement": "Announcement"
     }
   },
   "civicIssues": {
