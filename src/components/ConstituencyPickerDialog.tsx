@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Autocomplete,
   Box,
@@ -141,50 +141,77 @@ const ConstituencyPickerDialog: React.FC<Props> = ({ open, onClose, onSaved }) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Reactive pre-fill — runs whenever options load OR user changes.
+  // Reactive pre-fill — runs once per open per field, then steps aside so
+  // user edits stick. Without the one-shot refs, picking a new option would
+  // trip the effect again and snap the autocomplete back to the saved id.
   const u = user as any;
   const savedLokSabhaId = u?.lokSabhaConstituency?.id ?? null;
   const savedStateAssemblyId = u?.stateAssemblyConstituency?.id ?? null;
   const savedMunicipal = u?.municipalCorporationConstituency ?? null;
   const savedGp = u?.gramPanchayatConstituency ?? null;
 
+  const lokSabhaResolvedRef = useRef(false);
+  const stateAssemblyResolvedRef = useRef(false);
+  const municipalResolvedRef = useRef(false);
+  const gpResolvedRef = useRef(false);
+
+  // Reset the one-shot refs whenever the dialog opens, so reopening
+  // re-applies the latest saved values.
   useEffect(() => {
-    if (lokSabha?.id === savedLokSabhaId) return;
-    if (savedLokSabhaId == null || lokSabhaOptions.length === 0) return;
-    const m = lokSabhaOptions.find((c) => c.id === savedLokSabhaId);
-    if (m) setLokSabha(m);
-  }, [lokSabhaOptions, savedLokSabhaId, lokSabha]);
+    if (open) {
+      lokSabhaResolvedRef.current = false;
+      stateAssemblyResolvedRef.current = false;
+      municipalResolvedRef.current = false;
+      gpResolvedRef.current = false;
+    }
+  }, [open]);
 
   useEffect(() => {
-    if (stateAssembly?.id === savedStateAssemblyId) return;
+    if (lokSabhaResolvedRef.current) return;
+    if (savedLokSabhaId == null || lokSabhaOptions.length === 0) return;
+    const m = lokSabhaOptions.find((c) => c.id === savedLokSabhaId);
+    if (m) {
+      setLokSabha(m);
+      lokSabhaResolvedRef.current = true;
+    }
+  }, [lokSabhaOptions, savedLokSabhaId]);
+
+  useEffect(() => {
+    if (stateAssemblyResolvedRef.current) return;
     if (savedStateAssemblyId == null || stateAssemblyOptions.length === 0) return;
     const m = stateAssemblyOptions.find((c) => c.id === savedStateAssemblyId);
-    if (m) setStateAssembly(m);
-  }, [stateAssemblyOptions, savedStateAssemblyId, stateAssembly]);
+    if (m) {
+      setStateAssembly(m);
+      stateAssemblyResolvedRef.current = true;
+    }
+  }, [stateAssemblyOptions, savedStateAssemblyId]);
 
   // Pre-select municipality from saved municipal object
   useEffect(() => {
+    if (municipalResolvedRef.current) return;
     if (!savedMunicipal || !municipalities.length) return;
-    if (selectedMunicipality?.id) return;
     const munName = savedMunicipal.municipality as string | undefined;
     if (!munName) return;
     const norm = (s: string) => s.replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().toLowerCase();
     const m = municipalities.find((x) => norm(x.name) === norm(munName));
     if (m) {
+      municipalResolvedRef.current = true;
       setSelectedMunicipality(m);
       setCityWards([savedMunicipal as Constituency]);
       setSelectedCityWard(savedMunicipal as Constituency);
     }
-  }, [municipalities, savedMunicipal, selectedMunicipality]);
+  }, [municipalities, savedMunicipal]);
 
   // Pre-select GP from saved GP nested object (srNo + villageName + parents)
   useEffect(() => {
-    if (!savedGp || selectedGpState) return;
+    if (gpResolvedRef.current) return;
+    if (!savedGp || !savedGp.srNo) return;
+    gpResolvedRef.current = true;
     if (savedGp.state) setSelectedGpState(savedGp.state);
     if (savedGp.district) setSelectedGpDistrict(savedGp.district);
     if (savedGp.taluk) setSelectedGpTaluk(savedGp.taluk);
     if (savedGp.gpName) setSelectedGpGram(savedGp.gpName);
-    if (savedGp.srNo && savedGp.villageName) {
+    if (savedGp.villageName) {
       const synth: GPVillage = {
         id: String(savedGp.srNo),
         villageName: savedGp.villageName,
@@ -194,7 +221,7 @@ const ConstituencyPickerDialog: React.FC<Props> = ({ open, onClose, onSaved }) =
       setGpVillages([synth]);
       setSelectedGpVillage(synth);
     }
-  }, [savedGp, selectedGpState]);
+  }, [savedGp]);
 
   // ── Cascading fetches ─────────────────────────────────────────────────
   useEffect(() => {
