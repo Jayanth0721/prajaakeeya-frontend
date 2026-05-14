@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import useThemeStore from '../store/useThemeStore';
 import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
-import { getUnreadCount } from '../services/notificationService';
+import { getUnreadCount, NOTIFICATIONS_CHANGED_EVENT } from '../services/notificationService';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -50,11 +50,16 @@ export default function NotificationBell({
     fetchCount();
   }, [fetchCount, location.pathname]);
 
-  // Refresh when the tab regains focus.
+  // Refresh when the tab regains focus or when another component mutates notifications.
   useEffect(() => {
     const onFocus = () => fetchCount();
+    const onChanged = () => fetchCount();
     window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
+    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, onChanged);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, onChanged);
+    };
   }, [fetchCount]);
 
   const count = countOverride ?? liveCount;

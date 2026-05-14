@@ -49,8 +49,35 @@ export interface ListNotificationsParams {
   unreadOnly?: boolean;
 }
 
+export interface MarkAllReadResponse {
+  updated: number;
+}
+
+export interface DeleteNotificationResponse {
+  deleted: number;
+}
+
+/** Broadcast event name fired after any notification mutation so listeners (e.g. the header bell) can refresh. */
+export const NOTIFICATIONS_CHANGED_EVENT = 'prajakeeya:notifications-changed';
+
+/** Dispatch the cross-component refresh signal. */
+export const emitNotificationsChanged = () => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(NOTIFICATIONS_CHANGED_EVENT));
+  }
+};
+
 export const getUnreadCount = () =>
   apiClient.get<UnreadCountResponse>('/notifications/unread-count');
 
 export const listNotifications = (params: ListNotificationsParams = {}) =>
   apiClient.get<NotificationsListResponse>('/notifications', { params });
+
+export const markNotificationRead = (id: number) =>
+  apiClient.post<ApiNotification>(`/notifications/${id}/read`);
+
+export const markAllNotificationsRead = () =>
+  apiClient.post<MarkAllReadResponse>('/notifications/read-all');
+
+export const deleteNotification = (id: number) =>
+  apiClient.delete<DeleteNotificationResponse>(`/notifications/${id}`);

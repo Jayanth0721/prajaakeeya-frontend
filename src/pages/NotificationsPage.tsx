@@ -31,7 +31,14 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { BRAND } from '../theme';
-import { listNotifications, ApiNotification } from '../services/notificationService';
+import {
+  listNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+  deleteNotification,
+  emitNotificationsChanged,
+  ApiNotification,
+} from '../services/notificationService';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -211,11 +218,58 @@ export default function NotificationsPage() {
     return map;
   }, [visible]);
 
-  const handleMarkAll = () => setItems((prev) => prev.map((n) => ({ ...n, read: true })));
-  const handleClear = () => setItems([]);
+  const handleMarkAll = async () => {
+    const previouslyUnread = items.filter((n) => !n.read);
+    if (previouslyUnread.length === 0) return;
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await markAllNotificationsRead();
+      emitNotificationsChanged();
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to mark all as read.');
+      setItems((prev) =>
+        prev.map((n) =>
+          previouslyUnread.some((u) => u.id === n.id) ? { ...n, read: false } : n,
+        ),
+      );
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    const snapshot = items;
+    setItems((prev) => prev.filter((n) => n.id !== id));
+    try {
+      await deleteNotification(id);
+      emitNotificationsChanged();
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to delete notification.');
+      setItems(snapshot);
+    }
+  };
+
+  const handleClear = async () => {
+    if (items.length === 0) return;
+    const snapshot = items;
+    setItems([]);
+    try {
+      await Promise.all(snapshot.map((n) => deleteNotification(n.id)));
+      emitNotificationsChanged();
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to clear notifications.');
+      // Refetch to recover whatever survived
+      fetchData();
+    }
+  };
 
   const handleClickItem = (n: UiNotification) => {
-    setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+    if (!n.read) {
+      setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+      markNotificationRead(n.id)
+        .then(() => emitNotificationsChanged())
+        .catch(() => {
+          // Non-critical — keep the optimistic state; the next fetch will reconcile.
+        });
+    }
     if (n.href) navigate(n.href);
   };
 
@@ -507,20 +561,31 @@ export default function NotificationsPage() {
                           },
                         }}
                       >
-                        {!n.read && (
-                          <Box
+                        <Tooltip title={t('notifications.delete') || 'Delete'}>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(n.id);
+                            }}
                             sx={{
                               position: 'absolute',
-                              top: 14,
-                              right: 14,
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              bgcolor: BRAND.red,
-                              boxShadow: `0 0 0 4px ${isDark ? 'rgba(200,24,10,0.18)' : 'rgba(200,24,10,0.14)'}`,
+                              top: 8,
+                              right: 8,
+                              width: 28,
+                              height: 28,
+                              color: subText,
+                              opacity: 0.7,
+                              '&:hover': {
+                                opacity: 1,
+                                color: BRAND.red,
+                                bgcolor: isDark ? 'rgba(200,24,10,0.10)' : 'rgba(200,24,10,0.08)',
+                              },
                             }}
-                          />
-                        )}
+                          >
+                            <DeleteIcon sx={{ fontSize: 18 }} />
+                          </IconButton>
+                        </Tooltip>
                         <Avatar
                           sx={{
                             width: 42,
@@ -533,7 +598,7 @@ export default function NotificationsPage() {
                         >
                           {meta.icon}
                         </Avatar>
-                        <Box sx={{ flex: 1, minWidth: 0, pr: 2 }}>
+                        <Box sx={{ flex: 1, minWidth: 0, pr: 4.5 }}>
                           <Box
                             sx={{
                               display: 'flex',
