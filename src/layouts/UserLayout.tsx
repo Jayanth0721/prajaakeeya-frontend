@@ -24,6 +24,7 @@ import useThemeStore from '../store/useThemeStore';
 import prajakeeyaLogo from '../assets/images/prajakeeya.png';
 import { BRAND } from '../theme';
 import LanguageSelector from '../components/LanguageSelector';
+import NotificationBell from '../components/NotificationBell';
 import { fetchAspirant } from '../services/aspirantService';
 
 const FF = "'Baloo 2', sans-serif";
@@ -164,6 +165,9 @@ const UserLayout = () => {
                   color: isDark ? BRAND.yellow : BRAND.saffron,
                 }}
               />
+
+              {/* Notifications bell */}
+              <NotificationBell onViewAll={() => navigate('/user/notifications')} />
 
               <Box sx={{ width: { xs: 4, sm: 8 } }} />
 
