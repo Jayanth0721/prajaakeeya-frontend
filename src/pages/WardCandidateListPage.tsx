@@ -387,8 +387,11 @@ const WardCandidateListPage = () => {
   // ── 3-tab selector replaces the legacy filter dropdowns. Each tab maps to
   // one election type and auto-loads aspirants for the user's saved
   // constituency for that type. The original filter UI is kept in place below
-  // but gated by `!isAutoTypeMode` (which is now always false, since the tab
-  // selector always sets an `autoElectionType`).
+  // but gated by `!isAutoTypeMode` (which is now always false, since either
+  // the URL `?type=` deep-link or the tab selector sets `autoElectionType`).
+  // Tabs only render when the user arrives without a `?type=` param (e.g.
+  // from /user/sop "My Area Aspirants"); dashboard tiles deep-link with
+  // `?type=` and skip the tab UI entirely.
   type AspirantTab = 'mp' | 'mla' | 'ward_panchayat';
   const tabToElectionType = (tab: AspirantTab): string => {
     if (tab === 'mp') return 'lok_sabha';
@@ -398,15 +401,16 @@ const WardCandidateListPage = () => {
     if ((user as any)?.gramPanchayatConstituency != null) return 'gram_panchayat';
     return 'municipal_corporation';
   };
+  const urlType = searchParams.get('type');
+  const showTabSelector = !urlType;
   const initialTabFromUrl: AspirantTab = (() => {
-    const u = searchParams.get('type');
-    if (u === 'lok_sabha') return 'mp';
-    if (u === 'state_assembly') return 'mla';
-    if (u === 'municipal_corporation' || u === 'gram_panchayat') return 'ward_panchayat';
+    if (urlType === 'lok_sabha') return 'mp';
+    if (urlType === 'state_assembly') return 'mla';
+    if (urlType === 'municipal_corporation' || urlType === 'gram_panchayat') return 'ward_panchayat';
     return 'mp';
   })();
   const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromUrl);
-  const autoElectionType = tabToElectionType(activeTab);
+  const autoElectionType = urlType ?? tabToElectionType(activeTab);
   const autoUserConstituencyId = (() => {
     if (!user) return null;
     switch (autoElectionType) {
@@ -1322,9 +1326,11 @@ const WardCandidateListPage = () => {
         )}
 
         {/* 3-tab selector — drives `activeTab` which in turn sets the
-            effective `autoElectionType`. Replaces the legacy filter dropdowns
-            below (which are kept in code, gated by !isAutoTypeMode). Styled to
-            match the Civic Issues page tab strip. */}
+            effective `autoElectionType`. Only renders when the page is
+            visited without a `?type=` deep-link (e.g. coming from /user/sop
+            "My Area Aspirants"). Dashboard tiles pass `?type=` and skip the
+            tab UI entirely. Styled to match the Civic Issues page tabs. */}
+        {showTabSelector && (
         <Box sx={{
           p: { xs: 1.5, sm: 2 },
           mb: 2.5,
@@ -1405,6 +1411,7 @@ const WardCandidateListPage = () => {
             })()}
           </Stack>
         </Box>
+        )}
 
         {/* Legacy filter UI — preserved but never renders now that the tab
             selector above always sets `autoElectionType`. */}

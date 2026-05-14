@@ -54,7 +54,8 @@ import waterTapImg from '../assets/images/water-tap.png';
 import garbageImg from '../assets/images/garbage.png';
 import streetLightImg from '../assets/images/street-light.png';
 import savePlanetImg from '../assets/images/save-the-planet.png';
-import capitolImg from '../assets/images/capitol.png';
+import capitolInactiveImg from '../assets/images/capitol1.png';
+import capitolActiveImg from '../assets/images/capitol.png';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -588,16 +589,16 @@ const CivicIssuesPage: React.FC = () => {
             <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
               {(
                 [
-                  { key: 'mp' as const, label: t('civicIssues.tabMp', { defaultValue: 'MP Constituency' }), Icon: MPIcon, inactiveImg: undefined as string | undefined },
-                  // MLA: show capitol.png when inactive (matches the rest's
-                  // yellow palette); fall back to the Gavel SvgIcon when
-                  // active so the white-on-gradient state stays consistent.
-                  { key: 'mla' as const, label: t('civicIssues.tabMla', { defaultValue: 'MLA Constituency' }), Icon: MLAIcon, inactiveImg: capitolImg },
-                  { key: 'ward_panchayat' as const, label: t('civicIssues.tabWardPanchayat', { defaultValue: 'Ward / Panchayat' }), Icon: WardPinIcon, inactiveImg: undefined as string | undefined },
+                  { key: 'mp' as const, label: t('civicIssues.tabMp', { defaultValue: 'MP Constituency' }), Icon: MPIcon, inactiveImg: undefined as string | undefined, activeImg: undefined as string | undefined },
+                  // MLA: use capitol1.png when inactive and capitol.png when
+                  // active so both states show the building image rather than
+                  // the Gavel SvgIcon.
+                  { key: 'mla' as const, label: t('civicIssues.tabMla', { defaultValue: 'MLA Constituency' }), Icon: MLAIcon, inactiveImg: capitolInactiveImg, activeImg: capitolActiveImg },
+                  { key: 'ward_panchayat' as const, label: t('civicIssues.tabWardPanchayat', { defaultValue: 'Ward / Panchayat' }), Icon: WardPinIcon, inactiveImg: undefined as string | undefined, activeImg: undefined as string | undefined },
                 ]
-              ).map(({ key, label, Icon, inactiveImg }) => {
+              ).map(({ key, label, Icon, inactiveImg, activeImg }) => {
                 const isActive = activeTab === key;
-                const imgSrc = !isActive ? inactiveImg : undefined;
+                const imgSrc = isActive ? activeImg : inactiveImg;
                 return (
                   <Box
                     key={key}
