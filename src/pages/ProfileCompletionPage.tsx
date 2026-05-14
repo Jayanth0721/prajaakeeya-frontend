@@ -182,6 +182,10 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         municipal?: number | null;
         gramPanchayat?: number | null;
     }>({});
+    // Full saved municipal corp object from /auth/me — has the parent
+    // `municipality` name we need to pre-select the municipality dropdown
+    // without doing an extra wards-list fetch + ID lookup.
+    const initialMunicipalRef = useRef<any | null>(null);
 
     // Form validation schema
     const schema = useMemo(() => yup.object({
@@ -269,6 +273,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                         municipal: me.municipalCorporationConstituency?.id ?? null,
                         gramPanchayat: me.gramPanchayatConstituency?.id ?? null,
                     };
+                    initialMunicipalRef.current = me.municipalCorporationConstituency ?? null;
                     // Pre-select the local body type from whichever ID is already
                     // saved (a user can only have one — municipality OR GP).
                     if (me.municipalCorporationConstituency?.id != null) {
@@ -407,56 +412,31 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         };
     }, [selectedMunicipality]);
 
-    // Pre-fill the Municipal Corporation cascade from the saved leaf ID.
-    // `GET /elections/municipal_corporation/constituencies` returns every ward
-    // with its parent `municipality` name, so we can resolve in one request:
-    //   1. Find ward by id → get its municipality name
-    //   2. Match that name against the loaded municipalities list
-    //   3. Pre-select municipality + ward and seed the wards dropdown so the
-    //      existing scoped-fetch effect doesn't have to re-fetch first.
+    // Pre-fill the Municipal Corporation cascade from the saved nested object
+    // on /auth/me — it already carries `municipality`, `name`, `number`, etc.,
+    // so we can resolve without an extra wards-list fetch.
     const municipalResolvedRef = useRef(false);
     useEffect(() => {
         if (municipalResolvedRef.current) return;
         if (selectedMunicipality || selectedCityWard) return;
-        const savedId = initialIdsRef.current.municipal;
-        if (savedId == null) return;
+        const saved = initialMunicipalRef.current;
+        if (!saved || saved.id == null) return;
         if (!municipalities.length) return;
+        const munName = saved.municipality as string | undefined;
+        if (!munName) return;
+
+        const norm = (s: string) =>
+            s.replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().toLowerCase();
+        const munObj = municipalities.find((m) => norm(m.name) === norm(munName));
+        if (!munObj) return;
 
         municipalResolvedRef.current = true;
-        let cancelled = false;
-        setLoadingCityWards(true);
-        fetchConstituencies('municipal_corporation')
-            .then((resp) => {
-                if (cancelled) return;
-                const wards = (resp.data?.constituencies ?? []) as Constituency[];
-                const match = wards.find((w) => w.id === savedId);
-                if (!match) return;
-                const munName = (match as any).municipality as string | undefined;
-                if (!munName) return;
-                const norm = (s: string) =>
-                    s.replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().toLowerCase();
-                const munObj = municipalities.find((m) => norm(m.name) === norm(munName));
-                if (!munObj) return;
-                setSelectedMunicipality(munObj);
-                // Seed the wards dropdown with this municipality's wards so the
-                // selected ward shows immediately, without waiting for the
-                // scoped fetch effect to re-run.
-                const munWards = wards.filter(
-                    (w) => norm(((w as any).municipality ?? '')) === norm(munName),
-                );
-                setCityWards(munWards);
-                setSelectedCityWard(match);
-            })
-            .catch(() => {
-                // ignore — user can still re-pick manually
-            })
-            .finally(() => {
-                if (!cancelled) setLoadingCityWards(false);
-            });
-
-        return () => {
-            cancelled = true;
-        };
+        setSelectedMunicipality(munObj);
+        // The scoped-fetch effect on `selectedMunicipality` will load the full
+        // wards list; meanwhile seed the dropdown with the saved ward so it
+        // displays immediately.
+        setCityWards([saved as Constituency]);
+        setSelectedCityWard(saved as Constituency);
     }, [municipalities, selectedMunicipality, selectedCityWard]);
 
     // Gram Panchayat cascade — load states up front; the rest cascade on demand.
