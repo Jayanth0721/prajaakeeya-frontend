@@ -45,8 +45,8 @@ import { useSearchParams } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import { fetchVotingWindow } from '../../services/voteService';
 import ConstituencyPickerDialog from '../ConstituencyPickerDialog';
-import capitolInactiveImg from '../../assets/images/capitol1.png';
-import capitolActiveImg from '../../assets/images/capitol.png';
+import capitolInactiveImg from '../../assets/images/capitol.png';
+import capitolActiveImg from '../../assets/images/capitol1.png';
 
 // ── Theme constants — sourced from central BRAND palette ──────────────────
 const GOLD = BRAND.yellow;                    // '#F5A800'
