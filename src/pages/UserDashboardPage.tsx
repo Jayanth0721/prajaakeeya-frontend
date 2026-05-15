@@ -34,7 +34,7 @@ import sopImg from '../assets/images/sop.png';
 import meetImg from '../assets/images/meet.png';
 import leaderImg from '../assets/images/leader.png';
 import managerImg from '../assets/images/manager.png';
-import advisorImg from '../assets/images/advisor.png';
+import advisorImg from '../assets/images/office.png';
 import staffImg from '../assets/images/staff.png';
 import React from 'react';
 import { motion } from 'framer-motion';
