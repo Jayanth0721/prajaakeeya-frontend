@@ -25,6 +25,7 @@ import {
   EventAvailable as MeetingIcon,
   DoneAll as DoneAllIcon,
   DeleteOutline as DeleteIcon,
+  DeleteSweepOutlined as ClearAllIcon,
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -36,6 +37,7 @@ import {
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
+  clearAllNotifications,
   emitNotificationsChanged,
   ApiNotification,
 } from '../services/notificationService';
@@ -252,6 +254,19 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleClearAll = async () => {
+    if (items.length === 0) return;
+    const snapshot = items;
+    setItems([]);
+    try {
+      await clearAllNotifications();
+      emitNotificationsChanged();
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to clear notifications.');
+      setItems(snapshot);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     const snapshot = items;
     setItems((prev) => prev.filter((n) => n.id !== id));
@@ -402,28 +417,52 @@ export default function NotificationsPage() {
           </ToggleButton>
         </ToggleButtonGroup>
 
-        <Button
-          size="small"
-          variant="outlined"
-          disabled={unreadCount === 0 || loading}
-          startIcon={<DoneAllIcon sx={{ fontSize: 18 }} />}
-          onClick={handleMarkAll}
-          sx={{
-            fontFamily: FF,
-            fontWeight: 700,
-            textTransform: 'none',
-            borderRadius: 50,
-            borderColor: borderFaint,
-            color: accent,
-            '&:hover': {
-              borderColor: accent,
-              bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.10)',
-            },
-            '&.Mui-disabled': { color: subText, borderColor: borderFaint },
-          }}
-        >
-          {t('notifications.markAllRead') || 'Mark all read'}
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            size="small"
+            variant="outlined"
+            disabled={unreadCount === 0 || loading}
+            startIcon={<DoneAllIcon sx={{ fontSize: 18 }} />}
+            onClick={handleMarkAll}
+            sx={{
+              fontFamily: FF,
+              fontWeight: 700,
+              textTransform: 'none',
+              borderRadius: 50,
+              borderColor: borderFaint,
+              color: accent,
+              '&:hover': {
+                borderColor: accent,
+                bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.10)',
+              },
+              '&.Mui-disabled': { color: subText, borderColor: borderFaint },
+            }}
+          >
+            {t('notifications.markAllRead') || 'Mark all read'}
+          </Button>
+          <Button
+            size="small"
+            variant="outlined"
+            disabled={items.length === 0 || loading}
+            startIcon={<ClearAllIcon sx={{ fontSize: 18 }} />}
+            onClick={handleClearAll}
+            sx={{
+              fontFamily: FF,
+              fontWeight: 700,
+              textTransform: 'none',
+              borderRadius: 50,
+              borderColor: borderFaint,
+              color: accent,
+              '&:hover': {
+                borderColor: accent,
+                bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.10)',
+              },
+              '&.Mui-disabled': { color: subText, borderColor: borderFaint },
+            }}
+          >
+            {t('notifications.clearAll') || 'Clear all'}
+          </Button>
+        </Stack>
       </Stack>
 
       {/* Error */}

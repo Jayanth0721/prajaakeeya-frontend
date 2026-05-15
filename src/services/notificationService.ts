@@ -81,3 +81,6 @@ export const markAllNotificationsRead = () =>
 
 export const deleteNotification = (id: number) =>
   apiClient.delete<DeleteNotificationResponse>(`/notifications/${id}`);
+
+export const clearAllNotifications = () =>
+  apiClient.delete<DeleteNotificationResponse>('/notifications');
