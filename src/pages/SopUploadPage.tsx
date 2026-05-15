@@ -290,8 +290,8 @@ const SopUploadPage = () => {
                               e.target.value = '';
                               return;
                             }
-                            if (file.size > 20 * 1024 * 1024) {
-                              setSopEn({ name: file.name, size: file.size, uploaded: false, progress: 0, error: true, errorKey: 'forms.aspirant.messages.fileSize10mb' });
+                            if (file.size > 700 * 1024) {
+                              setSopEn({ name: file.name, size: file.size, uploaded: false, progress: 0, error: true, errorKey: 'forms.aspirant.messages.fileSize700kb' });
                               e.target.value = '';
                               return;
                             }
@@ -318,7 +318,7 @@ const SopUploadPage = () => {
                               let errorKey = 'forms.aspirant.messages.uploadFailed';
                               let errorMessage: string | undefined;
                               if (err?.response?.status === 413) {
-                                errorKey = 'forms.aspirant.messages.fileSize10mb';
+                                errorKey = 'forms.aspirant.messages.fileSize700kb';
                               } else if (err?.response?.data?.message) {
                                 errorMessage = err.response.data.message;
                               }

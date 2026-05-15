@@ -237,6 +237,7 @@
         "failedLoadWards": "Failed to load wards",
         "fileSize2mb": "Upload failed. Please upload a smaller image (max 2 MB).",
         "fileSize10mb": "File size exceeds 10MB limit",
+        "fileSize700kb": "File size exceeds 700KB limit",
         "resumePdfOnly": "Resume must be a PDF file",
         "epicImageOnly": "EPIC Card must be a JPG or PNG image",
         "addressProofImageOnly": "Address Proof must be a JPG or PNG image",
