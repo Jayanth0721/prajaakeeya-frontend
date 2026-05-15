@@ -17,6 +17,7 @@
     "refresh": "Refresh",
     "error": "An error occurred",
     "cancel": "Cancel",
+    "select": "Select",
     "home": "Home",
     "proceed": "Proceed",
     "skipForNow": "Skip for Now →",
@@ -1677,6 +1678,7 @@
       "ageConfirm": "I confirm that I am 18 years or older to use this platform."
     },
     "constituencyOnboarding": {
+      "dialogTitle": "Update your constituencies",
       "leftTitle": "Tell us where you vote",
       "leftSubtitle": "Help us tailor your civic feed to your constituency.",
       "cardTitle": "Set up your area",
