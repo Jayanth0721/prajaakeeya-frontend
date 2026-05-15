@@ -276,6 +276,12 @@
       "facebookLink": "ફેસબુક પ્રોફાઇલ લિંક (વૈકલ્પિક)",
       "whatsappNumber": "વોટ્સએપ નંબર (વૈકલ્પિક)",
       "twitterLink": "ટ્વિટર/એક્સ પ્રોફાઇલ લિંક (વૈકલ્પિક)",
+      "tabWardPanchayat": "નગરપાલિકા / ગ્રામ પંચાયત",
+      "electionContext": "ચૂંટણી અને મતવિસ્તાર",
+      "savedConstituency": "તમારો મતવિસ્તાર",
+      "constituencyMissing": "જો તમે ચૂંટણી લડવા માંગતા હો, તો તમારી પ્રોફાઇલમાં તમારો {{type}} મતવિસ્તાર અપડેટ કરો.",
+      "updateProfile": "પ્રોફાઇલ અપડેટ કરો",
+      "tabBlockedVotingOpen": "આ ચૂંટણી માટે હાલમાં મતદાન ચાલુ છે — નોંધણી બંધ છે.",
       "steps": {
         "candidateInfo": "ઉમેદવાર માહિતી",
         "sopAgreement": "SOP",

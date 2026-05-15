@@ -276,6 +276,12 @@
       "facebookLink": "ফেসবুক প্রোফাইল লিঙ্ক (ঐচ্ছিক)",
       "whatsappNumber": "হোয়াটসঅ্যাপ নম্বর (ঐচ্ছিক)",
       "twitterLink": "টুইটার/এক্স প্রোফাইল লিঙ্ক (ঐচ্ছিক)",
+      "tabWardPanchayat": "পৌরসভা / গ্রাম পঞ্চায়েত",
+      "electionContext": "নির্বাচন ও নির্বাচনী এলাকা",
+      "savedConstituency": "আপনার নির্বাচনী এলাকা",
+      "constituencyMissing": "আপনি যদি প্রতিদ্বন্দ্বিতা করতে চান, তাহলে প্রোফাইলে আপনার {{type}} নির্বাচনী এলাকা আপডেট করুন।",
+      "updateProfile": "প্রোফাইল আপডেট করুন",
+      "tabBlockedVotingOpen": "এই নির্বাচনের জন্য বর্তমানে ভোটগ্রহণ চলছে — নিবন্ধন বন্ধ রয়েছে।",
       "steps": {
         "candidateInfo": "প্রার্থীর তথ্য",
         "sopAgreement": "SOP",

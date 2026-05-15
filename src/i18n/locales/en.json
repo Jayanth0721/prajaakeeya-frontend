@@ -276,6 +276,12 @@
       "facebookLink": "Facebook Profile Link (Optional)",
       "whatsappNumber": "WhatsApp Number (Optional)",
       "twitterLink": "Twitter/X Profile Link (Optional)",
+      "tabWardPanchayat": "Municipal / Gram Panchayat",
+      "electionContext": "Election & Constituency",
+      "savedConstituency": "Your Constituency",
+      "constituencyMissing": "If you want to contest, update your {{type}} constituency in your profile.",
+      "updateProfile": "Update Profile",
+      "tabBlockedVotingOpen": "Voting is currently open for this election — registration is closed.",
       "steps": {
         "candidateInfo": "Aspirant Information",
         "sopAgreement": "SOP",
@@ -1713,7 +1719,7 @@
   },
   "notifications": {
     "title": "Notifications",
-    "subtitle": "Stay updated on your ward, issues, and aspirants.",
+    "subtitle": "Stay updated on your ward, aspirants, chats, meetings, and voting window.",
     "new": "new",
     "markAllRead": "Mark all read",
     "clearAll": "Clear all",

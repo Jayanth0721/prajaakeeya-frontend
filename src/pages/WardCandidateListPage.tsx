@@ -77,6 +77,8 @@ import { getAspirantMessages, postUserChatMessage, AspirantChatMessageDto } from
 import useAuthStore from '../store/useAuthStore';
 import apiClient from '../services/apiClient';
 import CloseIcon from '@mui/icons-material/Close';
+import capitolInactiveImg from '../assets/images/capitol.png';
+import capitolActiveImg from '../assets/images/capitol1.png';
 import { BRAND } from '../theme';
 
 interface Candidate {
@@ -1392,13 +1394,14 @@ const WardCandidateListPage = () => {
                   ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
                   : (t('pages.wardCandidates.tabWardPanchayat') || 'My Ward / Panchayat Aspirants');
               const wardTabIcon = hasGp && !hasMunicipal ? VillageIcon : CityIcon;
-              const tabs: { key: AspirantTab; label: string; Icon: typeof ParliamentIcon }[] = [
+              const tabs: { key: AspirantTab; label: string; Icon: typeof ParliamentIcon; inactiveImg?: string; activeImg?: string }[] = [
                 { key: 'mp', label: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants', Icon: ParliamentIcon },
-                { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants', Icon: GavelIcon },
+                { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants', Icon: GavelIcon, inactiveImg: capitolInactiveImg, activeImg: capitolActiveImg },
                 { key: 'ward_panchayat', label: wardTabLabel, Icon: wardTabIcon },
               ];
-              return tabs.map(({ key, label, Icon }) => {
+              return tabs.map(({ key, label, Icon, inactiveImg, activeImg }) => {
                 const isActive = activeTab === key;
+                const imgSrc = isActive ? activeImg : inactiveImg;
                 return (
                   <Box
                     key={key}
@@ -1433,12 +1436,25 @@ const WardCandidateListPage = () => {
                           },
                     }}
                   >
-                    <Icon
-                      sx={{
-                        fontSize: { xs: 24, sm: 26 },
-                        color: isActive ? '#fff' : BRAND.yellow,
-                      }}
-                    />
+                    {imgSrc ? (
+                      <Box
+                        component="img"
+                        src={imgSrc}
+                        alt={label}
+                        sx={{
+                          width: { xs: 26, sm: 30 },
+                          height: { xs: 26, sm: 30 },
+                          objectFit: 'contain',
+                        }}
+                      />
+                    ) : (
+                      <Icon
+                        sx={{
+                          fontSize: { xs: 24, sm: 26 },
+                          color: isActive ? '#fff' : BRAND.yellow,
+                        }}
+                      />
+                    )}
                     <Typography
                       sx={{
                         fontFamily: '"Baloo 2", cursive',

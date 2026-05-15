@@ -276,6 +276,12 @@
       "facebookLink": "फेसबुक प्रोफ़ाइल लिंक (वैकल्पिक)",
       "whatsappNumber": "व्हाट्सएप नंबर (वैकल्पिक)",
       "twitterLink": "ट्विटर/एक्स प्रोफ़ाइल लिंक (वैकल्पिक)",
+      "tabWardPanchayat": "नगरपालिका / ग्राम पंचायत",
+      "electionContext": "चुनाव आ निर्वाचन क्षेत्र",
+      "savedConstituency": "रउआ के निर्वाचन क्षेत्र",
+      "constituencyMissing": "जदि रउआ चुनाव लड़े के चाहत बानी, त प्रोफाइल में अपन {{type}} निर्वाचन क्षेत्र अपडेट करीं।",
+      "updateProfile": "प्रोफाइल अपडेट करीं",
+      "tabBlockedVotingOpen": "एह चुनाव खातिर अभी मतदान चालू बा — पंजीकरण बंद बा।",
       "steps": {
         "candidateInfo": "उम्मीदवार के जानकारी",
         "sopAgreement": "SOP",

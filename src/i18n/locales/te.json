@@ -276,6 +276,12 @@
       "facebookLink": "ఫేస్‌బుక్ ప్రొఫైల్ లింక్ (ఐచ్ఛికం)",
       "whatsappNumber": "వాట్సాప్ నంబర్ (ఐచ్ఛికం)",
       "twitterLink": "ట్విట్టర్/ఎక్స్ ప్రొఫైల్ లింక్ (ఐచ్ఛికం)",
+      "tabWardPanchayat": "మున్సిపాలిటీ / గ్రామ పంచాయితీ",
+      "electionContext": "ఎన్నిక మరియు నియోజకవర్గం",
+      "savedConstituency": "మీ నియోజకవర్గం",
+      "constituencyMissing": "మీరు పోటీ చేయాలనుకుంటే, మీ ప్రొఫైల్‌లో మీ {{type}} నియోజకవర్గాన్ని నవీకరించండి.",
+      "updateProfile": "ప్రొఫైల్ నవీకరించండి",
+      "tabBlockedVotingOpen": "ఈ ఎన్నికకు ప్రస్తుతం ఓటింగ్ జరుగుతోంది — నమోదు మూసివేయబడింది.",
       "steps": {
         "candidateInfo": "ఆశావహుల సమాచారం",
         "sopAgreement": "SOP",

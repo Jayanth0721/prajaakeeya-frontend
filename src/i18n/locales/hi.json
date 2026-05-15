@@ -276,6 +276,12 @@
       "facebookLink": "फ़ेसबुक प्रोफ़ाइल लिंक (वैकल्पिक)",
       "whatsappNumber": "व्हाट्सएप नंबर (वैकल्पिक)",
       "twitterLink": "ट्विटर/एक्स प्रोफ़ाइल लिंक (वैकल्पिक)",
+      "tabWardPanchayat": "नगरपालिका / ग्राम पंचायत",
+      "electionContext": "चुनाव और निर्वाचन क्षेत्र",
+      "savedConstituency": "आपका निर्वाचन क्षेत्र",
+      "constituencyMissing": "यदि आप चुनाव लड़ना चाहते हैं, तो अपनी प्रोफ़ाइल में अपना {{type}} निर्वाचन क्षेत्र अपडेट करें।",
+      "updateProfile": "प्रोफ़ाइल अपडेट करें",
+      "tabBlockedVotingOpen": "इस चुनाव के लिए मतदान वर्तमान में चालू है — पंजीकरण बंद है।",
       "steps": {
         "candidateInfo": "उम्मीदवार की जानकारी",
         "sopAgreement": "SOP",
