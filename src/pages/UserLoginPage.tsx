@@ -104,9 +104,7 @@ const UserLoginPage = () => {
       logout();
       setRedirecting(true);
       setAuth(token, user);
-      const wardNum = user.wardNumber || user.wardId;
       navigate('/user/dashboard', { replace: true });
-      navigate('/user/voters');
     } catch (err: any) {
       const apiMessage = err?.response?.data?.message || err?.response?.data?.error || err?.message;
       setError(apiMessage || t('common.error') || 'Invalid OTP or something went wrong');

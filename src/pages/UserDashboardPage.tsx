@@ -41,7 +41,6 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
-import { fetchVotingWindow } from '../services/voteService';
 import { fetchAllWards } from '../services/wardService';
 
 const UserDashboardPage = () => {
@@ -76,16 +75,6 @@ const UserDashboardPage = () => {
   }, [location.state]);
 
   const isAspirant = user?.role === 'aspirant' && (user as any)?.documentStatus === 'completed';
-
-  const [votingActive, setVotingActive] = React.useState(false);
-  React.useEffect(() => {
-    fetchVotingWindow()
-      .then((resp) => {
-        const data = resp?.data as any;
-        setVotingActive(Boolean(data?.isVotingAllowed) && Boolean(data?.window?.isActive));
-      })
-      .catch(() => { /* ignore */ });
-  }, []);
 
   // Resolve ward name from API when user.wardName is missing
   const [resolvedWardName, setResolvedWardName] = React.useState<string>('');
@@ -149,14 +138,45 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const
     },
+    // Lok Sabha and State Assembly tiles are always shown. If the user hasn't
+    // saved a constituency for the type yet, clicking lands them on the
+    // /user/aspirantslist "Update Profile" empty state.
     {
-      title: t('userDashboard.actions.candidates') || 'Aspirant List',
-      description: t('userDashboard.actions.candidatesDesc') || 'View all Aspirants in your ward',
-      icon: <img src={leaderImg} alt="aspirant list" width={30} height={30} />,
-      path: `/user/aspirantslist`,
+      title: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants',
+      description: t('userDashboard.actions.myLokSabhaAspirantsDesc') || 'Aspirants in your Lok Sabha constituency',
+      icon: <img src={leaderImg} alt="lok sabha aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=lok_sabha`,
       variant: 'outlined' as const,
       color: 'secondary' as const
     },
+    {
+      title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
+      description: t('userDashboard.actions.myStateAssemblyAspirantsDesc') || 'Aspirants in your Assembly constituency',
+      icon: <img src={managerImg} alt="state assembly aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=state_assembly`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const
+    },
+    // Municipal Corporation and Gram Panchayat tiles only render when the
+    // user has actually saved a constituency for that type. Since each user
+    // belongs to exactly one of these two (urban vs rural), hiding the
+    // irrelevant one keeps the dashboard clean.
+    ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
+      title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
+      description: t('userDashboard.actions.myMunicipalCorporationAspirantsDesc') || 'Aspirants in your corporation ward',
+      icon: <img src={employeesImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=municipal_corporation`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const
+    }] : []),
+    ...((user as any)?.gramPanchayatConstituency != null ? [{
+      title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
+      description: t('userDashboard.actions.myGramPanchayatAspirantsDesc') || 'Aspirants in your Gram Panchayat',
+      icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=gram_panchayat`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const
+    }] : []),
     {
       title: t('userDashboard.actions.registerAspirant') || 'Register as Aspirant',
       description: t('userDashboard.actions.registerAspirantDesc') || 'Apply to become an aspirant in your ward',
@@ -218,13 +238,38 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
+    // Lok Sabha and State Assembly tiles are always shown. The aspirants list
+    // page nudges them to /user/complete-profile if the constituency isn't set.
     {
-      title: t('userDashboard.actions.candidates') || 'View Aspirants',
-      icon: <img src={leaderImg} alt="view aspirants" width={30} height={30} />,
-      path: `/user/aspirantslist`,
+      title: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants',
+      icon: <img src={leaderImg} alt="lok sabha aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=lok_sabha`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
+    {
+      title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
+      icon: <img src={managerImg} alt="state assembly aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=state_assembly`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const,
+    },
+    // Municipal Corporation / Gram Panchayat only render when the aspirant has
+    // saved one — a person belongs to exactly one local body, never both.
+    ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
+      title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
+      icon: <img src={employeesImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=municipal_corporation`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const,
+    }] : []),
+    ...((user as any)?.gramPanchayatConstituency != null ? [{
+      title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
+      icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
+      path: `/user/aspirantslist?type=gram_panchayat`,
+      variant: 'outlined' as const,
+      color: 'secondary' as const,
+    }] : []),
     {
       title: t('userDashboard.actions.voters') || 'View Voters',
       icon: <img src={king1Img} alt="voters" width={30} height={30} />,
@@ -241,9 +286,7 @@ const UserDashboardPage = () => {
     },
   ];
 
-  const displayActions = isAspirant
-    ? aspirantActions
-    : actions.filter((a) => !(votingActive && a.path === '/user/aspirants/register'));
+  const displayActions = isAspirant ? aspirantActions : actions;
 
   const handleActionClick = async (action: any) => {
     const disabledForThis = (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') || (action as any).disabled;
@@ -422,25 +465,21 @@ const UserDashboardPage = () => {
       }
 
       // Relative API path — use apiClient with baseURL
+      let blob: Blob | null = null;
       try {
-        let blob: Blob | null = null;
-        try {
-          const apiResp = await apiClient.get(src, { responseType: 'blob' });
-          blob = apiResp.data as Blob;
-        } catch (apiErr) {
-          const resp = await fetch(src, {
-            method: 'GET',
-            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-          });
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-          blob = await resp.blob();
-        }
-        if (!blob || blob.size === 0) throw new Error('Empty profile image');
-        const dataUrl = await blobToDataUrl(blob);
-        return { image: await loadImage(dataUrl), cleanup: () => { } };
-      } catch (e) {
-        throw e;
+        const apiResp = await apiClient.get(src, { responseType: 'blob' });
+        blob = apiResp.data as Blob;
+      } catch (apiErr) {
+        const resp = await fetch(src, {
+          method: 'GET',
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        blob = await resp.blob();
       }
+      if (!blob || blob.size === 0) throw new Error('Empty profile image');
+      const dataUrl = await blobToDataUrl(blob);
+      return { image: await loadImage(dataUrl), cleanup: () => { } };
     };
 
     // ── Background ──

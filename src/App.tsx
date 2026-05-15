@@ -37,6 +37,7 @@ import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 import UserPledgePage from "./pages/UserPledgePage";
 import ProfileCompletionPage from "./pages/ProfileCompletionPage";
+import UserConstituencyOnboardingPage from "./pages/UserConstituencyOnboardingPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import CivicIssuesPage from "./pages/CivicIssuesPage";
 import ReportIssuePage from "./pages/ReportIssuePage";
@@ -45,6 +46,7 @@ import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
 import DocumentsUploadPage from "./pages/DocumentsUploadPage";
 import SopUploadPage from "./pages/SopUploadPage";
 import SopPage from "./pages/SopPage";
+import NotificationsPage from "./pages/NotificationsPage";
 import SignedSopPage from "./pages/SignedSopPage";
 import AspirantApprovalPage from "./pages/AspirantApprovalPage";
 import WardCandidateListPage from "./pages/WardCandidateListPage";
@@ -96,7 +98,7 @@ const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated, isAdmin } = useAuthStore();
   if (isAuthenticated) {
     if (isAdmin) return <Navigate to="/admin/users" replace />;
-    return <Navigate to="/user/voters" replace />;
+    return <Navigate to="/user/dashboard" replace />;
   }
   return children;
 };
@@ -292,6 +294,18 @@ const App = () => {
             <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
           </Route>
 
+          {/* Standalone onboarding route — auth required, no UserLayout chrome */}
+          <Route
+            path="/onboarding/location"
+            element={
+              isAuthenticated ? (
+                <UserConstituencyOnboardingPage />
+              ) : (
+                <Navigate to="/register" />
+              )
+            }
+          />
+
           {/* User routes - auth required but API calls bypassed */}
           <Route
             path="/user"
@@ -361,6 +375,7 @@ const App = () => {
             <Route path="vote" element={<VotingPage />} />
             <Route path="discussions" element={<WardDiscussionPage />} />
             <Route path="sop" element={<SopPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
           </Route>
 
           {/* Guest routes — no auth required */}

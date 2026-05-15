@@ -57,7 +57,22 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Autocomplete,
 } from '@mui/material';
+import {
+    fetchConstituencies,
+    fetchMunicipalities,
+    fetchConstituenciesByScope,
+    fetchGPStates,
+    fetchGPDistricts,
+    fetchGPTaluks,
+    fetchGPGrams,
+    fetchGPVillages,
+    type Constituency,
+    type GPVillage,
+} from '../services/electionService';
+
+type Municipality = { id: number; name: string; state: string };
 import { BRAND } from '../theme';
 import {
     Person as PersonIcon,
@@ -122,6 +137,55 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     const [contactChat, setContactChat] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Constituency selections — flat lists for Lok Sabha + State Assembly,
+    // cascading flows for Municipal Corporation (Municipality → Ward) and
+    // Gram Panchayat (State → District → Taluk → GP → Village). The leaf IDs
+    // are what get sent to /users/me; the cascades are only there so the user
+    // can re-pick (we can't reverse-resolve the parents from a single saved id).
+    const [lokSabhaOptions, setLokSabhaOptions] = useState<Constituency[]>([]);
+    const [stateAssemblyOptions, setStateAssemblyOptions] = useState<Constituency[]>([]);
+    const [lokSabhaConstituency, setLokSabhaConstituency] = useState<Constituency | null>(null);
+    const [stateAssemblyConstituency, setStateAssemblyConstituency] = useState<Constituency | null>(null);
+    const [loadingConstituencies, setLoadingConstituencies] = useState(false);
+
+    // Municipal cascade
+    const [municipalities, setMunicipalities] = useState<Municipality[]>([]);
+    const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
+    const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality | null>(null);
+    const [cityWards, setCityWards] = useState<Constituency[]>([]);
+    const [loadingCityWards, setLoadingCityWards] = useState(false);
+    const [selectedCityWard, setSelectedCityWard] = useState<Constituency | null>(null);
+
+    // Gram Panchayat cascade
+    const [gpStates, setGpStates] = useState<string[]>([]);
+    const [gpDistricts, setGpDistricts] = useState<string[]>([]);
+    const [gpTaluks, setGpTaluks] = useState<string[]>([]);
+    const [gpGrams, setGpGrams] = useState<string[]>([]);
+    const [gpVillages, setGpVillages] = useState<GPVillage[]>([]);
+    const [loadingGp, setLoadingGp] = useState(false);
+    const [selectedGpState, setSelectedGpState] = useState<string | null>(null);
+    const [selectedGpDistrict, setSelectedGpDistrict] = useState<string | null>(null);
+    const [selectedGpTaluk, setSelectedGpTaluk] = useState<string | null>(null);
+    const [selectedGpGram, setSelectedGpGram] = useState<string | null>(null);
+    const [selectedGpVillage, setSelectedGpVillage] = useState<GPVillage | null>(null);
+
+    // Local body choice — a person lives in either a municipality (urban) OR
+    // a gram panchayat (rural), never both, so we only let them edit one side.
+    const [localBody, setLocalBody] = useState<'municipality' | 'gram_panchayat' | null>(null);
+
+    // Raw IDs from /auth/me — preserved if the user doesn't touch the cascade
+    // so saving doesn't accidentally clear an existing value.
+    const initialIdsRef = useRef<{
+        lokSabha?: number | null;
+        stateAssembly?: number | null;
+        municipal?: number | null;
+        gramPanchayat?: number | null;
+    }>({});
+    // Full saved municipal corp object from /auth/me — has the parent
+    // `municipality` name we need to pre-select the municipality dropdown
+    // without doing an extra wards-list fetch + ID lookup.
+    const initialMunicipalRef = useRef<any | null>(null);
 
     // Form validation schema
     const schema = useMemo(() => yup.object({
@@ -203,6 +267,21 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 if (me) {
                     setValue('name', me.name || me.nameEn || me.nameKn || '');
                     setPhotoPreview(me.profilePicture || null);
+                    initialIdsRef.current = {
+                        lokSabha: me.lokSabhaConstituency?.id ?? null,
+                        stateAssembly: me.stateAssemblyConstituency?.id ?? null,
+                        municipal: me.municipalCorporationConstituency?.id ?? null,
+                        // GP uses `srNo` rather than `id` as the village identifier.
+                        gramPanchayat: me.gramPanchayatConstituency?.srNo ?? null,
+                    };
+                    initialMunicipalRef.current = me.municipalCorporationConstituency ?? null;
+                    // Pre-select the local body type from whichever side is
+                    // saved (a user can only have one — municipality OR GP).
+                    if (me.municipalCorporationConstituency != null) {
+                        setLocalBody('municipality');
+                    } else if (me.gramPanchayatConstituency != null) {
+                        setLocalBody('gram_panchayat');
+                    }
                 }
 
                 // Refresh the auth store in parallel
@@ -247,6 +326,237 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Fetch the flat lists for Lok Sabha + State Assembly once on mount.
+    // Municipal Corporation & Gram Panchayat use cascading dropdowns below.
+    useEffect(() => {
+        let cancelled = false;
+        setLoadingConstituencies(true);
+        Promise.all([
+            fetchConstituencies('lok_sabha').catch(() => ({ data: { constituencies: [] } as any })),
+            fetchConstituencies('state_assembly').catch(() => ({ data: { constituencies: [] } as any })),
+        ])
+            .then(([ls, sa]) => {
+                if (cancelled) return;
+                setLokSabhaOptions(ls?.data?.constituencies ?? []);
+                setStateAssemblyOptions(sa?.data?.constituencies ?? []);
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingConstituencies(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // Pre-select Lok Sabha / State Assembly reactively. Reading from the auth
+    // store user avoids the race where the options fetch finished before
+    // /auth/me populated initialIdsRef.current — symptom: dropdowns showed
+    // their label but no value even though /auth/me had the ID.
+    // One-shot refs ensure the pre-fill runs only until the saved value is
+    // applied; otherwise the effect re-runs on every user pick and snaps the
+    // dropdown back to the saved ID.
+    const lokSabhaIdFromUser = (user as any)?.lokSabhaConstituency?.id as number | null | undefined;
+    const stateAssemblyIdFromUser = (user as any)?.stateAssemblyConstituency?.id as number | null | undefined;
+    const lokSabhaResolvedRef = useRef(false);
+    const stateAssemblyResolvedRef = useRef(false);
+    useEffect(() => {
+        if (lokSabhaResolvedRef.current) return;
+        if (lokSabhaIdFromUser == null) return;
+        if (lokSabhaOptions.length === 0) return;
+        const m = lokSabhaOptions.find((c) => c.id === lokSabhaIdFromUser);
+        if (m) {
+            setLokSabhaConstituency(m);
+            lokSabhaResolvedRef.current = true;
+        }
+    }, [lokSabhaOptions, lokSabhaIdFromUser]);
+    useEffect(() => {
+        if (stateAssemblyResolvedRef.current) return;
+        if (stateAssemblyIdFromUser == null) return;
+        if (stateAssemblyOptions.length === 0) return;
+        const m = stateAssemblyOptions.find((c) => c.id === stateAssemblyIdFromUser);
+        if (m) {
+            setStateAssemblyConstituency(m);
+            stateAssemblyResolvedRef.current = true;
+        }
+    }, [stateAssemblyOptions, stateAssemblyIdFromUser]);
+
+    // Municipality list — loaded on mount so the dropdown is ready to use.
+    useEffect(() => {
+        let cancelled = false;
+        setLoadingMunicipalities(true);
+        fetchMunicipalities()
+            .then((resp) => {
+                if (cancelled) return;
+                setMunicipalities(Array.isArray(resp.data) ? resp.data : []);
+            })
+            .catch(() => {
+                if (!cancelled) setMunicipalities([]);
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingMunicipalities(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // Wards for the currently selected municipality.
+    useEffect(() => {
+        if (!selectedMunicipality) {
+            setCityWards([]);
+            return;
+        }
+        let cancelled = false;
+        setLoadingCityWards(true);
+        fetchConstituenciesByScope(selectedMunicipality.name)
+            .then((resp) => {
+                if (cancelled) return;
+                setCityWards(Array.isArray(resp.data) ? resp.data : []);
+            })
+            .catch(() => {
+                if (!cancelled) setCityWards([]);
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingCityWards(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [selectedMunicipality]);
+
+    // Pre-fill the Municipal Corporation cascade from the saved nested object
+    // on /auth/me — it already carries `municipality`, `name`, `number`, etc.,
+    // so we can resolve without an extra wards-list fetch. Read from the auth
+    // store user (reactive) rather than initialMunicipalRef so the effect
+    // re-runs when /auth/me lands after the municipalities list does.
+    const savedMunicipal =
+        (initialMunicipalRef.current as any) ??
+        ((user as any)?.municipalCorporationConstituency as any) ??
+        null;
+    const municipalResolvedRef = useRef(false);
+    useEffect(() => {
+        if (municipalResolvedRef.current) return;
+        if (selectedMunicipality || selectedCityWard) return;
+        if (!savedMunicipal || savedMunicipal.id == null) return;
+        if (!municipalities.length) return;
+        const munName = savedMunicipal.municipality as string | undefined;
+        if (!munName) return;
+
+        const norm = (s: string) =>
+            s.replace(/[–—]/g, '-').replace(/\s+/g, ' ').trim().toLowerCase();
+        const munObj = municipalities.find((m) => norm(m.name) === norm(munName));
+        if (!munObj) return;
+
+        municipalResolvedRef.current = true;
+        setSelectedMunicipality(munObj);
+        // The scoped-fetch effect on `selectedMunicipality` will load the full
+        // wards list; meanwhile seed the dropdown with the saved ward so it
+        // displays immediately.
+        setCityWards([savedMunicipal as Constituency]);
+        setSelectedCityWard(savedMunicipal as Constituency);
+    }, [municipalities, selectedMunicipality, selectedCityWard, savedMunicipal]);
+
+    // Gram Panchayat cascade — load states up front; the rest cascade on demand.
+    useEffect(() => {
+        let cancelled = false;
+        setLoadingGp(true);
+        fetchGPStates()
+            .then((resp) => {
+                if (cancelled) return;
+                setGpStates(Array.isArray(resp.data) ? resp.data : []);
+            })
+            .catch(() => {
+                if (!cancelled) setGpStates([]);
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingGp(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!selectedGpState) {
+            setGpDistricts([]);
+            return;
+        }
+        setLoadingGp(true);
+        fetchGPDistricts(selectedGpState)
+            .then((resp) => setGpDistricts(Array.isArray(resp.data) ? resp.data : []))
+            .catch(() => setGpDistricts([]))
+            .finally(() => setLoadingGp(false));
+    }, [selectedGpState]);
+
+    useEffect(() => {
+        if (!selectedGpState || !selectedGpDistrict) {
+            setGpTaluks([]);
+            return;
+        }
+        setLoadingGp(true);
+        fetchGPTaluks(selectedGpState, selectedGpDistrict)
+            .then((resp) => setGpTaluks(Array.isArray(resp.data) ? resp.data : []))
+            .catch(() => setGpTaluks([]))
+            .finally(() => setLoadingGp(false));
+    }, [selectedGpState, selectedGpDistrict]);
+
+    useEffect(() => {
+        if (!selectedGpState || !selectedGpDistrict || !selectedGpTaluk) {
+            setGpGrams([]);
+            return;
+        }
+        setLoadingGp(true);
+        fetchGPGrams(selectedGpState, selectedGpDistrict, selectedGpTaluk)
+            .then((resp) => setGpGrams(Array.isArray(resp.data) ? resp.data : []))
+            .catch(() => setGpGrams([]))
+            .finally(() => setLoadingGp(false));
+    }, [selectedGpState, selectedGpDistrict, selectedGpTaluk]);
+
+    useEffect(() => {
+        if (
+            !selectedGpState ||
+            !selectedGpDistrict ||
+            !selectedGpTaluk ||
+            !selectedGpGram
+        ) {
+            setGpVillages([]);
+            return;
+        }
+        setLoadingGp(true);
+        fetchGPVillages(selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram)
+            .then((resp) => setGpVillages(Array.isArray(resp.data) ? resp.data : []))
+            .catch(() => setGpVillages([]))
+            .finally(() => setLoadingGp(false));
+    }, [selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram]);
+
+    // Pre-fill the Gram Panchayat cascade from the saved nested object on
+    // /auth/me. The GP nested shape carries the full hierarchy
+    // (state/district/taluk/gpName + srNo + villageName), so we seed each
+    // upper-level string directly. The existing cascade effects fetch the
+    // list for the next level, and the village picker waits for its options
+    // to load, then matches by villageName (or srNo as fallback).
+    const gpResolvedRef = useRef(false);
+    const savedGp = (user as any)?.gramPanchayatConstituency ?? null;
+    useEffect(() => {
+        if (gpResolvedRef.current) return;
+        if (!savedGp || !savedGp.srNo) return;
+        gpResolvedRef.current = true;
+        if (savedGp.state) setSelectedGpState(savedGp.state);
+        if (savedGp.district) setSelectedGpDistrict(savedGp.district);
+        if (savedGp.taluk) setSelectedGpTaluk(savedGp.taluk);
+        if (savedGp.gpName) setSelectedGpGram(savedGp.gpName);
+    }, [savedGp]);
+    // Once the villages list arrives for the saved GP, select the matching
+    // village so the Village dropdown renders the saved name.
+    useEffect(() => {
+        if (!savedGp || selectedGpVillage) return;
+        if (!gpVillages.length) return;
+        const match = gpVillages.find(
+            (v) => v.villageName === savedGp.villageName || v.id === String(savedGp.srNo),
+        );
+        if (match) setSelectedGpVillage(match);
+    }, [gpVillages, savedGp, selectedGpVillage]);
+
     // Delete profile picture
     const handleDeletePhoto = async () => {
         setPhotoMenuAnchor(null);
@@ -261,6 +571,40 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
             setPhotoPreview(null);
             showMessage('Failed to delete photo', 'error');
         }
+    };
+
+    // Build the constituency payload. A user lives in either a Municipality
+    // OR a Gram Panchayat — not both. The local-body picker decides which
+    // side gets updated; the other is explicitly nulled so stale data doesn't
+    // linger.
+    const buildConstituencyPayload = () => {
+        const base = {
+            lokSabhaConstituencyId: lokSabhaConstituency?.id ?? null,
+            stateAssemblyConstituencyId: stateAssemblyConstituency?.id ?? null,
+        };
+        if (localBody === 'municipality') {
+            return {
+                ...base,
+                municipalCorporationConstituencyId:
+                    selectedCityWard?.id ?? initialIdsRef.current.municipal ?? null,
+                gramPanchayatConstituencyId: null,
+            };
+        }
+        if (localBody === 'gram_panchayat') {
+            return {
+                ...base,
+                municipalCorporationConstituencyId: null,
+                gramPanchayatConstituencyId: selectedGpVillage?.id
+                    ? Number(selectedGpVillage.id)
+                    : (initialIdsRef.current.gramPanchayat ?? null),
+            };
+        }
+        // No local body picked — preserve whatever was already saved.
+        return {
+            ...base,
+            municipalCorporationConstituencyId: initialIdsRef.current.municipal ?? null,
+            gramPanchayatConstituencyId: initialIdsRef.current.gramPanchayat ?? null,
+        };
     };
 
     // Form submission
@@ -299,7 +643,17 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                     allowChat: contactChat,
                 });
             } else {
-                await apiClient.put('/users/me', { name: data.name });
+                await apiClient.put('/users/me', {
+                    name: data.name,
+                    ...buildConstituencyPayload(),
+                });
+            }
+
+            // For both aspirants and non-aspirants, the constituency IDs live on
+            // the user record, so send them via /users/me. (Aspirants already
+            // hit the aspirant PATCH above; this is a separate, additive call.)
+            if (isAspirant) {
+                await apiClient.put('/users/me', buildConstituencyPayload());
             }
 
             // Refresh profile to get updated data
@@ -458,9 +812,9 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                 pl: { xs: 0, sm: 0 }, pr: { xs: 1.5, sm: 0 },
                                 '& .MuiGrid-item': { pl: { xs: 1, sm: 2 } },
                                 '& .MuiTextField-root': { boxSizing: 'border-box', width: '100%' },
-                                '& .MuiInputLabel-root': { color: isDark ? 'rgba(245,168,0,0.75)' : 'rgba(200,130,0,0.75)' },
-                                '& .MuiInputLabel-root.Mui-focused': { color: isDark ? '#F5A800' : '#c88200' },
-                                '& .MuiInputLabel-root.Mui-disabled': { color: isDark ? 'rgba(245,168,0,0.35)' : 'rgba(200,130,0,0.35)' },
+                                '& .MuiInputLabel-root': { color: isDark ? '#fff' : '#000' },
+                                '& .MuiInputLabel-root.Mui-focused': { color: isDark ? '#fff' : '#000' },
+                                '& .MuiInputLabel-root.Mui-disabled': { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' },
                                 '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? 'rgba(245,168,0,0.4)' : 'rgba(200,130,0,0.45)' },
                                 '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? 'rgba(245,168,0,0.7)' : 'rgba(200,130,0,0.75)' },
                                 '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: isDark ? '#F5A800' : '#c88200' },
@@ -750,6 +1104,330 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                         disabled
                                     />
                                 </Grid> */}
+
+                                {/* Constituencies section */}
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 1,
+                                            fontSize: '0.78rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.08em',
+                                            color: '#F5A800',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('profile.myConstituencies') || 'My Constituencies'}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={lokSabhaOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={lokSabhaConstituency}
+                                        onChange={(_, v) => setLokSabhaConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.lokSabhaConstituency') || 'Lok Sabha Constituency'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={stateAssemblyOptions}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={stateAssemblyConstituency}
+                                        onChange={(_, v) => setStateAssemblyConstituency(v)}
+                                        loading={loadingConstituencies}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('profile.stateAssemblyConstituency') || 'State Assembly Constituency'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                {/* Local Body picker — a person lives in either
+                                    a Municipality (urban) OR a Gram Panchayat
+                                    (rural), so only one of the two cascades is
+                                    shown at a time. */}
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 0.5,
+                                            mb: 1,
+                                            fontSize: '0.72rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.06em',
+                                            color: isDark
+                                                ? 'rgba(255,255,255,0.55)'
+                                                : 'rgba(17,24,39,0.55)',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('pages.constituencyOnboarding.localBodyTitle') || 'Local Body'}
+                                    </Typography>
+                                    <TextField
+                                        select
+                                        size="small"
+                                        fullWidth
+                                        value={localBody ?? ''}
+                                        onChange={(e) => {
+                                            const v = e.target.value as 'municipality' | 'gram_panchayat' | '';
+                                            const next = v === '' ? null : v;
+                                            setLocalBody(next);
+                                            // Clear the *other* side's selection so it can't accidentally save.
+                                            if (next === 'municipality') {
+                                                setSelectedGpState(null);
+                                                setSelectedGpDistrict(null);
+                                                setSelectedGpTaluk(null);
+                                                setSelectedGpGram(null);
+                                                setSelectedGpVillage(null);
+                                            } else if (next === 'gram_panchayat') {
+                                                setSelectedMunicipality(null);
+                                                setSelectedCityWard(null);
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem value="municipality">
+                                            {t('pages.constituencyOnboarding.localBodyMunicipality') || 'Municipality'}
+                                            {' — '}
+                                            {t('pages.constituencyOnboarding.localBodyMunicipalityDesc') || 'I live in a city or town'}
+                                        </MenuItem>
+                                        <MenuItem value="gram_panchayat">
+                                            {t('pages.constituencyOnboarding.localBodyGramPanchayat') || 'Gram Panchayat'}
+                                            {' — '}
+                                            {t('pages.constituencyOnboarding.localBodyGramPanchayatDesc') || 'I live in a village'}
+                                        </MenuItem>
+                                    </TextField>
+                                </Grid>
+
+                                {/* Municipal Corporation cascade: Municipality → Ward */}
+                                {localBody === 'municipality' && (<>
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 0.5,
+                                            fontSize: '0.72rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.06em',
+                                            color: isDark
+                                                ? 'rgba(255,255,255,0.55)'
+                                                : 'rgba(17,24,39,0.55)',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('profile.municipalCorporationConstituency') || 'Municipal Corporation / Ward'}
+                                        {initialIdsRef.current.municipal != null && !selectedCityWard && (
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    ml: 1,
+                                                    color: '#F5A800',
+                                                    fontWeight: 600,
+                                                    textTransform: 'none',
+                                                    letterSpacing: 'normal',
+                                                }}
+                                            >
+                                                · {t('profile.currentlySaved', { defaultValue: 'Currently saved — re-pick to change' })}
+                                            </Box>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={municipalities}
+                                        getOptionLabel={(o) => o.name}
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={selectedMunicipality}
+                                        onChange={(_, v) => {
+                                            setSelectedMunicipality(v);
+                                            setSelectedCityWard(null);
+                                        }}
+                                        loading={loadingMunicipalities}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.corporationLabel') || 'Corporation / Municipality'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={cityWards}
+                                        getOptionLabel={(o) =>
+                                            `${o.number ? `${o.number} - ` : ''}${o.name}`
+                                        }
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={selectedCityWard}
+                                        onChange={(_, v) => setSelectedCityWard(v)}
+                                        loading={loadingCityWards}
+                                        disabled={!selectedMunicipality}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.wardLabel') || 'City Corporation Ward'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                </>)}
+
+                                {/* Gram Panchayat cascade: State → District → Taluk → GP → Village */}
+                                {localBody === 'gram_panchayat' && (<>
+                                <Grid item xs={12}>
+                                    <Typography
+                                        sx={{
+                                            mt: 0.5,
+                                            fontSize: '0.72rem',
+                                            fontWeight: 700,
+                                            letterSpacing: '0.06em',
+                                            color: isDark
+                                                ? 'rgba(255,255,255,0.55)'
+                                                : 'rgba(17,24,39,0.55)',
+                                            textTransform: 'uppercase',
+                                        }}
+                                    >
+                                        {t('profile.gramPanchayatConstituency') || 'Gram Panchayat'}
+                                        {initialIdsRef.current.gramPanchayat != null && !selectedGpVillage && (
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    ml: 1,
+                                                    color: '#F5A800',
+                                                    fontWeight: 600,
+                                                    textTransform: 'none',
+                                                    letterSpacing: 'normal',
+                                                }}
+                                            >
+                                                · {t('profile.currentlySaved', { defaultValue: 'Currently saved — re-pick to change' })}
+                                            </Box>
+                                        )}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gpStates}
+                                        value={selectedGpState}
+                                        onChange={(_, v) => {
+                                            setSelectedGpState(v);
+                                            setSelectedGpDistrict(null);
+                                            setSelectedGpTaluk(null);
+                                            setSelectedGpGram(null);
+                                            setSelectedGpVillage(null);
+                                        }}
+                                        loading={loadingGp}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.stateLabel') || 'State'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gpDistricts}
+                                        value={selectedGpDistrict}
+                                        onChange={(_, v) => {
+                                            setSelectedGpDistrict(v);
+                                            setSelectedGpTaluk(null);
+                                            setSelectedGpGram(null);
+                                            setSelectedGpVillage(null);
+                                        }}
+                                        loading={loadingGp}
+                                        disabled={!selectedGpState}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.districtLabel') || 'District'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gpTaluks}
+                                        value={selectedGpTaluk}
+                                        onChange={(_, v) => {
+                                            setSelectedGpTaluk(v);
+                                            setSelectedGpGram(null);
+                                            setSelectedGpVillage(null);
+                                        }}
+                                        loading={loadingGp}
+                                        disabled={!selectedGpDistrict}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.talukLabel') || 'Taluk'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gpGrams}
+                                        value={selectedGpGram}
+                                        onChange={(_, v) => {
+                                            setSelectedGpGram(v);
+                                            setSelectedGpVillage(null);
+                                        }}
+                                        loading={loadingGp}
+                                        disabled={!selectedGpTaluk}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.gpLabel') || 'Gram Panchayat'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Autocomplete
+                                        fullWidth
+                                        size="small"
+                                        options={gpVillages}
+                                        getOptionLabel={(o) => o.villageName}
+                                        isOptionEqualToValue={(a, b) => a.id === b.id}
+                                        value={selectedGpVillage}
+                                        onChange={(_, v) => setSelectedGpVillage(v)}
+                                        loading={loadingGp}
+                                        disabled={!selectedGpGram}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('pages.constituencyOnboarding.villageLabel') || 'Village'}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                </>)}
                             </Grid>
 
                             {/* Submit Button (placed in Grid so widths align with inputs) */}

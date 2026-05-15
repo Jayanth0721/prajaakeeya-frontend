@@ -86,7 +86,7 @@ const AuthCallbackPage = () => {
       } else {
         setAuth(token, user);
       }
-      navigate('/user/voters', { replace: true });
+      navigate('/user/dashboard', { replace: true });
     } catch (e) {
       console.error('Failed to parse auth callback params', e);
     }

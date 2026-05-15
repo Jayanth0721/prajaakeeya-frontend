@@ -292,36 +292,95 @@ const UserRegisterPage = () => {
                 {t("pages.register.registerWithSocial")}
               </Typography>
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={consented}
-                    onChange={(e) => setConsented(e.target.checked)}
-                    sx={{
-                      color: isDark
-                        ? "rgba(255,255,255,0.35)"
-                        : "rgba(17,24,39,0.35)",
-                      "&.Mui-checked": { color: "#F5A800" },
-                      pt: 0.5,
-                      alignSelf: "flex-start",
-                    }}
-                  />
-                }
-                label={
-                  <Typography
-                    sx={{
-                      fontSize: "0.82rem",
-                      color: isDark
-                        ? "rgba(255,255,255,0.65)"
-                        : "rgba(17,24,39,0.7)",
-                      lineHeight: 1.5,
-                    }}
-                  >
-                    {t("pages.register.consentText")}
-                  </Typography>
-                }
-                sx={{ alignItems: "flex-start", mx: 0 }}
-              />
+              <Box
+                sx={{
+                  border: `1px solid ${isDark ? "rgba(245,168,0,0.25)" : "rgba(245,168,0,0.4)"}`,
+                  borderRadius: 2,
+                  p: 2,
+                  background: isDark
+                    ? "rgba(245,168,0,0.04)"
+                    : "rgba(245,168,0,0.04)",
+                }}
+              >
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={consented}
+                      onChange={(e) => setConsented(e.target.checked)}
+                      sx={{
+                        color: isDark
+                          ? "rgba(255,255,255,0.35)"
+                          : "rgba(17,24,39,0.35)",
+                        "&.Mui-checked": { color: "#F5A800" },
+                        py: { xs: 1, sm: 0.25 },
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography
+                      sx={{
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        color: isDark
+                          ? "rgba(255,255,255,0.88)"
+                          : "rgba(17,24,39,0.88)",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {t("pages.register.consentCombined")
+                        .split(/(Privacy Policy|Terms)/)
+                        .map((part, i) => {
+                          if (part === "Privacy Policy") {
+                            return (
+                              <Box
+                                key={i}
+                                component="a"
+                                href="/privacy-policy"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/privacy-policy");
+                                }}
+                                sx={{
+                                  color: "#F5A800",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                {part}
+                              </Box>
+                            );
+                          }
+                          if (part === "Terms") {
+                            return (
+                              <Box
+                                key={i}
+                                component="a"
+                                href="/terms-and-conditions"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/terms-and-conditions");
+                                }}
+                                sx={{
+                                  color: "#F5A800",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                {part}
+                              </Box>
+                            );
+                          }
+                          return part;
+                        })}
+                    </Typography>
+                  }
+                  sx={{
+                    alignItems: "flex-start",
+                    mx: 0,
+                  }}
+                />
+              </Box>
 
               <Button
                 variant="contained"
@@ -447,7 +506,7 @@ const UserRegisterPage = () => {
                 onClick={() => navigate("/guest/dashboard")}
                 sx={{
                   mt: 1,
-                  py: 1,
+                  py: 0.75,
                   borderRadius: 50,
                   fontWeight: 700,
                   fontSize: "0.88rem",
@@ -460,7 +519,22 @@ const UserRegisterPage = () => {
                   },
                 }}
               >
-                {t("pages.register.continueAsGuest")}
+                {(() => {
+                  const label = t("pages.register.continueAsGuest");
+                  const match = label.match(/^(.*?)\s*\((.+)\)\s*$/);
+                  const main = match ? match[1] : label;
+                  const sub = match ? `(${match[2]})` : "";
+                  return (
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1.1 }}>
+                      <Box component="span">{main}</Box>
+                      {sub && (
+                        <Box component="span" sx={{ fontSize: "0.7rem", fontWeight: 500, opacity: 0.85 }}>
+                          {sub}
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                })()}
               </Button>
             </Stack>
           )}
@@ -876,10 +950,9 @@ const UserRegisterPage = () => {
                       // which would re-show the index.html preloader.
                       clearSession();
                       setAuth(pendingAuth.token, pendingAuth.user);
-                      // RedirectIfAuth forces authenticated users to
-                      // /user/voters anyway, so navigate there directly to
-                      // avoid a flash through /user/civic-issues.
-                      navigate("/user/voters", { replace: true });
+                      // New users land on the constituency onboarding wizard
+                      // before reaching the dashboard.
+                      navigate("/onboarding/location", { replace: true });
                     }
                   }}
                   sx={{

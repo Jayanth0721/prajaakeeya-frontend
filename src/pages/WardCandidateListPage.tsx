@@ -48,6 +48,10 @@ import {
   Language as LanguageIcon,
   KeyboardArrowUp as KeyboardArrowUpIcon,
   InfoOutlined as InfoOutlinedIcon,
+  AccountBalance as ParliamentIcon,
+  Gavel as GavelIcon,
+  LocationCity as CityIcon,
+  Agriculture as VillageIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -73,6 +77,8 @@ import { getAspirantMessages, postUserChatMessage, AspirantChatMessageDto } from
 import useAuthStore from '../store/useAuthStore';
 import apiClient from '../services/apiClient';
 import CloseIcon from '@mui/icons-material/Close';
+import capitolInactiveImg from '../assets/images/capitol.png';
+import capitolActiveImg from '../assets/images/capitol1.png';
 import { BRAND } from '../theme';
 
 interface Candidate {
@@ -380,6 +386,80 @@ const WardCandidateListPage = () => {
   const isMunicipalElection = selectedElection?.type === 'municipal_corporation';
   const isGramPanchayat = selectedElection?.type === 'gram_panchayat';
 
+  // ── 3-tab selector replaces the legacy filter dropdowns. Each tab maps to
+  // one election type and auto-loads aspirants for the user's saved
+  // constituency for that type. The original filter UI is kept in place below
+  // but gated by `!isAutoTypeMode` (which is now always false, since either
+  // the URL `?type=` deep-link or the tab selector sets `autoElectionType`).
+  // Tabs only render when the user arrives without a `?type=` param (e.g.
+  // from /user/sop "My Area Aspirants"); dashboard tiles deep-link with
+  // `?type=` and skip the tab UI entirely.
+  type AspirantTab = 'mp' | 'mla' | 'ward_panchayat';
+  const tabToElectionType = (tab: AspirantTab): string => {
+    if (tab === 'mp') return 'lok_sabha';
+    if (tab === 'mla') return 'state_assembly';
+    // ward_panchayat tab — pick whichever local body the user has saved.
+    if ((user as any)?.municipalCorporationConstituency?.id != null) return 'municipal_corporation';
+    if ((user as any)?.gramPanchayatConstituency != null) return 'gram_panchayat';
+    return 'municipal_corporation';
+  };
+  const urlType = searchParams.get('type');
+  const showTabSelector = !urlType;
+  const initialTabFromUrl: AspirantTab = (() => {
+    if (urlType === 'lok_sabha') return 'mp';
+    if (urlType === 'state_assembly') return 'mla';
+    if (urlType === 'municipal_corporation' || urlType === 'gram_panchayat') return 'ward_panchayat';
+    return 'mp';
+  })();
+  const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromUrl);
+  const autoElectionType = urlType ?? tabToElectionType(activeTab);
+  // Path passed to the aspirant-register page — carries the current election
+  // type so the CandidateInformationStep can pre-select the matching tab.
+  const registerPath = autoElectionType
+    ? `/user/aspirants/register?type=${encodeURIComponent(autoElectionType)}`
+    : '/user/aspirants/register';
+  const autoUserConstituencyId = (() => {
+    if (!user) return null;
+    switch (autoElectionType) {
+      case 'lok_sabha':
+        return user.lokSabhaConstituency?.id ?? null;
+      case 'state_assembly':
+        return user.stateAssemblyConstituency?.id ?? null;
+      case 'municipal_corporation':
+        return user.municipalCorporationConstituency?.id ?? null;
+      case 'gram_panchayat':
+        // GP villages are identified by `srNo` on the nested object.
+        return user.gramPanchayatConstituency?.srNo ?? null;
+      default:
+        return null;
+    }
+  })();
+  // True whenever the URL pins us to a specific election type (regardless of
+  // whether the user has the matching constituency saved).
+  const isAutoTypeMode = Boolean(autoElectionType);
+  // True only when we have both the type AND the user's stored ID — i.e. we can
+  // skip the filter UI and load aspirants directly.
+  const autoFilterMode = Boolean(autoElectionType && autoUserConstituencyId);
+  // True when ?type= is present but the user hasn't saved that constituency.
+  const missingConstituencyForType = isAutoTypeMode && !autoUserConstituencyId;
+
+  // Friendly label for the missing-constituency message — falls back to the
+  // raw election type if no translation key matches.
+  const autoTypeLabelKey = (() => {
+    switch (autoElectionType) {
+      case 'lok_sabha':
+        return 'pages.constituencyOnboarding.step1Title';
+      case 'state_assembly':
+        return 'pages.constituencyOnboarding.step2Title';
+      case 'municipal_corporation':
+        return 'pages.constituencyOnboarding.step3Title';
+      case 'gram_panchayat':
+        return 'pages.constituencyOnboarding.step4Title';
+      default:
+        return '';
+    }
+  })();
+
   // ── Gram Panchayat filter state ──
   const [gpStates, setGpStates] = useState<string[]>([]);
   const [gpDistricts, setGpDistricts] = useState<string[]>([]);
@@ -399,6 +479,11 @@ const WardCandidateListPage = () => {
 
   const [showAspirantPrompt, setShowAspirantPrompt] = useState(false);
   const [votingWindowActive, setVotingWindowActive] = useState(false);
+  // The election type of the currently-open voting window, if any. Used to
+  // gate aspirant registration only for the matching election (so a Lok Sabha
+  // voting window doesn't block State Assembly registrations and vice versa).
+  const [blockedElectionType, setBlockedElectionType] = useState<string | null>(null);
+  const registrationBlocked = blockedElectionType != null && blockedElectionType === autoElectionType;
   const filtersRestoredRef = useRef(false);
 
   // Save filter selections to sessionStorage so they persist across navigation
@@ -415,8 +500,15 @@ const WardCandidateListPage = () => {
     if (selectedGpVillage) filters.gpVillage = selectedGpVillage;
     sessionStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
   }, [selectedElectionId, selectedConstituency, selectedMunicipality, selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram, selectedGpVillage]);
-  const [votingWindow, setVotingWindow] = useState<{ startTime: number; endTime: number; description?: string; isActive?: boolean; electionName?: string } | null>(null);
+  const [votingWindow, setVotingWindow] = useState<{ startTime: number; endTime: number; description?: string; isActive?: boolean; electionName?: string; electionId?: number } | null>(null);
   const [eligibilityDialogOpen, setEligibilityDialogOpen] = useState(false);
+
+  const isVotingActiveForThisElection =
+    votingWindowActive &&
+    votingWindow?.isActive === true &&
+    votingWindow?.electionId != null &&
+    selectedElectionId !== '' &&
+    Number(votingWindow.electionId) === Number(selectedElectionId);
 
   useEffect(() => {
     const flag = sessionStorage.getItem('showAspirantPrompt');
@@ -612,6 +704,38 @@ const WardCandidateListPage = () => {
     return () => { mounted = false; clearInterval(id); };
   }, [chatOpen, activeAspirant]);
 
+  // When arriving from a notification deep-link (e.g. ?electionId=2&aspirantId=5),
+  // translate electionId → type once elections have loaded so the existing tab logic
+  // picks the right list. The aspirantId param is consumed by the scroll effect below.
+  useEffect(() => {
+    const eidParam = searchParams.get('electionId');
+    if (!eidParam || urlType || elections.length === 0) return;
+    const eid = Number(eidParam);
+    if (!Number.isFinite(eid)) return;
+    const election = elections.find((e) => e.id === eid);
+    if (!election?.type) return;
+    const next = new URLSearchParams(searchParams);
+    next.set('type', election.type);
+    next.delete('electionId');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, urlType, elections, setSearchParams]);
+
+  // Scroll to a specific aspirant card after candidates render (from ?aspirantId=…).
+  // The param is then stripped so subsequent re-renders don't re-scroll.
+  useEffect(() => {
+    const aidParam = searchParams.get('aspirantId');
+    if (!aidParam) return;
+    const aid = Number(aidParam);
+    if (!Number.isFinite(aid)) return;
+    if (!candidates.some((c) => c.id === aid)) return;
+    const el = document.getElementById(`aspirant-card-${aid}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const next = new URLSearchParams(searchParams);
+    next.delete('aspirantId');
+    setSearchParams(next, { replace: true });
+  }, [candidates, searchParams, setSearchParams]);
+
   // Fetch elections on mount & restore saved election filter
   useEffect(() => {
     fetchElections()
@@ -648,7 +772,8 @@ const WardCandidateListPage = () => {
         const isVotingAllowed = windowResp?.data?.isVotingAllowed;
         setVotingWindowActive(Boolean(isVotingAllowed));
         const w = windowResp?.data?.window;
-        if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '' });
+        if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '', electionId: (w as any)?.electionId ?? (w as any)?.election?.id });
+        setBlockedElectionType(isVotingAllowed && w?.isActive ? (w as any)?.election?.type ?? null : null);
       } catch (e) {
         // ignore
       }
@@ -888,6 +1013,10 @@ const WardCandidateListPage = () => {
       .finally(() => setLoadingGpVillages(false));
   }, [selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram, getSavedFilters]);
 
+  // Tracks the election type the auto-load effect has already handled, so it
+  // re-fires when the user navigates between dashboard tiles (different ?type=).
+  const lastAutoLoadedTypeRef = useRef<string | null>(null);
+
   // Load aspirants – called only when both election AND constituency/GP village are set
   const loadAspirants = useCallback(async (electionId: number, constituencyId: number) => {
       try {
@@ -947,7 +1076,8 @@ const WardCandidateListPage = () => {
           const isVotingAllowed = windowResp?.data?.isVotingAllowed;
           setVotingWindowActive(Boolean(isVotingAllowed));
           const w = windowResp?.data?.window;
-          if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '' });
+          if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '', electionId: (w as any)?.electionId ?? (w as any)?.election?.id });
+          setBlockedElectionType(isVotingAllowed && w?.isActive ? (w as any)?.election?.type ?? null : null);
         } catch (e) {
           // ignore voting window errors
         }
@@ -957,6 +1087,101 @@ const WardCandidateListPage = () => {
         setLoading(false);
       }
   }, []);
+
+  // Auto-load aspirants when arriving from a dashboard tile with ?type=<election_type>.
+  // Re-fires whenever the URL ?type= changes so navigating between tiles
+  // (e.g. state_assembly → municipal_corporation) loads the right data and
+  // clears any stale selections from the previous type.
+  useEffect(() => {
+    if (!autoFilterMode) return;
+    if (lastAutoLoadedTypeRef.current === autoElectionType) return;
+    if (!elections.length || !autoUserConstituencyId) return;
+    const election = elections.find((e) => e.type === autoElectionType);
+    if (!election) return;
+
+    // Clear stale per-election state so the context strip and results don't
+    // briefly show data from the previously-loaded tile.
+    setSelectedConstituency(null);
+    setSelectedGpVillage(null);
+    setSelectedMunicipality(null);
+    setConstituencies([]);
+    setCityConstituencies([]);
+    setCandidates([]);
+
+    // Purge the cross-election-type filter cache. Otherwise a constituency
+    // saved during a previous tile visit (e.g. state_assembly → Aland) gets
+    // restored here by ID and shows the wrong name in the context strip.
+    try {
+      sessionStorage.removeItem(FILTER_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    // Suppress the saved-filter restoration in the existing election-change
+    // effect — we already know what to load from the user's profile.
+    filtersRestoredRef.current = true;
+
+    lastAutoLoadedTypeRef.current = autoElectionType;
+    setSelectedElectionId(election.id);
+    void loadAspirants(election.id, autoUserConstituencyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFilterMode, elections, autoUserConstituencyId, autoElectionType, loadAspirants]);
+
+  // In auto mode, resolve the context-strip name directly from the nested
+  // constituency object on /auth/me — it already carries id + name + parent
+  // metadata, so we don't need to wait for `constituencies` to load or hit
+  // /elections/<type>/constituencies a second time just to look up a name.
+  useEffect(() => {
+    if (!autoFilterMode || !autoUserConstituencyId) return;
+    if (autoElectionType === 'municipal_corporation' || autoElectionType === 'gram_panchayat') return;
+    if (selectedConstituency?.id === autoUserConstituencyId) return;
+    const nested =
+      autoElectionType === 'lok_sabha'
+        ? (user as any)?.lokSabhaConstituency
+        : autoElectionType === 'state_assembly'
+          ? (user as any)?.stateAssemblyConstituency
+          : null;
+    if (nested?.id === autoUserConstituencyId && nested?.name) {
+      setSelectedConstituency(nested as Constituency);
+      return;
+    }
+    // Fallback: if /auth/me hasn't delivered the nested object yet, fall back
+    // to the already-loaded constituencies list.
+    if (!constituencies.length) return;
+    const match = constituencies.find((c) => c.id === autoUserConstituencyId);
+    if (match) setSelectedConstituency(match);
+  }, [autoFilterMode, autoUserConstituencyId, autoElectionType, constituencies, selectedConstituency, user]);
+
+  // Municipal corporation & gram panchayat auto-mode name resolution — same
+  // idea, sourced from the nested object on /auth/me.
+  useEffect(() => {
+    if (!autoFilterMode || !autoUserConstituencyId) return;
+    if (
+      autoElectionType !== 'municipal_corporation' &&
+      autoElectionType !== 'gram_panchayat'
+    ) return;
+    if (autoElectionType === 'municipal_corporation' && selectedConstituency?.id === autoUserConstituencyId) return;
+    if (autoElectionType === 'gram_panchayat' && selectedGpVillage?.id === String(autoUserConstituencyId)) return;
+
+    const nested =
+      autoElectionType === 'municipal_corporation'
+        ? (user as any)?.municipalCorporationConstituency
+        : (user as any)?.gramPanchayatConstituency;
+    if (!nested) return;
+
+    if (autoElectionType === 'municipal_corporation') {
+      if (nested.id !== autoUserConstituencyId) return;
+      setSelectedConstituency(nested as Constituency);
+    } else {
+      // GP nested object uses `srNo` + `villageName` (no `id`/`name`).
+      if (nested.srNo !== autoUserConstituencyId) return;
+      setSelectedGpVillage({
+        id: String(nested.srNo),
+        villageName: nested.villageName ?? '',
+        villageCode: '',
+        population: '',
+      });
+    }
+  }, [autoFilterMode, autoElectionType, autoUserConstituencyId, selectedConstituency, selectedGpVillage, user]);
 
   // Fetch aspirants only when constituency changes (election change resets constituency to null first)
   useEffect(() => {
@@ -1033,11 +1258,17 @@ const WardCandidateListPage = () => {
           </Button>
 
           {(() => {
-            const allFiltersSelected = isGramPanchayat
-              ? !!(selectedElectionId && selectedGpState && selectedGpDistrict && selectedGpTaluk && selectedGpGram && selectedGpVillage)
-              : isMunicipalElection
-                ? !!(selectedElectionId && selectedMunicipality && selectedConstituency)
-                : !!(selectedElectionId && selectedConstituency);
+            // In auto-mode (dashboard tile deep-link) the user's constituency
+            // comes from /auth/me — selectedMunicipality and the GP cascade
+            // are never populated, so the original check hid the button on
+            // municipal/GP tiles. Relax the gate when autoFilterMode is on.
+            const allFiltersSelected = autoFilterMode
+              ? !!autoUserConstituencyId && !!selectedElectionId
+              : isGramPanchayat
+                ? !!(selectedElectionId && selectedGpState && selectedGpDistrict && selectedGpTaluk && selectedGpGram && selectedGpVillage)
+                : isMunicipalElection
+                  ? !!(selectedElectionId && selectedMunicipality && selectedConstituency)
+                  : !!(selectedElectionId && selectedConstituency);
 
             if (!allFiltersSelected) return null;
 
@@ -1147,6 +1378,112 @@ const WardCandidateListPage = () => {
           </Stack>
         )}
 
+        {/* 3-tab selector — drives `activeTab` which in turn sets the
+            effective `autoElectionType`. Only renders when the page is
+            visited without a `?type=` deep-link (e.g. coming from /user/sop
+            "My Area Aspirants"). Dashboard tiles pass `?type=` and skip the
+            tab UI entirely. Styled to match the Civic Issues page tabs. */}
+        {showTabSelector && (
+        <Box sx={{
+          p: { xs: 1.5, sm: 2 },
+          mb: 2.5,
+          borderRadius: 3,
+          border: `1px solid ${isDark ? 'rgba(245,168,0,0.18)' : 'rgba(245,168,0,0.28)'}`,
+          bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(17,24,39,0.02)',
+        }}>
+          <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
+            {(() => {
+              const hasMunicipal = (user as any)?.municipalCorporationConstituency?.id != null;
+              const hasGp = (user as any)?.gramPanchayatConstituency != null;
+              const wardTabLabel = hasMunicipal
+                ? (t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Aspirants')
+                : hasGp
+                  ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
+                  : (t('pages.wardCandidates.tabWardPanchayat') || 'My Ward / Panchayat Aspirants');
+              const wardTabIcon = hasGp && !hasMunicipal ? VillageIcon : CityIcon;
+              const tabs: { key: AspirantTab; label: string; Icon: typeof ParliamentIcon; inactiveImg?: string; activeImg?: string }[] = [
+                { key: 'mp', label: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants', Icon: ParliamentIcon },
+                { key: 'mla', label: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants', Icon: GavelIcon, inactiveImg: capitolInactiveImg, activeImg: capitolActiveImg },
+                { key: 'ward_panchayat', label: wardTabLabel, Icon: wardTabIcon },
+              ];
+              return tabs.map(({ key, label, Icon, inactiveImg, activeImg }) => {
+                const isActive = activeTab === key;
+                const imgSrc = isActive ? activeImg : inactiveImg;
+                return (
+                  <Box
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    sx={{
+                      flex: 1,
+                      cursor: 'pointer',
+                      px: { xs: 1, sm: 1.5 },
+                      py: { xs: 1.4, sm: 1.6 },
+                      borderRadius: 2,
+                      border: isActive
+                        ? '1.5px solid rgba(245,168,0,0.55)'
+                        : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.08)'}`,
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(245,168,0,0.95) 0%, rgba(224,32,16,0.85) 100%)'
+                        : isDark
+                          ? 'rgba(255,255,255,0.03)'
+                          : 'rgba(17,24,39,0.02)',
+                      color: isActive ? '#fff' : isDark ? 'rgba(255,255,255,0.78)' : 'rgba(17,24,39,0.78)',
+                      transition: 'all 0.18s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 0.4,
+                      textAlign: 'center',
+                      minWidth: 0,
+                      '&:hover': isActive
+                        ? {}
+                        : {
+                            borderColor: 'rgba(245,168,0,0.45)',
+                            background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.06)',
+                          },
+                    }}
+                  >
+                    {imgSrc ? (
+                      <Box
+                        component="img"
+                        src={imgSrc}
+                        alt={label}
+                        sx={{
+                          width: { xs: 26, sm: 30 },
+                          height: { xs: 26, sm: 30 },
+                          objectFit: 'contain',
+                        }}
+                      />
+                    ) : (
+                      <Icon
+                        sx={{
+                          fontSize: { xs: 24, sm: 26 },
+                          color: isActive ? '#fff' : BRAND.yellow,
+                        }}
+                      />
+                    )}
+                    <Typography
+                      sx={{
+                        fontFamily: '"Baloo 2", cursive',
+                        fontWeight: 700,
+                        fontSize: { xs: '0.78rem', sm: '0.88rem' },
+                        lineHeight: 1.15,
+                      }}
+                    >
+                      {label}
+                    </Typography>
+                  </Box>
+                );
+              });
+            })()}
+          </Stack>
+        </Box>
+        )}
+
+        {/* Legacy filter UI — preserved but never renders now that the tab
+            selector above always sets `autoElectionType`. */}
+        {!isAutoTypeMode && (
+        <>
         {/* GP / Village not found help message - mobile: above filters */}
         {isGramPanchayat && (
           <Typography variant="body2" sx={{ display: { xs: 'block', sm: 'none' }, color: isDark ? 'rgb(245, 168, 0)' : 'red', fontStyle: 'italic', mb: 0.5 }}>
@@ -1435,9 +1772,156 @@ const WardCandidateListPage = () => {
             {t('civicIssues.gpVillageNotFound')}
           </Typography>
         )}
+        </>
+        )}
 
-        {/* If server reports user has voted, show a green notice */}
-        {(user?.hasVoted || hasVoted) && (
+        {/* "Update your profile" empty state — shown when the dashboard tile
+            deep-linked us to an election type but the user hasn't saved their
+            constituency for it yet. */}
+        {missingConstituencyForType && (
+          <Box
+            sx={{
+              mt: { xs: 1, sm: 1.5 },
+              mb: { xs: 2, sm: 2 },
+              p: { xs: 3, sm: 4 },
+              borderRadius: 3,
+              textAlign: 'center',
+              border: `1px solid ${isDark ? 'rgba(245,168,0,0.28)' : 'rgba(245,168,0,0.42)'}`,
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(245,168,0,0.08) 0%, rgba(224,32,16,0.04) 100%)'
+                : 'linear-gradient(135deg, rgba(245,168,0,0.10) 0%, rgba(224,32,16,0.04) 100%)',
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { xs: '1.05rem', sm: '1.2rem' },
+                fontWeight: 800,
+                color: isDark ? '#fff' : 'rgba(17,24,39,0.92)',
+                mb: 1,
+              }}
+            >
+              {t('pages.wardCandidates.missingConstituencyTitle', {
+                defaultValue: 'Set your {{type}} to see aspirants',
+                type: autoTypeLabelKey
+                  ? t(autoTypeLabelKey, { defaultValue: 'constituency' })
+                  : 'constituency',
+              })}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(17,24,39,0.7)',
+                mb: 2.5,
+                maxWidth: 480,
+                mx: 'auto',
+                lineHeight: 1.55,
+              }}
+            >
+              {t('pages.wardCandidates.missingConstituencyBody', {
+                defaultValue:
+                  'Update your {{type}} in your profile to see aspirants in your area.',
+                type: autoTypeLabelKey
+                  ? t(autoTypeLabelKey, { defaultValue: 'constituency' })
+                  : 'constituency',
+              })}
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/user/complete-profile')}
+              sx={{
+                py: 1.1,
+                px: 3.5,
+                borderRadius: 2,
+                fontWeight: 800,
+                textTransform: 'none',
+                fontSize: '0.95rem',
+                color: '#fff',
+                background:
+                  'linear-gradient(135deg, #C8180A 0%, #E02010 100%)',
+                boxShadow: '0 6px 20px rgba(200,24,10,0.35)',
+                '&:hover': {
+                  background:
+                    'linear-gradient(135deg, #E02010 0%, #C8180A 100%)',
+                  boxShadow: '0 8px 26px rgba(200,24,10,0.5)',
+                },
+              }}
+            >
+              {t('pages.wardCandidates.updateProfileCta', {
+                defaultValue: 'Update Profile',
+              })}
+            </Button>
+          </Box>
+        )}
+
+        {/* Context strip — shows the currently active election + constituency.
+            Stacks vertically on mobile so a long election name (e.g.
+            "Municipal Corporation (Corporator)") doesn't squeeze the ward
+            name into an awkward 3-line wrap. */}
+        {selectedElection && !missingConstituencyForType && (selectedConstituency || selectedGpVillage || selectedMunicipality) && (
+          <Box
+            sx={{
+              mt: { xs: 0.5, sm: 1 },
+              mb: { xs: 1, sm: 1.5 },
+              px: { xs: 1.5, sm: 2 },
+              py: { xs: 1, sm: 1.25 },
+              borderRadius: 2,
+              border: `1px solid ${isDark ? 'rgba(245,168,0,0.25)' : 'rgba(245,168,0,0.4)'}`,
+              background: isDark
+                ? 'linear-gradient(135deg, rgba(245,168,0,0.06) 0%, rgba(224,32,16,0.04) 100%)'
+                : 'linear-gradient(135deg, rgba(245,168,0,0.08) 0%, rgba(224,32,16,0.04) 100%)',
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-start', sm: 'center' },
+              gap: { xs: 0.75, sm: 1.5 },
+            }}
+          >
+            <Box
+              component="span"
+              sx={{
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: BRAND.yellow,
+                px: 0.9,
+                py: 0.3,
+                borderRadius: 1,
+                border: `1px solid ${BRAND.yellow}`,
+                lineHeight: 1.2,
+                alignSelf: 'flex-start',
+                maxWidth: '100%',
+              }}
+            >
+              {selectedElection.name}
+            </Box>
+            <Typography
+              sx={{
+                fontSize: { xs: '0.95rem', sm: '0.95rem' },
+                fontWeight: 700,
+                color: isDark ? '#fff' : 'rgba(17,24,39,0.92)',
+                lineHeight: 1.3,
+                flex: 1,
+                minWidth: 0,
+                wordBreak: 'break-word',
+              }}
+            >
+              {isGramPanchayat
+                ? selectedGpVillage?.villageName
+                : isMunicipalElection
+                  ? selectedConstituency
+                    ? `${selectedMunicipality?.name ?? ''}${selectedMunicipality?.name && selectedConstituency ? ' · ' : ''}${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
+                    : selectedMunicipality?.name
+                  : selectedConstituency
+                    ? `${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
+                    : ''}
+            </Typography>
+          </Box>
+        )}
+
+        {/* If server reports user has voted AND the active voting window is for
+            this tab's election, show a green notice. Scoped by electionId so
+            voting on Lok Sabha doesn't surface the message under MLA, etc. */}
+        {(user?.hasVoted || hasVoted) && isVotingActiveForThisElection && (
           <Box sx={{ my: 2 }}>
             <Typography sx={{ color: 'success.main', fontWeight: 700, textAlign: { xs: 'center', md: 'left' } }}>
               {isKannada ? 'ನೀವು ಈಗಾಗಲೇ ಮತ ಚಲಾಯಿಸಿದ್ದೀರಿ' : 'You have already voted'}
@@ -1466,8 +1950,8 @@ const WardCandidateListPage = () => {
                 {t('pages.wardCandidates.demoAspirantNotice')}
               </Typography>
             </Box>
-            {/* Register as aspirant card - hidden during active voting */}
-            {!votingWindowActive && (
+            {/* Register as aspirant card - hidden when voting is open for THIS election type */}
+            {!registrationBlocked && (
               <Box sx={{
                 flex: 1, p: 3, borderRadius: '16px',
                 background: panelBg,
@@ -1488,7 +1972,7 @@ const WardCandidateListPage = () => {
                   {(
                     <Button
                       variant="contained"
-                      onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate('/user/aspirants/register')}
+                      onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate(registerPath)}
                       sx={{
                         alignSelf: { xs: 'stretch', sm: 'flex-start' }, fontWeight: 700, borderRadius: '8px', textTransform: 'none',
                         color: '#fff', background: `linear-gradient(135deg, ${BRAND.red} 0%, ${BRAND.red2} 100%)`,
@@ -1569,7 +2053,7 @@ const WardCandidateListPage = () => {
             }}
           >
             {candidates.map((candidate) => (
-              <Box key={candidate.id}>
+              <Box key={candidate.id} id={`aspirant-card-${candidate.id}`}>
                 <Card
                   sx={{
                     height: '100%',
@@ -2383,7 +2867,7 @@ const WardCandidateListPage = () => {
                       {(() => {
                         const isDemo = isDemoCandidate(candidate);
                         const isInteractionEligible = !!((user as any)?.isChat || (user as any)?.isMeeting || (user as any)?.isPhoneCall);
-                        const voteDisabled = !votingWindowActive || !isInteractionEligible;
+                        const voteDisabled = !isVotingActiveForThisElection || !isInteractionEligible;
                         const finalDisabled = isDemo || voteDisabled || hasVoted || Boolean(user?.hasVoted);
                         return (
                           <Box sx={{ width: '100%' }}>
@@ -2412,7 +2896,13 @@ const WardCandidateListPage = () => {
 
                             <Box
                               sx={{ width: '100%' }}
-                              onClick={finalDisabled ? () => setEligibilityDialogOpen(true) : undefined}
+                              onClick={finalDisabled ? () => {
+                                if ((hasVoted || user?.hasVoted) && isVotingActiveForThisElection) {
+                                  setVoteThankOpen(true);
+                                } else {
+                                  setEligibilityDialogOpen(true);
+                                }
+                              } : undefined}
                             >
                               <Button
                                 variant="contained"
@@ -2462,7 +2952,7 @@ const WardCandidateListPage = () => {
         )}
 
         {/* Register as aspirant banner below the candidate list — hide when only demo is showing (top section already has it) */}
-        {candidates.some(c => !isDemoCandidate(c)) && user && user.role !== 'aspirant' && !user.aspirantId && !votingWindowActive && (
+        {candidates.some(c => !isDemoCandidate(c)) && user && user.role !== 'aspirant' && !user.aspirantId && !registrationBlocked && (
           <Box sx={{
             width: '100%', p: 3, borderRadius: '16px',
             background: panelBg,
@@ -2486,8 +2976,8 @@ const WardCandidateListPage = () => {
             {(
               <Button
                 variant="contained"
-                onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate('/user/aspirants/register')}
-                disabled={votingWindowActive}
+                onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate(registerPath)}
+                disabled={registrationBlocked}
                 sx={{
                   flexShrink: 0, fontWeight: 700, borderRadius: '8px', textTransform: 'none', whiteSpace: 'nowrap',
                   alignSelf: { xs: 'stretch', sm: 'auto' },
@@ -2784,7 +3274,7 @@ const WardCandidateListPage = () => {
                     setChatMessages((prev) => [...prev, m]);
                     setChatText('');
                     setSuccessOpen(true);
-                    try { void trackInteraction(activeAspirant.id); } catch (_) { }
+                    try { void trackInteraction(activeAspirant.id); } catch (_) { /* noop */ }
                   } catch (err: any) {
                     setErrorMsg(err?.response?.data?.message || 'Failed to send message');
                     setErrorOpen(true);
@@ -2806,7 +3296,7 @@ const WardCandidateListPage = () => {
                   setChatMessages((prev) => [...prev, m]);
                   setChatText('');
                   setSuccessOpen(true);
-                  try { void trackInteraction(activeAspirant.id); } catch (_) { }
+                  try { void trackInteraction(activeAspirant.id); } catch (_) { /* noop */ }
                 } catch (err: any) {
                   setErrorMsg(err?.response?.data?.message || 'Failed to send message');
                   setErrorOpen(true);
@@ -3113,7 +3603,7 @@ const WardCandidateListPage = () => {
                       size="large"
                       onClick={() => {
                         setShowAspirantPrompt(false);
-                        navigate('/user/aspirants/register');
+                        navigate(registerPath);
                       }}
                       sx={{
                         py: 1.2, px: 4, borderRadius: 3, fontWeight: 700, fontSize: '1rem',

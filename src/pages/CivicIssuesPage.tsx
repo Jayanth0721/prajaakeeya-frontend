@@ -26,8 +26,12 @@ import {
   FlashOn as FlashOnIcon,
   Apartment as BuildingIcon,
   AccountBalance as BridgeIcon,
+  Gavel as MLAIcon,
+  LocationOn as WardPinIcon,
   MoreHoriz as MoreHorizIcon,
 } from '@mui/icons-material';
+// Reuse BridgeIcon (AccountBalance) for the MP tab — same Parliament-pillar glyph.
+const MPIcon = BridgeIcon;
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
@@ -50,6 +54,8 @@ import waterTapImg from '../assets/images/water-tap.png';
 import garbageImg from '../assets/images/garbage.png';
 import streetLightImg from '../assets/images/street-light.png';
 import savePlanetImg from '../assets/images/save-the-planet.png';
+import capitolInactiveImg from '../assets/images/capitol.png';
+import capitolActiveImg from '../assets/images/capitol1.png';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -111,6 +117,45 @@ const CivicIssuesPage: React.FC = () => {
 
   const isGramPanchayat = selectedElectionType === 'gram_panchayat';
 
+  // Map election type → the user's saved constituency ID on /auth/me.
+  const userConstituencyIdForType = (type?: string): number | null => {
+    if (!type || !user) return null;
+    switch (type) {
+      case 'lok_sabha':
+        return (user as any).lokSabhaConstituency?.id ?? null;
+      case 'state_assembly':
+        return (user as any).stateAssemblyConstituency?.id ?? null;
+      case 'municipal_corporation':
+        return (user as any).municipalCorporationConstituency?.id ?? null;
+      case 'gram_panchayat':
+        return (user as any).gramPanchayatConstituency?.srNo ?? null;
+      default:
+        return null;
+    }
+  };
+
+  // Only election types where the user has a saved constituency are offered —
+  // e.g. a user with `gramPanchayatConstituencyId: null` won't see Gram
+  // Panchayat in the Election Type dropdown.
+  const availableElections = elections.filter(
+    (el) => userConstituencyIdForType(el.type) != null,
+  );
+
+  // The Civic Issues page is structured as 3 tabs:
+  //   • mp             → Lok Sabha
+  //   • mla            → State Assembly
+  //   • ward_panchayat → Municipal Corporation (urban) OR Gram Panchayat
+  //                       (rural) — whichever the user has saved.
+  type CivicTab = 'mp' | 'mla' | 'ward_panchayat';
+  const tabToElectionType = (tab: CivicTab): string | null => {
+    if (tab === 'mp') return 'lok_sabha';
+    if (tab === 'mla') return 'state_assembly';
+    if ((user as any)?.municipalCorporationConstituency?.id != null) return 'municipal_corporation';
+    if ((user as any)?.gramPanchayatConstituency != null) return 'gram_panchayat';
+    return null;
+  };
+  const [activeTab, setActiveTab] = useState<CivicTab>('mp');
+
   const [raisingCat, setRaisingCat] = useState<string | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: 'success' | 'error' | 'info' }>({ open: false, msg: '', severity: 'success' });
 
@@ -122,39 +167,72 @@ const CivicIssuesPage: React.FC = () => {
   const textMid = isDark ? 'rgba(255,255,255,0.64)' : 'rgba(17,24,39,0.65)';
   const textDim = isDark ? 'rgba(255,255,255,0.42)' : 'rgba(17,24,39,0.46)';
 
+  // If the user arrived via the "Public Issue" button on the aspirants list,
+  // location.state carries filterElectionId. Map that election type back to
+  // the matching tab so the right one is highlighted and the right value
+  // cards render — without the user having to re-click.
+  useEffect(() => {
+    if (!filterElectionId || !elections.length) return;
+    const election = elections.find((e) => e.id === filterElectionId);
+    if (!election) return;
+    if (election.type === 'lok_sabha') setActiveTab('mp');
+    else if (election.type === 'state_assembly') setActiveTab('mla');
+    else if (
+      election.type === 'municipal_corporation' ||
+      election.type === 'gram_panchayat'
+    ) setActiveTab('ward_panchayat');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterElectionId, elections]);
+
+  // Map active tab → election (id + type). Re-fires whenever the tab or the
+  // user's saved IDs change so the right election context drives fetchData.
+  useEffect(() => {
+    const wantedType = tabToElectionType(activeTab);
+    if (!wantedType) {
+      setSelectedElectionType('');
+      setSelectedElectionId('');
+      return;
+    }
+    const matched = elections.find((e) => e.type === wantedType);
+    setSelectedElectionType(wantedType);
+    setSelectedElectionId(matched ? matched.id : '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, elections, user]);
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setFetchError('');
-      
-      // If filters from WardCandidateListPage are provided, use them directly
+
+      // Deep-link filter from WardCandidateListPage wins.
       if (filterElectionId && filterConstituencyId) {
         const data = await getIssuesByElectionAndConstituency(filterElectionId, filterConstituencyId, user?.id);
         setCategories(data.categories);
         setIssues(data.issues);
-      } else if (selectedElectionId && selectedGpVillage && isGramPanchayat) {
-        // Use GP village as constituency
-        const data = await getIssuesByElectionAndConstituency(Number(selectedElectionId), Number(selectedGpVillage.id), user?.id);
-        setCategories(data.categories);
-        setIssues(data.issues);
-      } else if (selectedElectionId && selectedConstituency) {
-        // Use user-selected election and constituency
-        const data = await getIssuesByElectionAndConstituency(Number(selectedElectionId), selectedConstituency.id, user?.id);
-        setCategories(data.categories);
-        setIssues(data.issues);
-      } else {
-        // No valid context selected yet
-        setCategories([]);
-        setIssues([]);
-        setLoading(false);
         return;
       }
+
+      // Otherwise pair the picked election with the user's saved constituency
+      // for that type (lokSabhaConstituencyId / stateAssemblyConstituencyId /
+      // municipalCorporationConstituencyId / gramPanchayatConstituencyId).
+      const userConstId = userConstituencyIdForType(selectedElectionType);
+      if (selectedElectionId && userConstId != null) {
+        const data = await getIssuesByElectionAndConstituency(Number(selectedElectionId), userConstId, user?.id);
+        setCategories(data.categories);
+        setIssues(data.issues);
+        return;
+      }
+
+      // Nothing picked yet.
+      setCategories([]);
+      setIssues([]);
     } catch (err: any) {
       setFetchError(err?.response?.data?.message || err?.message || t('civicIssues.failedToLoad'));
     } finally {
       setLoading(false);
     }
-  }, [filterElectionId, filterConstituencyId, selectedElectionId, selectedConstituency, selectedGpVillage, isGramPanchayat, user?.id, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterElectionId, filterConstituencyId, selectedElectionId, selectedElectionType, user, t]);
 
   useEffect(() => {
     fetchData();
@@ -341,34 +419,63 @@ const CivicIssuesPage: React.FC = () => {
       .finally(() => setLoadingGpVillages(false));
   }, [selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram]);
 
-  // Fetch issues when both election and constituency are selected by user
+  // Fetch issues whenever the user picks a new election type (the constituency
+  // ID is now derived from /auth/me, not selected manually).
   useEffect(() => {
-    if (selectedElectionId && selectedConstituency && !filterElectionId) {
+    if (selectedElectionId && selectedElectionType && !filterElectionId) {
       fetchData();
     }
-  }, [selectedElectionId, selectedConstituency, filterElectionId, fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedElectionId, selectedElectionType, filterElectionId]);
 
-  // Fetch issues when GP village is selected
+  // Resolve the user's constituency name for display (chip / sub-header).
+  // /auth/me now returns the full nested constituency object for each type, so
+  // we can short-circuit the resolution without an extra fetch. GP nested
+  // uses `srNo` + `villageName` (no id/name), so we synthesize a Constituency
+  // shape from those fields.
   useEffect(() => {
-    if (selectedElectionId && selectedGpVillage && isGramPanchayat && !filterElectionId) {
-      fetchData();
+    if (!selectedElectionType) {
+      setSelectedConstituency(null);
+      return;
     }
-  }, [selectedElectionId, selectedGpVillage, isGramPanchayat, filterElectionId, fetchData]);
+    const userId = userConstituencyIdForType(selectedElectionType);
+    if (userId == null) {
+      setSelectedConstituency(null);
+      return;
+    }
+    const u = user as any;
+    const nested =
+      selectedElectionType === 'lok_sabha' ? u?.lokSabhaConstituency :
+      selectedElectionType === 'state_assembly' ? u?.stateAssemblyConstituency :
+      selectedElectionType === 'municipal_corporation' ? u?.municipalCorporationConstituency :
+      selectedElectionType === 'gram_panchayat' ? u?.gramPanchayatConstituency :
+      null;
+    if (nested) {
+      if (selectedElectionType === 'gram_panchayat') {
+        setSelectedConstituency({
+          id: nested.srNo,
+          name: nested.villageName ?? '',
+          state: nested.state ?? '',
+        } as Constituency);
+      } else {
+        setSelectedConstituency(nested as Constituency);
+      }
+      return;
+    }
+    setSelectedConstituency(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedElectionType, user]);
 
   const handleRaise = async (category: IssueCategory) => {
-    // Can only raise if we have election/constituency filters
-    const hasContext = (filterElectionId && filterConstituencyId) || (selectedElectionId && selectedConstituency) || (selectedElectionId && selectedGpVillage && isGramPanchayat);
-    if (!hasContext || category.isRaised) return;  // Don't allow re-raising if already raised
+    const userConstId = userConstituencyIdForType(selectedElectionType);
+    const hasContext = (filterElectionId && filterConstituencyId) || (selectedElectionId && userConstId != null);
+    if (!hasContext || category.isRaised) return;
     try {
       setRaisingCat(category.name);
-      // Prioritize filter-based election/constituency
       if (filterElectionId && filterConstituencyId) {
         await raiseHandForCategoryByElectionConstituency(filterElectionId, filterConstituencyId, category.name);
-      } else if (selectedElectionId && selectedGpVillage && isGramPanchayat) {
-        await raiseHandForCategoryByElectionConstituency(Number(selectedElectionId), Number(selectedGpVillage.id), category.name);
-      } else if (selectedElectionId && selectedConstituency) {
-        // Use user-selected election/constituency
-        await raiseHandForCategoryByElectionConstituency(Number(selectedElectionId), selectedConstituency.id, category.name);
+      } else if (selectedElectionId && userConstId != null) {
+        await raiseHandForCategoryByElectionConstituency(Number(selectedElectionId), userConstId, category.name);
       }
       // Pick display name according to current language (Kannada when active)
       const display = (i18n.language || '').toLowerCase().startsWith('kn') && (category as any).nameKn ? (category as any).nameKn : category.name;
@@ -427,7 +534,10 @@ const CivicIssuesPage: React.FC = () => {
                 <Typography sx={{ fontFamily: FF, fontWeight: 800, fontSize: { xs: '1.15rem', sm: '1.4rem' }, color: textPrimary, lineHeight: 1.1 }}>
                   {t('civicIssues.title')}
                 </Typography>
-                {filterElectionName && filterConstituencyName ? (
+                {/* Election + constituency sub-line removed — the same info is
+                    already shown by the tab-section's value cards below, so it
+                    was rendering twice on /user/civic-issues. */}
+                {/* {filterElectionName && filterConstituencyName ? (
                   <Box>
                     <Typography sx={{ fontFamily: FF, fontSize: '0.9rem', color: isDark ? '#fff' : 'text.primary', mt: 0.5, fontWeight: 800 }}>
                       {filterElectionName}
@@ -456,299 +566,194 @@ const CivicIssuesPage: React.FC = () => {
                       </Typography>
                     )}
                   </Box>
-                ) : null}
+                ) : null} */}
               </Box>
             </Box>
           </Box>
         </Box>
       </motion.div>
 
-      {/* ── Filters (Election Type & Constituency) ────────────────────────────── */}
-      {!filterElectionName || !filterConstituencyName ? (
+      {/* ── 3-Tab selector (MP / MLA / Ward·Panchayat) — always shown so the
+            user can switch tabs even after deep-linking from the aspirants
+            list. The arriving filterElectionId is mapped to the right tab
+            automatically by the effect above. */}
+      {(
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.1 }}>
           <Box sx={{
-            p: { xs: 2, sm: 3 },
-            mb: 3,
+            p: { xs: 1.5, sm: 2 },
+            mb: 2.5,
             borderRadius: 3,
             border: `1px solid ${borderFaint}`,
             bgcolor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(17,24,39,0.02)',
           }}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%' }}>
-              <TextField
-                select
-                label={t('civicIssues.electionType', { defaultValue: 'Election Type' })}
-                value={selectedElectionId}
-                onChange={(e) => {
-                  const electionId = e.target.value ? Number(e.target.value) : '';
-                  setSelectedElectionId(electionId);
-                  const election = elections.find((el) => el.id === electionId);
-                  setSelectedElectionType(election?.type || '');
-                  setSelectedConstituency(null);
-                }}
-                sx={{
-                  flex: 1,
-                  minWidth: 200,
-                  '& .MuiOutlinedInput-root': {
-                    background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                    '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                    '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                    '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                  },
-                  '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                  '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                  '& .MuiSelect-select': { color: isDark ? '#fff' : 'rgba(15,23,42,0.9)' },
-                }}
-                SelectProps={{
-                  MenuProps: {
-                    PaperProps: {
-                      sx: {
-                        bgcolor: isDark ? '#1a1515' : '#ffffff',
-                        '& .MuiMenuItem-root': { color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(15,23,42,0.85)' },
-                        '& .MuiMenuItem-root:hover': { bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.1)' },
-                        '& .MuiMenuItem-root.Mui-selected': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.2)', color: BRAND.yellow },
-                      },
-                    },
-                  },
-                }}
-              >
-                {elections.map((el) => (
-                  <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
-                ))}
-              </TextField>
-
-              {isGramPanchayat ? (
-                <Autocomplete
-                  options={gpStates}
-                  value={selectedGpState}
-                  onChange={(_, val) => setSelectedGpState(val)}
-                  disabled={!selectedElectionType}
-                  loading={loadingGpStates}
-                  sx={{ flex: 1, minWidth: 200 }}
-                  ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="State" sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                        '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                        '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                        '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                      },
-                      '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                      '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                    }} />
-                  )}
-                />
-              ) : (
-                <>
-                  <Autocomplete
-                    options={selectedElectionType === 'municipal_corporation' ? municipalities : constituencies}
-                    getOptionLabel={(option) => option.name}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    value={selectedElectionType === 'municipal_corporation' ? selectedMunicipality : selectedConstituency}
-                    onChange={(_, value) => {
-                      if (selectedElectionType === 'municipal_corporation') {
-                        setSelectedMunicipality(value as any);
-                      } else {
-                        setSelectedConstituency(value as any);
-                      }
-                    }}
-                    disabled={!selectedElectionType || (selectedElectionType === 'municipal_corporation' ? loadingMunicipalities : loadingConstituencies)}
-                    loading={selectedElectionType === 'municipal_corporation' ? loadingMunicipalities : loadingConstituencies}
+            <Stack direction="row" spacing={{ xs: 1, sm: 1.5 }}>
+              {(
+                [
+                  { key: 'mp' as const, label: t('civicIssues.tabMp', { defaultValue: 'MP Constituency' }), Icon: MPIcon, inactiveImg: undefined as string | undefined, activeImg: undefined as string | undefined },
+                  // MLA: use capitol1.png when inactive and capitol.png when
+                  // active so both states show the building image rather than
+                  // the Gavel SvgIcon.
+                  { key: 'mla' as const, label: t('civicIssues.tabMla', { defaultValue: 'MLA Constituency' }), Icon: MLAIcon, inactiveImg: capitolInactiveImg, activeImg: capitolActiveImg },
+                  { key: 'ward_panchayat' as const, label: t('civicIssues.tabWardPanchayat', { defaultValue: 'Ward / Panchayat' }), Icon: WardPinIcon, inactiveImg: undefined as string | undefined, activeImg: undefined as string | undefined },
+                ]
+              ).map(({ key, label, Icon, inactiveImg, activeImg }) => {
+                const isActive = activeTab === key;
+                const imgSrc = isActive ? activeImg : inactiveImg;
+                return (
+                  <Box
+                    key={key}
+                    onClick={() => setActiveTab(key)}
                     sx={{
                       flex: 1,
-                      minWidth: 220,
-                      '& .MuiAutocomplete-popupIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
-                      '& .MuiAutocomplete-clearIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
-                    }}
-                    ListboxProps={{
-                      sx: {
-                        bgcolor: isDark ? '#1a1515' : '#fff',
-                        '& .MuiAutocomplete-option': {
-                          color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(15,23,42,0.9)',
-                          '&[aria-selected="true"]': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.1)' },
-                          '&.Mui-focused': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(17,24,39,0.04)' },
-                        },
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label={selectedElectionType === 'municipal_corporation' ? t('civicIssues.municipality', { defaultValue: 'Municipality' }) : t('civicIssues.constituency', { defaultValue: 'Constituency' })}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                            '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                            '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                            '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
+                      cursor: 'pointer',
+                      px: { xs: 1, sm: 1.5 },
+                      py: { xs: 1.4, sm: 1.6 },
+                      borderRadius: 2,
+                      border: isActive
+                        ? '1.5px solid rgba(245,168,0,0.55)'
+                        : `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.08)'}`,
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(245,168,0,0.95) 0%, rgba(224,32,16,0.85) 100%)'
+                        : isDark
+                          ? 'rgba(255,255,255,0.03)'
+                          : 'rgba(17,24,39,0.02)',
+                      color: isActive ? '#fff' : isDark ? 'rgba(255,255,255,0.78)' : 'rgba(17,24,39,0.78)',
+                      transition: 'all 0.18s ease',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 0.4,
+                      textAlign: 'center',
+                      minWidth: 0,
+                      '&:hover': isActive
+                        ? {}
+                        : {
+                            borderColor: 'rgba(245,168,0,0.45)',
+                            background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.06)',
                           },
-                          '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                          '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
+                    }}
+                  >
+                    {imgSrc ? (
+                      <Box
+                        component="img"
+                        src={imgSrc}
+                        alt={label}
+                        sx={{
+                          width: { xs: 26, sm: 30 },
+                          height: { xs: 26, sm: 30 },
+                          objectFit: 'contain',
+                        }}
+                      />
+                    ) : (
+                      <Icon
+                        sx={{
+                          fontSize: { xs: 24, sm: 26 },
+                          color: isActive ? '#fff' : BRAND.yellow,
                         }}
                       />
                     )}
-                  />
-
-                  {/* Show City Corporation Name when municipality is selected for municipal_corporation */}
-                  {selectedElectionType === 'municipal_corporation' && selectedMunicipality && (
-                    <Autocomplete
-                      options={constituencies}
-                      getOptionLabel={(option) => `${option.number} - ${option.name}`}
-                      isOptionEqualToValue={(option, value) => option.id === value.id}
-                      value={selectedConstituency}
-                      onChange={(_, value) => setSelectedConstituency(value)}
-                      disabled={loadingConstituencies}
-                      loading={loadingConstituencies}
+                    <Typography
                       sx={{
-                        flex: 1,
-                        minWidth: 220,
-                        '& .MuiAutocomplete-popupIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
-                        '& .MuiAutocomplete-clearIndicator': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(17,24,39,0.55)' },
+                        fontFamily: FF,
+                        fontWeight: 700,
+                        fontSize: { xs: '0.78rem', sm: '0.88rem' },
+                        lineHeight: 1.15,
                       }}
-                      ListboxProps={{
-                        sx: {
-                          bgcolor: isDark ? '#1a1515' : '#fff',
-                          '& .MuiAutocomplete-option': {
-                            color: isDark ? 'rgba(255,255,255,0.85)' : 'rgba(15,23,42,0.9)',
-                            '&[aria-selected="true"]': { bgcolor: isDark ? 'rgba(245,168,0,0.15)' : 'rgba(245,168,0,0.1)' },
-                            '&.Mui-focused': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(17,24,39,0.04)' },
-                          },
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label={t('civicIssues.ward', { defaultValue: 'Ward/Constituency' })}
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                              '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                              '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                              '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                            },
-                            '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                            '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                          }}
-                        />
-                      )}
-                    />
-                  )}
-                </>
-              )}
+                    >
+                      {label}
+                    </Typography>
+                  </Box>
+                );
+              })}
             </Stack>
 
-            {/* Gram Panchayat second row: District, Taluk, Gram, Village */}
-            {isGramPanchayat && selectedGpState && (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%', mt: 2, flexWrap: 'wrap' }}>
-                <Autocomplete
-                  options={gpDistricts}
-                  value={selectedGpDistrict}
-                  onChange={(_, val) => setSelectedGpDistrict(val)}
-                  disabled={!selectedGpState}
-                  loading={loadingGpDistricts}
-                  sx={{ flex: 1, minWidth: 180 }}
-                  ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="District" sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                        '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                        '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                        '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                      },
-                      '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                      '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                    }} />
+            {/* Constituency value display (read-only, sourced from /auth/me) */}
+            {(() => {
+              const wantedType = tabToElectionType(activeTab);
+              const userConstId = userConstituencyIdForType(wantedType ?? undefined);
+              // Empty state — user hasn't saved a constituency for this tab.
+              if (!wantedType || userConstId == null) {
+                return (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      borderRadius: 2,
+                      border: `1px dashed ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(245,168,0,0.45)'}`,
+                      textAlign: 'center',
+                    }}
+                  >
+                    <Typography sx={{ fontFamily: FF, fontSize: '0.9rem', color: textMid, mb: 1 }}>
+                      {t('civicIssues.constituencyNotSet', {
+                        defaultValue: 'No constituency saved for this category. Update your profile to see issues here.',
+                      })}
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => navigate('/user/complete-profile')}
+                      sx={{
+                        borderColor: BRAND.yellow,
+                        color: BRAND.yellow,
+                        fontWeight: 700,
+                        textTransform: 'none',
+                      }}
+                    >
+                      {t('civicIssues.updateProfile', { defaultValue: 'Update Profile' })}
+                    </Button>
+                  </Box>
+                );
+              }
+
+              // Render the resolved constituency name when available.
+              const isMunicipal = wantedType === 'municipal_corporation';
+              const municipalityName = isMunicipal
+                ? ((selectedConstituency as any)?.municipality as string | undefined)
+                : undefined;
+              return (
+                <Stack spacing={1.2} sx={{ mt: 2 }}>
+                  {isMunicipal && municipalityName && (
+                    <Box
+                      sx={{
+                        p: { xs: 1.25, sm: 1.5 },
+                        borderRadius: 2,
+                        border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(17,24,39,0.10)'}`,
+                      }}
+                    >
+                      <Typography sx={{ fontFamily: FF, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.10em', color: BRAND.yellow, textTransform: 'uppercase', mb: 0.3 }}>
+                        {t('civicIssues.municipality', { defaultValue: 'Municipality' })}
+                      </Typography>
+                      <Typography sx={{ fontFamily: FF, fontSize: '0.95rem', fontWeight: 700, color: textPrimary, wordBreak: 'break-word' }}>
+                        {municipalityName}
+                      </Typography>
+                    </Box>
                   )}
-                />
-                <Autocomplete
-                  options={gpTaluks}
-                  value={selectedGpTaluk}
-                  onChange={(_, val) => setSelectedGpTaluk(val)}
-                  disabled={!selectedGpDistrict}
-                  loading={loadingGpTaluks}
-                  sx={{ flex: 1, minWidth: 180 }}
-                  ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Taluk" sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                        '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                        '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                        '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                      },
-                      '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                      '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                    }} />
-                  )}
-                />
-                <Autocomplete
-                  options={gpGrams}
-                  value={selectedGpGram}
-                  onChange={(_, val) => setSelectedGpGram(val)}
-                  disabled={!selectedGpTaluk}
-                  loading={loadingGpGrams}
-                  sx={{ flex: 1, minWidth: 180 }}
-                  ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Gram Panchayat" sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                        '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                        '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                        '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                      },
-                      '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                      '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                    }} />
-                  )}
-                />
-                <Autocomplete
-                  options={gpVillages}
-                  getOptionLabel={(option) => option.villageName}
-                  value={selectedGpVillage}
-                  onChange={(_, val) => setSelectedGpVillage(val)}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  disabled={!selectedGpGram}
-                  loading={loadingGpVillages}
-                  sx={{ flex: 1, minWidth: 0 }}
-                  ListboxProps={{ sx: { bgcolor: isDark ? '#1a1515' : '#fff' } }}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Village" sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)',
-                        '& fieldset': { borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.2)' },
-                        '&:hover fieldset': { borderColor: 'rgba(245,168,0,0.45)' },
-                        '&.Mui-focused fieldset': { borderColor: BRAND.yellow, borderWidth: '1.5px' },
-                      },
-                      '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)' },
-                      '& .MuiInputLabel-root.Mui-focused': { color: BRAND.yellow },
-                    }} />
-                  )}
-                />
-              </Stack>
-            )}
-            {isGramPanchayat && (
-              <Typography sx={{ fontFamily: FF, fontSize: '0.85rem', color: '#F5A800', mt: 1.5 }}>
-                {(() => {
-                  const msg = t('civicIssues.gpVillageNotFound', { defaultValue: 'If you are unable to find your Grama Panchayat or village, please report it to support@prajaakeeya.org' });
-                  const email = 'support@prajaakeeya.org';
-                  const idx = msg.indexOf(email);
-                  if (idx === -1) return msg;
-                  return (
-                    <>
-                      {msg.slice(0, idx)}
-                      <Box component="a" href={`mailto:${email}`} sx={{ color: '#F5A800', textDecoration: 'underline' }}>
-                        {email}
-                      </Box>
-                      {msg.slice(idx + email.length)}
-                    </>
-                  );
-                })()}
-              </Typography>
-            )}
+                  <Box
+                    sx={{
+                      p: { xs: 1.25, sm: 1.5 },
+                      borderRadius: 2,
+                      border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(17,24,39,0.10)'}`,
+                    }}
+                  >
+                    <Typography sx={{ fontFamily: FF, fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.10em', color: BRAND.yellow, textTransform: 'uppercase', mb: 0.3 }}>
+                      {isMunicipal
+                        ? t('civicIssues.ward', { defaultValue: 'Ward' })
+                        : wantedType === 'gram_panchayat'
+                          ? t('civicIssues.village', { defaultValue: 'Village' })
+                          : t('civicIssues.constituency', { defaultValue: 'Constituency' })}
+                    </Typography>
+                    <Typography sx={{ fontFamily: FF, fontSize: '0.95rem', fontWeight: 700, color: textPrimary, wordBreak: 'break-word' }}>
+                      {selectedConstituency
+                        ? `${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
+                        : `#${userConstId}`}
+                    </Typography>
+                  </Box>
+                </Stack>
+              );
+            })()}
           </Box>
         </motion.div>
-      ) : null}
+      )}
 
       {/* ── Issues List ────────────────────────────────────────────────────── */}
       {!loading && !fetchError && issues.length > 0 && (

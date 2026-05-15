@@ -24,6 +24,7 @@ import useThemeStore from '../store/useThemeStore';
 import prajakeeyaLogo from '../assets/images/prajakeeya.png';
 import { BRAND } from '../theme';
 import LanguageSelector from '../components/LanguageSelector';
+import NotificationBell from '../components/NotificationBell';
 import { fetchAspirant } from '../services/aspirantService';
 
 const FF = "'Baloo 2', sans-serif";
@@ -41,6 +42,7 @@ const UserLayout = () => {
   const isCivicIssuesPage = location.pathname === '/user/civic-issues';
   const isSopPage = location.pathname === '/user/sop';
   const isAspirantRegister = location.pathname === '/user/aspirants/register';
+  const isNotificationsPage = location.pathname === '/user/notifications';
 
   const [aspirantName, setAspirantName] = useState<string | null>(null);
   const [aspirantLoading, setAspirantLoading] = useState(user?.role === 'aspirant');
@@ -98,7 +100,7 @@ const UserLayout = () => {
             {/* Left: back button (mobile, non-dashboard) or logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               {/* Mobile back button — shown on all pages except dashboard, voters, civic issues, sop, and aspirant register */}
-              {!isDashboard && !isVotersPage && !isCivicIssuesPage && !isSopPage && !isAspirantRegister && (
+              {!isDashboard && !isVotersPage && !isCivicIssuesPage && !isSopPage && !isAspirantRegister && !isNotificationsPage && (
                 <IconButton
                   onClick={() => navigate(-1)}
                   size="small"
@@ -117,7 +119,7 @@ const UserLayout = () => {
 
               {/* Logo — always on desktop, on dashboard/voters/civic-issues/sop on mobile */}
               <Box
-                sx={{ display: { xs: (isDashboard || isVotersPage || isCivicIssuesPage || isSopPage || isAspirantRegister) ? 'flex' : 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
+                sx={{ display: { xs: (isDashboard || isVotersPage || isCivicIssuesPage || isSopPage || isAspirantRegister || isNotificationsPage) ? 'flex' : 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
                 onClick={() => navigate('/user/dashboard')}
               >
                 <Box sx={{
@@ -164,6 +166,9 @@ const UserLayout = () => {
                   color: isDark ? BRAND.yellow : BRAND.saffron,
                 }}
               />
+
+              {/* Notifications bell — opens /user/notifications */}
+              <NotificationBell />
 
               <Box sx={{ width: { xs: 4, sm: 8 } }} />
 

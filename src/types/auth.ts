@@ -47,4 +47,36 @@ export interface AuthUser {
   electionName?: string;
   constituencyId?: number;
   constituencyName?: string;
+  lokSabhaConstituency?: {
+    id: number;
+    name?: string;
+    state?: string;
+  } | null;
+  stateAssemblyConstituency?: {
+    id: number;
+    name?: string;
+    state?: string;
+    parliamentary?: string;
+  } | null;
+  municipalCorporationConstituency?: {
+    id: number;
+    number?: string;
+    name?: string;
+    municipality?: string;
+    zone?: string;
+    assembly?: string;
+    parliamentary?: string;
+    state?: string;
+    category?: string | null;
+  } | null;
+  // Gram Panchayat uses a different shape from the other constituencies —
+  // identified by `srNo` (village serial number) plus the parent hierarchy.
+  gramPanchayatConstituency?: {
+    srNo: number;
+    villageName?: string; 
+    gpName?: string;
+    taluk?: string;
+    district?: string;
+    state?: string;
+  } | null;
 }

@@ -130,6 +130,17 @@ export const adminLoginWithPassword = async (payload: { email: string; password:
 
 export const fetchProfile = () => apiClient.get<AuthUser>('/auth/me');
 
+export interface UpdateUserConstituenciesPayload {
+  lokSabhaConstituencyId?: number | null;
+  stateAssemblyConstituencyId?: number | null;
+  municipalCorporationConstituencyId?: number | null;
+  gramPanchayatConstituencyId?: number | null;
+}
+
+export const updateUserConstituencies = (
+  payload: UpdateUserConstituenciesPayload
+) => apiClient.post<AuthUser>('/users/me/constituencies', payload);
+
 export const registerVoter = async (payload: RegisterVoterPayload) => {
   const { data } = await apiClient.post<RegisterVoterResponse>('/auth/register-voter', payload);
   return data;
