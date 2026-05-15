@@ -1850,7 +1850,7 @@ const WardCandidateListPage = () => {
             Stacks vertically on mobile so a long election name (e.g.
             "Municipal Corporation (Corporator)") doesn't squeeze the ward
             name into an awkward 3-line wrap. */}
-        {selectedElection && (selectedConstituency || selectedGpVillage || selectedMunicipality) && (
+        {selectedElection && !missingConstituencyForType && (selectedConstituency || selectedGpVillage || selectedMunicipality) && (
           <Box
             sx={{
               mt: { xs: 0.5, sm: 1 },
