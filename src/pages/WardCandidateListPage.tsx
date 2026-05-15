@@ -695,6 +695,38 @@ const WardCandidateListPage = () => {
     return () => { mounted = false; clearInterval(id); };
   }, [chatOpen, activeAspirant]);
 
+  // When arriving from a notification deep-link (e.g. ?electionId=2&aspirantId=5),
+  // translate electionId → type once elections have loaded so the existing tab logic
+  // picks the right list. The aspirantId param is consumed by the scroll effect below.
+  useEffect(() => {
+    const eidParam = searchParams.get('electionId');
+    if (!eidParam || urlType || elections.length === 0) return;
+    const eid = Number(eidParam);
+    if (!Number.isFinite(eid)) return;
+    const election = elections.find((e) => e.id === eid);
+    if (!election?.type) return;
+    const next = new URLSearchParams(searchParams);
+    next.set('type', election.type);
+    next.delete('electionId');
+    setSearchParams(next, { replace: true });
+  }, [searchParams, urlType, elections, setSearchParams]);
+
+  // Scroll to a specific aspirant card after candidates render (from ?aspirantId=…).
+  // The param is then stripped so subsequent re-renders don't re-scroll.
+  useEffect(() => {
+    const aidParam = searchParams.get('aspirantId');
+    if (!aidParam) return;
+    const aid = Number(aidParam);
+    if (!Number.isFinite(aid)) return;
+    if (!candidates.some((c) => c.id === aid)) return;
+    const el = document.getElementById(`aspirant-card-${aid}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const next = new URLSearchParams(searchParams);
+    next.delete('aspirantId');
+    setSearchParams(next, { replace: true });
+  }, [candidates, searchParams, setSearchParams]);
+
   // Fetch elections on mount & restore saved election filter
   useEffect(() => {
     fetchElections()
@@ -1996,7 +2028,7 @@ const WardCandidateListPage = () => {
             }}
           >
             {candidates.map((candidate) => (
-              <Box key={candidate.id}>
+              <Box key={candidate.id} id={`aspirant-card-${candidate.id}`}>
                 <Card
                   sx={{
                     height: '100%',
