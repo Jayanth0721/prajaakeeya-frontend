@@ -2896,7 +2896,13 @@ const WardCandidateListPage = () => {
 
                             <Box
                               sx={{ width: '100%' }}
-                              onClick={finalDisabled ? () => setEligibilityDialogOpen(true) : undefined}
+                              onClick={finalDisabled ? () => {
+                                if ((hasVoted || user?.hasVoted) && isVotingActiveForThisElection) {
+                                  setVoteThankOpen(true);
+                                } else {
+                                  setEligibilityDialogOpen(true);
+                                }
+                              } : undefined}
                             >
                               <Button
                                 variant="contained"
