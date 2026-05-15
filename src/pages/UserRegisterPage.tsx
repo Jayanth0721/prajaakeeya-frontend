@@ -337,9 +337,11 @@ const UserRegisterPage = () => {
                                 key={i}
                                 component="a"
                                 href="/privacy-policy"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/privacy-policy");
+                                }}
                                 sx={{
                                   color: "#F5A800",
                                   textDecoration: "underline",
@@ -355,9 +357,11 @@ const UserRegisterPage = () => {
                                 key={i}
                                 component="a"
                                 href="/terms-and-conditions"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  navigate("/terms-and-conditions");
+                                }}
                                 sx={{
                                   color: "#F5A800",
                                   textDecoration: "underline",
@@ -502,7 +506,7 @@ const UserRegisterPage = () => {
                 onClick={() => navigate("/guest/dashboard")}
                 sx={{
                   mt: 1,
-                  py: 1,
+                  py: 0.75,
                   borderRadius: 50,
                   fontWeight: 700,
                   fontSize: "0.88rem",
@@ -515,7 +519,22 @@ const UserRegisterPage = () => {
                   },
                 }}
               >
-                {t("pages.register.continueAsGuest")}
+                {(() => {
+                  const label = t("pages.register.continueAsGuest");
+                  const match = label.match(/^(.*?)\s*\((.+)\)\s*$/);
+                  const main = match ? match[1] : label;
+                  const sub = match ? match[2] : "";
+                  return (
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1.1 }}>
+                      <Box component="span">{main}</Box>
+                      {sub && (
+                        <Box component="span" sx={{ fontSize: "0.7rem", fontWeight: 500, opacity: 0.85 }}>
+                          {sub}
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                })()}
               </Button>
             </Stack>
           )}
