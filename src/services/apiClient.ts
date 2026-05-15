@@ -7,7 +7,7 @@ const baseURL = normalizedHost ? `${normalizedHost}/api` : '/api';
 
 const apiClient = axios.create({
   baseURL,
-  timeout: 15000
+  timeout: 60000
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -19,11 +19,22 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+const GENERIC_ERROR_MESSAGE = 'Something went wrong, Please try after sometime';
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
+    }
+    const isNetworkOrTimeout =
+      !error.response &&
+      (error.code === 'ECONNABORTED' ||
+        error.code === 'ERR_NETWORK' ||
+        error.message === 'Network Error' ||
+        (typeof error.message === 'string' && error.message.toLowerCase().includes('timeout')));
+    if (isNetworkOrTimeout) {
+      error.message = GENERIC_ERROR_MESSAGE;
     }
     return Promise.reject(error);
   }
