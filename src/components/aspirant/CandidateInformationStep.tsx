@@ -14,6 +14,7 @@ import {
   Autocomplete,
   useTheme,
   Alert,
+  Tooltip,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -42,6 +43,7 @@ import {
 } from '../../services/electionService';
 import { useSearchParams } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
+import { fetchVotingWindow } from '../../services/voteService';
 import ConstituencyPickerDialog from '../ConstituencyPickerDialog';
 import capitolInactiveImg from '../../assets/images/capitol1.png';
 import capitolActiveImg from '../../assets/images/capitol.png';
@@ -455,6 +457,43 @@ const CandidateInformationStep = ({
   const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromQuery);
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  // If a voting window is currently open for a given election type, registration
+  // for that election is closed — we disable the matching tab below.
+  const [blockedElectionType, setBlockedElectionType] = useState<string | null>(null);
+  useEffect(() => {
+    fetchVotingWindow()
+      .then((resp) => {
+        const data = resp?.data;
+        if (data?.isVotingAllowed && data?.window?.isActive) {
+          setBlockedElectionType(data.window.election?.type ?? null);
+        } else {
+          setBlockedElectionType(null);
+        }
+      })
+      .catch(() => { /* ignore — leave tabs enabled on failure */ });
+  }, []);
+
+  const isTabBlocked = (tab: AspirantTab): boolean => {
+    if (!blockedElectionType) return false;
+    if (tab === 'mp') return blockedElectionType === 'lok_sabha';
+    if (tab === 'mla') return blockedElectionType === 'state_assembly';
+    // ward_panchayat resolves to whichever local body the user actually has;
+    // block only on exact match against that.
+    const localBody = tabToElectionType('ward_panchayat');
+    return localBody != null && localBody === blockedElectionType;
+  };
+
+  // If the currently-selected tab becomes blocked once the voting-window
+  // response arrives, fall back to the first non-blocked tab so the user
+  // isn't stuck on a disabled view.
+  useEffect(() => {
+    if (!blockedElectionType) return;
+    if (!isTabBlocked(activeTab)) return;
+    const fallback = (['mp', 'mla', 'ward_panchayat'] as AspirantTab[]).find((t) => !isTabBlocked(t));
+    if (fallback) setActiveTab(fallback);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockedElectionType]);
+
   // Derive what the active tab resolves to.
   const activeElectionType = tabToElectionType(activeTab);
   const activeElection = activeElectionType
@@ -788,13 +827,14 @@ const CandidateInformationStep = ({
               {tabs.map(({ key, label, Icon, inactiveImg, activeImg }) => {
                 const isActive = activeTab === key;
                 const imgSrc = isActive ? activeImg : inactiveImg;
-                return (
+                const blocked = isTabBlocked(key);
+                const tabBox = (
                   <Box
-                    key={key}
-                    onClick={() => setActiveTab(key)}
+                    onClick={blocked ? undefined : () => setActiveTab(key)}
                     sx={{
                       flex: 1,
-                      cursor: 'pointer',
+                      cursor: blocked ? 'not-allowed' : 'pointer',
+                      opacity: blocked ? 0.45 : 1,
                       px: { xs: 1, sm: 1.5 },
                       py: { xs: 1.4, sm: 1.6 },
                       borderRadius: 2,
@@ -808,12 +848,14 @@ const CandidateInformationStep = ({
                       transition: 'all 0.18s ease',
                       display: 'flex', flexDirection: 'column', alignItems: 'center',
                       gap: 0.4, textAlign: 'center', minWidth: 0,
-                      '&:hover': isActive
+                      '&:hover': blocked
                         ? {}
-                        : {
-                            borderColor: 'rgba(245,168,0,0.45)',
-                            background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.06)',
-                          },
+                        : isActive
+                          ? {}
+                          : {
+                              borderColor: 'rgba(245,168,0,0.45)',
+                              background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.06)',
+                            },
                     }}
                   >
                     {imgSrc ? (
@@ -837,6 +879,19 @@ const CandidateInformationStep = ({
                       {label}
                     </Typography>
                   </Box>
+                );
+                if (!blocked) return <React.Fragment key={key}>{tabBox}</React.Fragment>;
+                return (
+                  <Tooltip
+                    key={key}
+                    arrow
+                    placement="top"
+                    title={t('forms.aspirant.tabBlockedVotingOpen', {
+                      defaultValue: 'Voting is currently open for this election — registration is closed.',
+                    })}
+                  >
+                    {tabBox}
+                  </Tooltip>
                 );
               })}
             </Stack>

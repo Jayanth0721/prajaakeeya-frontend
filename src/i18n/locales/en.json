@@ -1717,6 +1717,7 @@
     "new": "new",
     "markAllRead": "Mark all read",
     "clearAll": "Clear all",
+    "delete": "Delete",
     "emptyTitle": "You're all caught up",
     "emptyUnreadTitle": "No unread notifications",
     "emptyBody": "New activity will show up here.",

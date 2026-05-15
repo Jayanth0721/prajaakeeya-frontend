@@ -41,7 +41,6 @@ import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
-import { fetchVotingWindow } from '../services/voteService';
 import { fetchAllWards } from '../services/wardService';
 
 const UserDashboardPage = () => {
@@ -76,16 +75,6 @@ const UserDashboardPage = () => {
   }, [location.state]);
 
   const isAspirant = user?.role === 'aspirant' && (user as any)?.documentStatus === 'completed';
-
-  const [votingActive, setVotingActive] = React.useState(false);
-  React.useEffect(() => {
-    fetchVotingWindow()
-      .then((resp) => {
-        const data = resp?.data as any;
-        setVotingActive(Boolean(data?.isVotingAllowed) && Boolean(data?.window?.isActive));
-      })
-      .catch(() => { /* ignore */ });
-  }, []);
 
   // Resolve ward name from API when user.wardName is missing
   const [resolvedWardName, setResolvedWardName] = React.useState<string>('');
@@ -297,9 +286,7 @@ const UserDashboardPage = () => {
     },
   ];
 
-  const displayActions = isAspirant
-    ? aspirantActions
-    : actions.filter((a) => !(votingActive && a.path === '/user/aspirants/register'));
+  const displayActions = isAspirant ? aspirantActions : actions;
 
   const handleActionClick = async (action: any) => {
     const disabledForThis = (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') || (action as any).disabled;

@@ -13,6 +13,13 @@ export interface VotingWindow {
   endTime: number;
   isActive: boolean;
   description: string;
+  electionId?: number;
+  election?: {
+    id: number;
+    type: string;
+    name: string;
+    scope?: string | null;
+  };
 }
 
 export interface VotingWindowResponse {
