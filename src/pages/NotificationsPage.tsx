@@ -323,9 +323,6 @@ export default function NotificationsPage() {
               >
                 {t('notifications.title') || 'Notifications'}
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: FF, color: subText, mt: 0.3 }}>
-                {t('notifications.subtitle') || 'Stay updated on your ward, issues, and aspirants.'}
-              </Typography>
             </Box>
           </Box>
 
