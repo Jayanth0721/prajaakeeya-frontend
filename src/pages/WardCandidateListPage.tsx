@@ -477,6 +477,11 @@ const WardCandidateListPage = () => {
 
   const [showAspirantPrompt, setShowAspirantPrompt] = useState(false);
   const [votingWindowActive, setVotingWindowActive] = useState(false);
+  // The election type of the currently-open voting window, if any. Used to
+  // gate aspirant registration only for the matching election (so a Lok Sabha
+  // voting window doesn't block State Assembly registrations and vice versa).
+  const [blockedElectionType, setBlockedElectionType] = useState<string | null>(null);
+  const registrationBlocked = blockedElectionType != null && blockedElectionType === autoElectionType;
   const filtersRestoredRef = useRef(false);
 
   // Save filter selections to sessionStorage so they persist across navigation
@@ -727,6 +732,7 @@ const WardCandidateListPage = () => {
         setVotingWindowActive(Boolean(isVotingAllowed));
         const w = windowResp?.data?.window;
         if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '' });
+        setBlockedElectionType(isVotingAllowed && w?.isActive ? (w as any)?.election?.type ?? null : null);
       } catch (e) {
         // ignore
       }
@@ -1030,6 +1036,7 @@ const WardCandidateListPage = () => {
           setVotingWindowActive(Boolean(isVotingAllowed));
           const w = windowResp?.data?.window;
           if (w) setVotingWindow({ startTime: w.startTime, endTime: w.endTime, description: w.description, isActive: Boolean(w.isActive), electionName: (windowResp as any)?.data?.window?.election?.name ?? '' });
+          setBlockedElectionType(isVotingAllowed && w?.isActive ? (w as any)?.election?.type ?? null : null);
         } catch (e) {
           // ignore voting window errors
         }
@@ -1886,8 +1893,8 @@ const WardCandidateListPage = () => {
                 {t('pages.wardCandidates.demoAspirantNotice')}
               </Typography>
             </Box>
-            {/* Register as aspirant card - hidden during active voting */}
-            {!votingWindowActive && (
+            {/* Register as aspirant card - hidden when voting is open for THIS election type */}
+            {!registrationBlocked && (
               <Box sx={{
                 flex: 1, p: 3, borderRadius: '16px',
                 background: panelBg,
@@ -2882,7 +2889,7 @@ const WardCandidateListPage = () => {
         )}
 
         {/* Register as aspirant banner below the candidate list — hide when only demo is showing (top section already has it) */}
-        {candidates.some(c => !isDemoCandidate(c)) && user && user.role !== 'aspirant' && !user.aspirantId && !votingWindowActive && (
+        {candidates.some(c => !isDemoCandidate(c)) && user && user.role !== 'aspirant' && !user.aspirantId && !registrationBlocked && (
           <Box sx={{
             width: '100%', p: 3, borderRadius: '16px',
             background: panelBg,
@@ -2907,7 +2914,7 @@ const WardCandidateListPage = () => {
               <Button
                 variant="contained"
                 onClick={() => hasPendingRegistration ? handleNavigateToRegistration() : navigate(registerPath)}
-                disabled={votingWindowActive}
+                disabled={registrationBlocked}
                 sx={{
                   flexShrink: 0, fontWeight: 700, borderRadius: '8px', textTransform: 'none', whiteSpace: 'nowrap',
                   alignSelf: { xs: 'stretch', sm: 'auto' },
