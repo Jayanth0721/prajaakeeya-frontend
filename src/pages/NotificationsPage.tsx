@@ -321,7 +321,7 @@ export default function NotificationsPage() {
                 onClick={() => navigate(-1)}
                 size="small"
                 sx={{
-                  display: { xs: 'none', sm: 'inline-flex' },
+                  display: { xs: 'inline-flex', sm: 'none' },
                   color: accent,
                   border: `1px solid ${borderFaint}`,
                   borderRadius: 2,
@@ -361,17 +361,38 @@ export default function NotificationsPage() {
           size="small"
           onChange={(_, v) => v && setFilter(v)}
           sx={{
+            p: 0.5,
+            gap: 0.5,
+            borderRadius: 50,
+            background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(17,24,39,0.04)',
+            border: `1px solid ${borderFaint}`,
+            backdropFilter: 'blur(6px)',
+            '& .MuiToggleButtonGroup-grouped': {
+              border: 'none',
+              borderRadius: '999px !important',
+              mx: 0,
+            },
             '& .MuiToggleButton-root': {
               fontFamily: FF,
               fontWeight: 700,
+              fontSize: '0.82rem',
               textTransform: 'none',
-              border: `1px solid ${borderFaint}`,
               color: subText,
-              px: 2,
-              '&.Mui-selected': {
-                bgcolor: isDark ? 'rgba(245,168,0,0.16)' : 'rgba(245,168,0,0.14)',
+              px: 2.2,
+              py: 0.6,
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.08)',
                 color: accent,
-                borderColor: accent,
+              },
+              '&.Mui-selected': {
+                background: 'linear-gradient(135deg, rgba(245,168,0,0.95) 0%, rgba(224,32,16,0.85) 100%)',
+                color: '#fff',
+                boxShadow: '0 4px 12px -2px rgba(245,168,0,0.45)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, rgba(245,168,0,1) 0%, rgba(224,32,16,0.95) 100%)',
+                  color: '#fff',
+                },
               },
             },
           }}
@@ -387,44 +408,62 @@ export default function NotificationsPage() {
         <Stack direction="row" spacing={1}>
           <Button
             size="small"
-            variant="outlined"
             disabled={unreadCount === 0 || loading}
             startIcon={<DoneAllIcon sx={{ fontSize: 18 }} />}
             onClick={handleMarkAll}
             sx={{
               fontFamily: FF,
               fontWeight: 700,
+              fontSize: '0.82rem',
               textTransform: 'none',
               borderRadius: 50,
-              borderColor: borderFaint,
+              px: 2,
+              py: 0.7,
               color: accent,
+              border: `1px solid ${isDark ? 'rgba(245,168,0,0.28)' : 'rgba(245,168,0,0.35)'}`,
+              background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.05)',
+              transition: 'all 0.2s ease',
               '&:hover': {
                 borderColor: accent,
-                bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.10)',
+                background: isDark ? 'rgba(245,168,0,0.14)' : 'rgba(245,168,0,0.12)',
+                boxShadow: '0 4px 12px -3px rgba(245,168,0,0.35)',
               },
-              '&.Mui-disabled': { color: subText, borderColor: borderFaint },
+              '&.Mui-disabled': {
+                color: subText,
+                borderColor: borderFaint,
+                background: 'transparent',
+              },
             }}
           >
             {t('notifications.markAllRead') || 'Mark all read'}
           </Button>
           <Button
             size="small"
-            variant="outlined"
             disabled={items.length === 0 || loading}
             startIcon={<ClearAllIcon sx={{ fontSize: 18 }} />}
             onClick={handleClearAll}
             sx={{
               fontFamily: FF,
               fontWeight: 700,
+              fontSize: '0.82rem',
               textTransform: 'none',
               borderRadius: 50,
-              borderColor: borderFaint,
+              px: 2,
+              py: 0.7,
               color: accent,
+              border: `1px solid ${isDark ? 'rgba(245,168,0,0.28)' : 'rgba(245,168,0,0.35)'}`,
+              background: isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.05)',
+              transition: 'all 0.2s ease',
               '&:hover': {
                 borderColor: accent,
-                bgcolor: isDark ? 'rgba(245,168,0,0.08)' : 'rgba(245,168,0,0.10)',
+                background: isDark ? 'rgba(245,168,0,0.14)' : 'rgba(245,168,0,0.12)',
+                boxShadow: '0 4px 12px -3px rgba(245,168,0,0.35)',
               },
-              '&.Mui-disabled': { color: subText, borderColor: borderFaint },
+              '&.Mui-disabled': {
+                color: subText,
+                borderColor: borderFaint,
+                background: 'transparent',
+              },
             }}
           >
             {t('notifications.clearAll') || 'Clear all'}
