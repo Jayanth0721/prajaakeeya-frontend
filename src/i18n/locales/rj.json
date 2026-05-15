@@ -237,6 +237,7 @@
         "failedLoadWards": "वार्ड लोड करण में फेल",
         "fileSize2mb": "अपलोड फेल। कृपया छोटी फोटो अपलोड करो (अधिकतम 2 MB)।",
         "fileSize10mb": "फ़ाइल रो आकार 10MB सूं मोटो है",
+        "fileSize700kb": "फ़ाइल रो आकार 700KB सूं मोटो है",
         "resumePdfOnly": "रेज़्यूमे PDF फ़ाइल होणी चाहिजे",
         "epicImageOnly": "वोटर आईडी कार्ड JPG या PNG इमेज होणी चाहिजे",
         "addressProofImageOnly": "पता रो प्रमाण JPG या PNG इमेज होणी चाहिजे",
