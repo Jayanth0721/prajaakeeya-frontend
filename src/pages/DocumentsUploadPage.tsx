@@ -4,10 +4,16 @@ import {
   Snackbar,
   Alert,
   Box,
+  Button,
   Typography,
   Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   useTheme,
 } from '@mui/material';
+import { HowToVote as HowToVoteIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
 import { isFileSizeValid } from '../utils/fileUtils';
@@ -47,8 +53,10 @@ const DocumentsUploadPage = () => {
   const [aspirantResp, setAspirantResp] = useState<any | null>(null);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isDark = theme.palette.mode === 'dark';
 
   // Load aspirant data on mount and hydrate already-uploaded documents from server
   useEffect(() => {
@@ -71,7 +79,7 @@ const DocumentsUploadPage = () => {
             data.selfieUrl || data.recentPhotoUrl
               ? uploadedMarker('selfie.png')
               : prev.photo,
-          sopEn: data.sopUrl ? uploadedMarker('sop.pdf') : prev.sopEn,
+          // sopEn: data.sopUrl ? uploadedMarker('sop.pdf') : prev.sopEn,
         }));
       })
       .catch(() => {});
@@ -338,8 +346,11 @@ const DocumentsUploadPage = () => {
     }
   };
 
-  const handleNext = () => {
-    navigate('/user/aspirants/sop');
+  const handleNext = async () => {
+    // SOP upload step is disabled — finish registration here instead of navigating
+    // to '/user/aspirants/sop'.
+    try { await fetchProfile(); } catch { /* non-fatal */ }
+    setSuccessDialogOpen(true);
   };
 
   return (
@@ -421,6 +432,74 @@ const DocumentsUploadPage = () => {
           {error || t('status.aspirantRegistered') || t('forms.aspirant.messages.applicationSubmitted')}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={successDialogOpen}
+        onClose={() => { setSuccessDialogOpen(false); navigate('/user/dashboard', { replace: true }); }}
+        maxWidth="sm"
+        fullWidth
+        BackdropProps={{ sx: { backdropFilter: 'blur(6px)', background: 'rgba(0,0,0,0.74)' } }}
+        PaperProps={{
+          sx: {
+            bgcolor: isDark ? '#0A0808' : '#FFFFFF',
+            color: theme.palette.text.primary,
+            borderRadius: '16px',
+            overflow: 'hidden',
+            border: isDark ? '1px solid rgba(245,168,0,0.22)' : '1px solid rgba(245,168,0,0.3)',
+            boxShadow: isDark
+              ? '0 20px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) inset'
+              : '0 20px 70px rgba(17,24,39,0.18), 0 0 0 1px rgba(15,23,42,0.04) inset',
+            backgroundImage: isDark
+              ? 'linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px)'
+              : 'linear-gradient(rgba(17,24,39,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(17,24,39,.02) 1px,transparent 1px)',
+            backgroundSize: '44px 44px',
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', height: '4px' }}>
+          {['#C8180A', '#253A9A', '#6B3A00'].map((c) => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
+        </Box>
+        <DialogTitle sx={{ textAlign: 'center', pt: 4 }}>
+          <Box sx={{
+            width: 78, height: 78, borderRadius: '50%', mx: 'auto', mb: 2,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg,rgba(200,24,10,0.22),rgba(245,168,0,0.16))',
+            border: '1.5px solid rgba(245,168,0,0.45)',
+            '@keyframes votePulse': {
+              '0%,100%': { boxShadow: '0 0 0 0 rgba(245,168,0,0.0), 0 0 22px rgba(200,24,10,0.22)' },
+              '50%': { boxShadow: '0 0 0 8px rgba(245,168,0,0.06), 0 0 34px rgba(245,168,0,0.35)' },
+            },
+            animation: 'votePulse 2.4s ease-in-out infinite',
+          }}>
+            <HowToVoteIcon sx={{ fontSize: 42, color: '#F5A800' }} />
+          </Box>
+          <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
+            {t('forms.aspirant.successDialog.title')}
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ textAlign: 'center', pb: 2, px: { xs: 3, sm: 5 } }}>
+          <Typography variant="body1" sx={{ mb: 1, color: isDark ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.74)' }}>
+            {t('forms.aspirant.successDialog.message')}
+          </Typography>
+          <Typography variant="body1" sx={{ fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.88)' : 'rgba(15,23,42,0.9)' }}>
+            {t('forms.aspirant.successDialog.thanks')}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
+          <Button
+            variant="contained"
+            onClick={() => { setSuccessDialogOpen(false); navigate('/user/dashboard', { replace: true }); }}
+            sx={{
+              px: 4, fontWeight: 800, color: '#fff', borderRadius: '10px',
+              background: 'linear-gradient(135deg,#C8180A 0%,#F5A800 100%)',
+              boxShadow: '0 8px 28px rgba(200,24,10,0.38)',
+              '&:hover': { background: 'linear-gradient(135deg,#df210f 0%,#ffbe1a 100%)', boxShadow: '0 10px 34px rgba(200,24,10,0.52)' },
+            }}
+          >
+            {t('common.ok')}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
     </Stack>
   );

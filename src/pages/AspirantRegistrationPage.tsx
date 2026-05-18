@@ -54,17 +54,24 @@ const AspirantRegistrationPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeStep, setActiveStep] = useState(0);
-  const [sopAgreed] = useState(true);
+  const SOP_AGREED_KEY = `aspirant_sop_agreed_${user?.id ?? 'guest'}`;
+  const [sopAgreed, setSopAgreed] = useState<boolean>(() => {
+    try { return localStorage.getItem(SOP_AGREED_KEY) === 'true'; } catch { return false; }
+  });
   const [answers, setAnswers] = useState<string[]>(Array(9).fill(''));
   const [aspirantResp, setAspirantResp] = useState<any | null>(null);
   const [declarationChecks, setDeclarationChecks] = useState({
     agreed: false,
   });
   const [digitalSignature, setDigitalSignature] = useState('');
-  const [declarationPlace, setDeclarationPlace] = useState('');
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Re-read sopAgreed flag when navigating back from /user/sop
+  useEffect(() => {
+    try { setSopAgreed(localStorage.getItem(SOP_AGREED_KEY) === 'true'); } catch { /* ignore */ }
+  }, [location.key, SOP_AGREED_KEY]);
 
   // Election type ref for dynamic age validation in yup schema
   const electionsRef = useRef<Election[]>([]);
@@ -308,6 +315,7 @@ const AspirantRegistrationPage = () => {
       linkedinLink: values.linkedinLink || null,
       twitterLink: values.twitterLink || null,
       whatsappNumber: values.whatsappNumber || null,
+      sopAgreed: true,
       identityBackground: answers[0] || '',
       resignationPledge: answers[1] || '',
       noHighCommand: answers[2] || '',
@@ -408,7 +416,7 @@ const AspirantRegistrationPage = () => {
   const canProceedStep6 =
     declarationChecks.agreed &&
     digitalSignature.trim().length > 0 &&
-    declarationPlace.trim().length > 0;
+    sopAgreed;
 
   return (
     <Stack spacing={3}>
@@ -433,12 +441,11 @@ const AspirantRegistrationPage = () => {
         {activeStep === 0 && (
           <DeclarationStep
             sopAgreed={sopAgreed}
+            onSopClick={() => navigate('/user/sop', { state: { from: 'aspirant-registration' } })}
             declarationChecks={declarationChecks}
             setDeclarationChecks={setDeclarationChecks}
             digitalSignature={digitalSignature}
             setDigitalSignature={setDigitalSignature}
-            declarationPlace={declarationPlace}
-            setDeclarationPlace={setDeclarationPlace}
             canProceed={canProceedStep6}
             loading={false}
             onBack={() => navigate(-1)}

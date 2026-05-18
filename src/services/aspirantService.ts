@@ -29,6 +29,7 @@ export interface AspirantPayload {
   linkedinLink?: string | null;
   twitterLink?: string | null;
   whatsappNumber?: string | null;
+  sopAgreed?: boolean;
 }
 
 export const registerAspirant = (payload: AspirantPayload) => apiClient.post('/aspirants', payload);

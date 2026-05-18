@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Box,
   Typography,
-  Stack,
   Checkbox,
   FormControlLabel,
   TextField,
@@ -13,10 +12,11 @@ import {
   useTheme,
 } from '@mui/material';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import LockIcon from '@mui/icons-material/Lock';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import GavelIcon from '@mui/icons-material/Gavel';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { BRAND } from '../../theme';
 
 // ── Theme constants — sourced from central BRAND palette ──────────────────
@@ -36,12 +36,11 @@ export interface DeclarationChecks {
 
 interface Props {
   sopAgreed: boolean;
+  onSopClick: () => void;
   declarationChecks: DeclarationChecks;
   setDeclarationChecks: React.Dispatch<React.SetStateAction<DeclarationChecks>>;
   digitalSignature: string;
   setDigitalSignature: (v: string) => void;
-  declarationPlace: string;
-  setDeclarationPlace: (v: string) => void;
   canProceed: boolean;
   loading: boolean;
   onBack: () => void;
@@ -51,10 +50,9 @@ interface Props {
 
 // ── Component ──────────────────────────────────────────────────────────────
 const DeclarationStep = ({
-  sopAgreed,
+  sopAgreed, onSopClick,
   declarationChecks, setDeclarationChecks,
   digitalSignature, setDigitalSignature,
-  declarationPlace, setDeclarationPlace,
   canProceed, loading,
   onBack, onSubmit, onCancel,
 }: Props) => {
@@ -74,54 +72,12 @@ const DeclarationStep = ({
   return (
     <Box sx={{ position: 'relative' }}>
 
-      {/* ── SOP Gate overlay ───────────────────────────────────────────── */}
-      <AnimatePresence>
-        {!sopAgreed && (
-          <motion.div
-            key="gate"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'absolute', inset: 0, zIndex: 50,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 16,
-              backdropFilter: 'blur(6px)',
-              background: 'rgba(10,8,8,0.88)',
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, type: 'spring', stiffness: 220, damping: 18 }}
-              style={{ textAlign: 'center', padding: '32px 24px' }}
-            >
-              <Box sx={{
-                width: 72, height: 72, borderRadius: '50%', mx: 'auto', mb: 2,
-                bgcolor: 'rgba(200,24,10,0.12)', border: '2px solid rgba(200,24,10,0.5)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <LockIcon sx={{ fontSize: 36, color: '#C8180A' }} />
-              </Box>
-              <Typography sx={{ fontFamily: FF, fontWeight: 800, fontSize: '1.2rem', color: '#fff', mb: 1 }}>
-                SOP Agreement Required
-              </Typography>
-              <Typography sx={{ fontFamily: FF, fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', maxWidth: 340 }}>
-                You must read and accept the SOP Flow Chart before accessing the Declaration step.
-              </Typography>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ── Main card ──────────────────────────────────────────────────── */}
       <Box sx={{
         bgcolor: DARK, borderRadius: 2, overflow: 'hidden',
         background: cardBg,
         border: `1px solid ${borderColor}`,
         boxShadow: isDark ? '0 8px 30px rgba(0,0,0,0.4)' : '0 8px 30px rgba(17,24,39,0.08)',
-        opacity: sopAgreed ? 1 : 0.35,
-        pointerEvents: sopAgreed ? 'auto' : 'none',
         transition: 'opacity 0.3s',
       }}>
 
@@ -271,22 +227,58 @@ const DeclarationStep = ({
               />
             </Grid>
             <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                label={t('forms.aspirant.declaration.place') || 'Place'}
-                value={declarationPlace}
-                onChange={e => setDeclarationPlace(e.target.value)}
-                InputLabelProps={{ sx: { color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.62)', fontFamily: FF } }}
-                inputProps={{ style: { fontFamily: FF, color: isDark ? '#fff' : 'rgba(15,23,42,0.92)' } }}
+              <Box
+                onClick={onSopClick}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSopClick(); }}
                 sx={{
-                  '& .MuiOutlinedInput-root': {
-                    background: fieldBg,
-                    '& fieldset': { borderColor: fieldBorder },
-                    '&:hover fieldset': { borderColor: GOLDD },
-                    '&.Mui-focused fieldset': { borderColor: GOLD, borderWidth: '1.5px' },
+                  height: 56,
+                  px: 1.75,
+                  borderRadius: '4px',
+                  display: 'flex', alignItems: 'center', gap: 1.25,
+                  cursor: 'pointer',
+                  background: sopAgreed
+                    ? (isDark ? 'rgba(43,180,104,0.10)' : 'rgba(43,180,104,0.12)')
+                    : fieldBg,
+                  border: `1.5px solid ${sopAgreed
+                    ? 'rgba(43,180,104,0.45)'
+                    : (isDark ? 'rgba(245,168,0,0.4)' : 'rgba(245,168,0,0.5)')}`,
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    borderColor: sopAgreed ? 'rgba(43,180,104,0.7)' : GOLD,
+                    background: sopAgreed
+                      ? (isDark ? 'rgba(43,180,104,0.16)' : 'rgba(43,180,104,0.18)')
+                      : (isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.08)'),
                   },
                 }}
-              />
+              >
+                {sopAgreed
+                  ? <CheckCircleIcon sx={{ color: '#2fbf71', fontSize: 22 }} />
+                  : <AccountTreeIcon sx={{ color: GOLD, fontSize: 22 }} />}
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography sx={{
+                    fontFamily: FF, fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.15,
+                    color: sopAgreed ? '#2fbf71' : (isDark ? '#fff' : 'rgba(15,23,42,0.92)'),
+                  }}>
+                    {sopAgreed
+                      ? (t('forms.aspirant.declaration.sopAgreed') || 'SOP Agreed')
+                      : (t('forms.aspirant.declaration.sopAgree') || 'Agree to SOP')}
+                  </Typography>
+                  <Typography sx={{
+                    fontFamily: FF, fontSize: '0.7rem', mt: '2px',
+                    color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.6)',
+                  }}>
+                    {sopAgreed
+                      ? (t('forms.aspirant.declaration.sopAgreedHint') || 'Tap to review again')
+                      : (t('forms.aspirant.declaration.sopAgreeHint') || 'Tap to view & accept SOP')}
+                  </Typography>
+                </Box>
+                <OpenInNewIcon sx={{
+                  fontSize: 16,
+                  color: sopAgreed ? 'rgba(43,180,104,0.7)' : GOLDD,
+                }} />
+              </Box>
             </Grid>
             <Grid item xs={12} md={3}>
               <TextField
@@ -327,9 +319,9 @@ const DeclarationStep = ({
             fontFamily: FF, fontSize: '0.78rem', color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(15,23,42,0.6)',
             display: { xs: 'none', sm: 'block' },
           }}>
-            {(declarationChecks?.agreed || canProceed)
+            {canProceed
               ? (t('forms.aspirant.declaration.footer') || '✓ Declaration confirmed — ready to proceed')
-              : (t('forms.aspirant.declaration.instruction') || 'Agree to the declaration, provide signature & place to continue')}
+              : (t('forms.aspirant.declaration.instruction') || 'Agree to declaration & SOP, provide signature to continue')}
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 1, width: { xs: '100%', sm: 'auto' }, justifyContent: { xs: 'space-between', sm: 'flex-end' } }}>
