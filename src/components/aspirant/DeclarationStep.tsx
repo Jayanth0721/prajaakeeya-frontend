@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import GavelIcon from '@mui/icons-material/Gavel';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { BRAND } from '../../theme';
 
@@ -254,8 +254,8 @@ const DeclarationStep = ({
                 }}
               >
                 {sopAgreed
-                  ? <CheckCircleIcon sx={{ color: '#2fbf71', fontSize: 22 }} />
-                  : <AccountTreeIcon sx={{ color: GOLD, fontSize: 22 }} />}
+                  ? <CheckBoxIcon sx={{ color: '#2fbf71', fontSize: 24 }} />
+                  : <CheckBoxOutlineBlankIcon sx={{ color: GOLD, fontSize: 24 }} />}
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography sx={{
                     fontFamily: FF, fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.15,

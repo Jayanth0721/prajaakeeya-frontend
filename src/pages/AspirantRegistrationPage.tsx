@@ -55,15 +55,26 @@ const AspirantRegistrationPage = () => {
   const [error, setError] = useState('');
   const [activeStep, setActiveStep] = useState(0);
   const SOP_AGREED_KEY = `aspirant_sop_agreed_${user?.id ?? 'guest'}`;
+  const DECLARATION_KEY = `aspirant_declaration_${user?.id ?? 'guest'}`;
   const [sopAgreed, setSopAgreed] = useState<boolean>(() => {
     try { return localStorage.getItem(SOP_AGREED_KEY) === 'true'; } catch { return false; }
   });
   const [answers, setAnswers] = useState<string[]>(Array(9).fill(''));
   const [aspirantResp, setAspirantResp] = useState<any | null>(null);
-  const [declarationChecks, setDeclarationChecks] = useState({
-    agreed: false,
+  const [declarationChecks, setDeclarationChecks] = useState<{ agreed: boolean }>(() => {
+    try {
+      const raw = localStorage.getItem(DECLARATION_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return { agreed: Boolean(parsed?.declarationChecks?.agreed) };
+    } catch { return { agreed: false }; }
   });
-  const [digitalSignature, setDigitalSignature] = useState('');
+  const [digitalSignature, setDigitalSignature] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(DECLARATION_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return typeof parsed?.digitalSignature === 'string' ? parsed.digitalSignature : '';
+    } catch { return ''; }
+  });
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,6 +83,13 @@ const AspirantRegistrationPage = () => {
   useEffect(() => {
     try { setSopAgreed(localStorage.getItem(SOP_AGREED_KEY) === 'true'); } catch { /* ignore */ }
   }, [location.key, SOP_AGREED_KEY]);
+
+  // Persist declaration fields so navigating to /user/sop and back doesn't reset them
+  useEffect(() => {
+    try {
+      localStorage.setItem(DECLARATION_KEY, JSON.stringify({ digitalSignature, declarationChecks }));
+    } catch { /* ignore */ }
+  }, [digitalSignature, declarationChecks, DECLARATION_KEY]);
 
   // Election type ref for dynamic age validation in yup schema
   const electionsRef = useRef<Election[]>([]);

@@ -456,8 +456,12 @@
         "title": "Declaration & Agreement",
         "subtitle": "Please read and agree to the following declaration",
         "footer": "✓ Declaration confirmed — ready to proceed",
-        "instruction": "Agree to the declaration, provide signature & place to continue",
+        "instruction": "Agree to the declaration & SOP, provide signature to continue",
         "place": "Place",
+        "sopAgree": "Agree to SOP",
+        "sopAgreeHint": "Tap to view & accept SOP",
+        "sopAgreed": "SOP Agreed",
+        "sopAgreedHint": "Tap to review again",
         "checkbox": {
           "agreed": "The Citizens who elected me are my employers who pay my salary and have appointed me to work.As per this SOP (Standard Operating Procedure), I will work according to the wishes of the citizens and will undergo an evaluation (polling) of my performance every 6 months throughout the 5-year term through this site/app.If more than 50% of the citizens express dissatisfaction with my work and I fail the evaluation, I will improve my performance within the next 3 months and undergo another evaluation through this site/app.If again more than 50% of the citizens reject my performance, I will resign from my position.",
           "agreed1": "I voluntarily declare that if I receive fewer votes than another aspirant, I will support the aspirant who receives the highest votes and will not contest in the real election. I understand that this platform does not restrict anyone from contesting elections.",
