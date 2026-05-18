@@ -228,16 +228,11 @@ const DeclarationStep = ({
             </Grid>
             <Grid item xs={12} md={4}>
               <Box
-                onClick={onSopClick}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSopClick(); }}
                 sx={{
                   height: 56,
                   px: 1.75,
                   borderRadius: '4px',
                   display: 'flex', alignItems: 'center', gap: 1.25,
-                  cursor: 'pointer',
                   background: sopAgreed
                     ? (isDark ? 'rgba(43,180,104,0.10)' : 'rgba(43,180,104,0.12)')
                     : fieldBg,
@@ -245,12 +240,6 @@ const DeclarationStep = ({
                     ? 'rgba(43,180,104,0.45)'
                     : (isDark ? 'rgba(245,168,0,0.4)' : 'rgba(245,168,0,0.5)')}`,
                   transition: 'all 0.2s',
-                  '&:hover': {
-                    borderColor: sopAgreed ? 'rgba(43,180,104,0.7)' : GOLD,
-                    background: sopAgreed
-                      ? (isDark ? 'rgba(43,180,104,0.16)' : 'rgba(43,180,104,0.18)')
-                      : (isDark ? 'rgba(245,168,0,0.06)' : 'rgba(245,168,0,0.08)'),
-                  },
                 }}
               >
                 {sopAgreed
@@ -274,10 +263,35 @@ const DeclarationStep = ({
                       : (t('forms.aspirant.declaration.sopAgreeHint') || 'Tap to view & accept SOP')}
                   </Typography>
                 </Box>
-                <OpenInNewIcon sx={{
-                  fontSize: 16,
-                  color: sopAgreed ? 'rgba(43,180,104,0.7)' : GOLDD,
-                }} />
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={onSopClick}
+                  aria-label={sopAgreed
+                    ? (t('forms.aspirant.declaration.sopAgreedHint') || 'Review SOP')
+                    : (t('forms.aspirant.declaration.sopAgreeHint') || 'View & accept SOP')}
+                  sx={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 32, height: 32, borderRadius: '6px',
+                    transition: 'background 0.18s',
+                    '&:hover': {
+                      background: sopAgreed
+                        ? (isDark ? 'rgba(43,180,104,0.18)' : 'rgba(43,180,104,0.2)')
+                        : (isDark ? 'rgba(245,168,0,0.14)' : 'rgba(245,168,0,0.18)'),
+                    },
+                    '&:focus-visible': {
+                      outline: `2px solid ${sopAgreed ? 'rgba(43,180,104,0.7)' : GOLD}`,
+                      outlineOffset: '1px',
+                    },
+                  }}
+                >
+                  <OpenInNewIcon sx={{
+                    fontSize: 18,
+                    color: sopAgreed ? 'rgba(43,180,104,0.9)' : GOLD,
+                  }} />
+                </Box>
               </Box>
             </Grid>
             <Grid item xs={12} md={3}>
