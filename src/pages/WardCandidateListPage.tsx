@@ -1320,9 +1320,9 @@ const WardCandidateListPage = () => {
                   textTransform: 'none',
                   fontWeight: 700,
                   whiteSpace: 'nowrap',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  px: { xs: 1.5, sm: 2 },
-                  py: { xs: 1, sm: 1.25 },
+                  fontSize: { xs: '0.65rem', sm: '0.78rem' },
+                  px: { xs: 1.2, sm: 1.6 },
+                  py: { xs: 0.8, sm: 1 },
                   background: `linear-gradient(135deg, #ef4444 0%, #dc2626 100%)`,
                   boxShadow: '0 4px 18px rgba(239,68,68,0.4)',
                   '&:hover': {

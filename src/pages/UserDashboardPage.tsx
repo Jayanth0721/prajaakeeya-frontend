@@ -738,12 +738,12 @@ const UserDashboardPage = () => {
             {[BRAND.red, BRAND.blue, BRAND.brown].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
           </Box>
           <Box sx={{
-            px: { xs: 2.2, sm: 3.2, md: 4 },
-            py: { xs: 2.4, md: 3.2 },
+            px: 2.2,
+            py: 1,
             display: 'flex',
-            alignItems: { xs: 'flex-start', md: 'center' },
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: 'column',
             gap: 2,
             position: 'relative',
             zIndex: 1,
@@ -768,12 +768,12 @@ const UserDashboardPage = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 1.2,
-                  px: { xs: 1.5, md: 2 },
-                  py: { xs: 1, md: 1.2 },
+                  px: 1,
+                  py: 0.25,
                   borderRadius: 2,
                   background: isDark ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.7)',
                   border: `1px solid ${BORDER}`,
-                  alignSelf: { xs: 'flex-start', md: 'center' },
+                  alignSelf: 'flex-start',
                 }}
               >
                 <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textHigh, lineHeight: 1 }}>
