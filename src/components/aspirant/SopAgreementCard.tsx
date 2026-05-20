@@ -109,90 +109,82 @@ const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKan
                         setSopAgreed={() => { /* read-only */ }}
                         onAgree={() => setOpen(false)}
                         hideAgreement
-                    />
-
-                    {/* Digital signature block */}
-                    <Box
-                        sx={{
-                            mt: 2,
-                            borderRadius: 2,
-                            p: { xs: 1.75, sm: 2.25 },
-                            background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(15,23,42,0.03)',
-                            border: `1px solid ${isDark ? 'rgba(245,168,0,0.28)' : 'rgba(245,168,0,0.35)'}`,
-                        }}
-                    >
-                        <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 1.5 }}>
-                            <DrawIcon sx={{ color: isDark ? BRAND.yellow : BRAND.saffron, fontSize: 18 }} />
-                            <Typography sx={{
-                                fontFamily: FF, fontWeight: 700, fontSize: '0.72rem',
-                                textTransform: 'uppercase', letterSpacing: '0.1em',
-                                color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.6)',
-                            }}>
-                                {isKannada ? 'ಡಿಜಿಟಲ್ ಸಹಿ' : 'Digitally Signed'}
-                            </Typography>
-                        </Stack>
-
-                        <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
-                            spacing={{ xs: 2, sm: 2 }}
-                            alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
-                            justifyContent="space-between"
-                        >
-                            {/* Left: Signature + Name */}
-                            <Box sx={{ minWidth: 0 }}>
-                                <Typography sx={{
-                                    fontFamily: '"Dancing Script","Brush Script MT",cursive',
-                                    fontWeight: 700,
-                                    fontSize: { xs: '1.6rem', sm: '2rem' },
-                                    color: isDark ? '#FFD27A' : '#B45309',
-                                    lineHeight: 1.1,
-                                    pb: 0.5,
-                                    borderBottom: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(180,83,9,0.4)'}`,
-                                    display: 'inline-block',
-                                    minWidth: { xs: 180, sm: 240 },
-                                }}>
-                                    {name}
-                                </Typography>
-                                <Box sx={{ mt: 1.2 }}>
+                        signatureSlot={
+                            <Box>
+                                <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 1.5 }}>
+                                    <DrawIcon sx={{ color: isDark ? BRAND.yellow : BRAND.saffron, fontSize: 18 }} />
                                     <Typography sx={{
-                                        fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
-                                        color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
-                                        textTransform: 'uppercase', letterSpacing: '0.08em',
+                                        fontFamily: FF, fontWeight: 700, fontSize: '0.72rem',
+                                        textTransform: 'uppercase', letterSpacing: '0.1em',
+                                        color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.6)',
                                     }}>
-                                        {isKannada ? 'ಹೆಸರು' : 'Name'}
+                                        {isKannada ? 'ಡಿಜಿಟಲ್ ಸಹಿ' : 'Digitally Signed'}
                                     </Typography>
-                                    <Typography sx={{
-                                        fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
-                                        color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
-                                    }}>
-                                        {name}
-                                    </Typography>
-                                </Box>
+                                </Stack>
+
+                                <Stack
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                    spacing={{ xs: 2, sm: 2 }}
+                                    alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
+                                    justifyContent="space-between"
+                                >
+                                    {/* Left: Signature + Name */}
+                                    <Box sx={{ minWidth: 0 }}>
+                                        <Typography sx={{
+                                            fontFamily: '"Dancing Script","Brush Script MT",cursive',
+                                            fontWeight: 700,
+                                            fontSize: { xs: '1.6rem', sm: '2rem' },
+                                            color: isDark ? '#FFD27A' : '#B45309',
+                                            lineHeight: 1.1,
+                                            pb: 0.5,
+                                            borderBottom: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(180,83,9,0.4)'}`,
+                                            display: 'inline-block',
+                                            minWidth: { xs: 180, sm: 240 },
+                                        }}>
+                                            {name}
+                                        </Typography>
+                                        <Box sx={{ mt: 1.2 }}>
+                                            <Typography sx={{
+                                                fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
+                                                color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
+                                                textTransform: 'uppercase', letterSpacing: '0.08em',
+                                            }}>
+                                                {isKannada ? 'ಹೆಸರು' : 'Name'}
+                                            </Typography>
+                                            <Typography sx={{
+                                                fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
+                                                color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
+                                            }}>
+                                                {name}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+
+                                    {/* Right: Signed On */}
+                                    {sopAgreedAt && (
+                                        <Box sx={{ textAlign: { xs: 'left', sm: 'right' }, flexShrink: 0 }}>
+                                            <Typography sx={{
+                                                fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
+                                                color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
+                                                textTransform: 'uppercase', letterSpacing: '0.08em',
+                                            }}>
+                                                {isKannada ? 'ಸಹಿ ಮಾಡಿದ ದಿನಾಂಕ' : 'Signed On'}
+                                            </Typography>
+                                            <Typography sx={{
+                                                fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
+                                                color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
+                                            }}>
+                                                {new Date(sopAgreedAt).toLocaleDateString('en-IN', {
+                                                    day: 'numeric', month: 'short', year: 'numeric',
+                                                    hour: '2-digit', minute: '2-digit',
+                                                })}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </Stack>
                             </Box>
-
-                            {/* Right: Signed On */}
-                            {sopAgreedAt && (
-                                <Box sx={{ textAlign: { xs: 'left', sm: 'right' }, flexShrink: 0 }}>
-                                    <Typography sx={{
-                                        fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
-                                        color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
-                                        textTransform: 'uppercase', letterSpacing: '0.08em',
-                                    }}>
-                                        {isKannada ? 'ಸಹಿ ಮಾಡಿದ ದಿನಾಂಕ' : 'Signed On'}
-                                    </Typography>
-                                    <Typography sx={{
-                                        fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
-                                        color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
-                                    }}>
-                                        {new Date(sopAgreedAt).toLocaleDateString('en-IN', {
-                                            day: 'numeric', month: 'short', year: 'numeric',
-                                            hour: '2-digit', minute: '2-digit',
-                                        })}
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Stack>
-                    </Box>
+                        }
+                    />
                 </Box>
             </Dialog>
         </>

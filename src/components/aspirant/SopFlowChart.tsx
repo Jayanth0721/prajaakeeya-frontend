@@ -182,9 +182,11 @@ interface SopFlowChartProps {
   onCancel?: () => void;
   /** When true, hides the agree-checkbox and proceed button (for view-only pages) */
   hideAgreement?: boolean;
+  /** Optional content rendered inside the SOP container, above the bottom color bar */
+  signatureSlot?: React.ReactNode;
 }
 
-const SopFlowChart = ({ sopAgreed, setSopAgreed, onAgree, onCancel, hideAgreement = false }: SopFlowChartProps) => {
+const SopFlowChart = ({ sopAgreed, setSopAgreed, onAgree, onCancel, hideAgreement = false, signatureSlot }: SopFlowChartProps) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
@@ -667,6 +669,13 @@ const SopFlowChart = ({ sopAgreed, setSopAgreed, onAgree, onCancel, hideAgreemen
         </motion.div>
 
       </Box>{/* end flow */}
+
+      {/* Optional signature slot — renders inside the SOP container */}
+      {signatureSlot && (
+        <Box sx={{ px: { xs: 2, sm: 3 }, pb: 3, pt: 1 }}>
+          {signatureSlot}
+        </Box>
+      )}
 
       {/* Bottom colour bar */}
       <Box sx={{ display: 'flex', height: '4px', opacity: 0.4 }}>
