@@ -26,14 +26,11 @@ import {
     Share as ShareIcon,
     Visibility as VisibilityIcon,
     InfoOutlined as InfoOutlinedIcon,
-    CheckBox as CheckBoxIcon,
-    OpenInNew as OpenInNewIcon,
-    Draw as DrawIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { getAspirantById } from '../services/aspirantService';
 import { BRAND } from '../theme';
-import SopFlowChart from '../components/aspirant/SopFlowChart';
+import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -113,7 +110,6 @@ const AspirantViewDetailsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [photoOpen, setPhotoOpen] = useState(false);
     const [pdfViewUrl, setPdfViewUrl] = useState<string | null>(null);
-    const [sopDialogOpen, setSopDialogOpen] = useState(false);
 
     const border = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(17,24,39,0.1)';
     const cardBg = isDark
@@ -585,61 +581,12 @@ const AspirantViewDetailsPage: React.FC = () => {
                 <Card sx={{ mb: 2.5, borderRadius: 3, border: `1px solid ${border}`, background: cardBg, boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.35)' : '0 8px 24px rgba(17,24,39,0.07)' }}>
                     <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
                         <SectionHeader icon={<VerifiedIcon fontSize="small" />} title={isKannada ? 'SOP ಒಪ್ಪಂದ' : 'SOP Agreement'} />
-
-                        {/* SOP Agreed pill */}
-                        <Box
-                            sx={{
-                                px: 1.75, py: 1.25,
-                                borderRadius: 1.5,
-                                display: 'flex', alignItems: 'center', gap: 1.25,
-                                background: isDark ? 'rgba(43,180,104,0.10)' : 'rgba(43,180,104,0.12)',
-                                border: `1.5px solid rgba(43,180,104,0.45)`,
-                            }}
-                        >
-                            <CheckBoxIcon sx={{ color: '#2fbf71', fontSize: 24 }} />
-                            <Box
-                                component="button"
-                                type="button"
-                                onClick={() => setSopDialogOpen(true)}
-                                sx={{
-                                    all: 'unset',
-                                    cursor: 'pointer',
-                                    flex: 1, minWidth: 0,
-                                    textAlign: 'left',
-                                }}
-                            >
-                                <Typography sx={{
-                                    fontFamily: FF, fontWeight: 700, fontSize: '0.95rem', lineHeight: 1.15,
-                                    color: '#2fbf71',
-                                }}>
-                                    {isKannada ? 'SOP ಒಪ್ಪಿಗೆ ಪಡೆಯಲಾಗಿದೆ' : 'SOP Agreed'}
-                                </Typography>
-                                <Typography sx={{
-                                    fontFamily: FF, fontSize: '0.75rem', mt: '2px',
-                                    color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.6)',
-                                }}>
-                                    {isKannada ? 'ಪರಿಶೀಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ' : 'Tap to review the SOP'}
-                                </Typography>
-                            </Box>
-                            <Box
-                                component="button"
-                                type="button"
-                                onClick={() => setSopDialogOpen(true)}
-                                aria-label="Review SOP"
-                                sx={{
-                                    all: 'unset',
-                                    cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    width: 32, height: 32, borderRadius: '6px',
-                                    transition: 'background 0.18s',
-                                    '&:hover': {
-                                        background: isDark ? 'rgba(43,180,104,0.18)' : 'rgba(43,180,104,0.2)',
-                                    },
-                                }}
-                            >
-                                <OpenInNewIcon sx={{ fontSize: 18, color: 'rgba(43,180,104,0.9)' }} />
-                            </Box>
-                        </Box>
+                        <SopAgreementCard
+                            sopAgreed={Boolean(aspirant.sopAgreed)}
+                            name={aspirant.name}
+                            sopAgreedAt={aspirant.sopAgreedAt}
+                            isKannada={isKannada}
+                        />
                     </CardContent>
                 </Card>
             )}
@@ -725,115 +672,6 @@ const AspirantViewDetailsPage: React.FC = () => {
                 )}
             </Dialog>
 
-            {/* SOP Agreement Dialog (read-only view) */}
-            <Dialog
-                open={sopDialogOpen}
-                onClose={() => setSopDialogOpen(false)}
-                maxWidth="md"
-                fullWidth
-                fullScreen={isMobile}
-                PaperProps={{ sx: { borderRadius: isMobile ? 0 : 3, overflow: 'hidden' } }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, borderBottom: `1px solid ${border}` }}>
-                    <Typography sx={{ fontFamily: FF, fontWeight: 700, fontSize: '0.95rem' }}>
-                        {isKannada ? 'SOP' : 'Standard Operating Procedure'}
-                    </Typography>
-                    <MuiIconButton onClick={() => setSopDialogOpen(false)} size="small"><CloseIcon /></MuiIconButton>
-                </Box>
-                <Box sx={{ p: { xs: 1.5, sm: 2 }, overflowY: 'auto' }}>
-                    <SopFlowChart
-                        sopAgreed={Boolean(aspirant.sopAgreed)}
-                        setSopAgreed={() => { /* read-only */ }}
-                        onAgree={() => setSopDialogOpen(false)}
-                        hideAgreement
-                    />
-
-                    {/* Digital signature block — shown below SOP inside the popup */}
-                    {aspirant.sopAgreed && (
-                        <Box
-                            sx={{
-                                mt: 2,
-                                borderRadius: 2,
-                                p: { xs: 1.75, sm: 2.25 },
-                                background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(15,23,42,0.03)',
-                                border: `1px solid ${isDark ? 'rgba(245,168,0,0.28)' : 'rgba(245,168,0,0.35)'}`,
-                            }}
-                        >
-                            <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 1.5 }}>
-                                <DrawIcon sx={{ color: isDark ? BRAND.yellow : BRAND.saffron, fontSize: 18 }} />
-                                <Typography sx={{
-                                    fontFamily: FF, fontWeight: 700, fontSize: '0.72rem',
-                                    textTransform: 'uppercase', letterSpacing: '0.1em',
-                                    color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.6)',
-                                }}>
-                                    {isKannada ? 'ಡಿಜಿಟಲ್ ಸಹಿ' : 'Digitally Signed'}
-                                </Typography>
-                            </Stack>
-
-                            <Stack
-                                direction={{ xs: 'column', sm: 'row' }}
-                                spacing={{ xs: 2, sm: 2 }}
-                                alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
-                                justifyContent="space-between"
-                            >
-                                {/* Left: Signature + Name */}
-                                <Box sx={{ minWidth: 0 }}>
-                                    <Typography sx={{
-                                        fontFamily: '"Dancing Script","Brush Script MT",cursive',
-                                        fontWeight: 700,
-                                        fontSize: { xs: '1.6rem', sm: '2rem' },
-                                        color: isDark ? '#FFD27A' : '#B45309',
-                                        lineHeight: 1.1,
-                                        pb: 0.5,
-                                        borderBottom: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(180,83,9,0.4)'}`,
-                                        display: 'inline-block',
-                                        minWidth: { xs: 180, sm: 240 },
-                                    }}>
-                                        {aspirant.name}
-                                    </Typography>
-                                    <Box sx={{ mt: 1.2 }}>
-                                        <Typography sx={{
-                                            fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
-                                            color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
-                                            textTransform: 'uppercase', letterSpacing: '0.08em',
-                                        }}>
-                                            {isKannada ? 'ಹೆಸರು' : 'Name'}
-                                        </Typography>
-                                        <Typography sx={{
-                                            fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
-                                            color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
-                                        }}>
-                                            {aspirant.name}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-
-                                {/* Right: Signed On */}
-                                {aspirant.sopAgreedAt && (
-                                    <Box sx={{ textAlign: { xs: 'left', sm: 'right' }, flexShrink: 0 }}>
-                                        <Typography sx={{
-                                            fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
-                                            color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
-                                            textTransform: 'uppercase', letterSpacing: '0.08em',
-                                        }}>
-                                            {isKannada ? 'ಸಹಿ ಮಾಡಿದ ದಿನಾಂಕ' : 'Signed On'}
-                                        </Typography>
-                                        <Typography sx={{
-                                            fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
-                                            color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
-                                        }}>
-                                            {new Date(aspirant.sopAgreedAt).toLocaleDateString('en-IN', {
-                                                day: 'numeric', month: 'short', year: 'numeric',
-                                                hour: '2-digit', minute: '2-digit',
-                                            })}
-                                        </Typography>
-                                    </Box>
-                                )}
-                            </Stack>
-                        </Box>
-                    )}
-                </Box>
-            </Dialog>
         </Box>
     );
 };
