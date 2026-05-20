@@ -82,6 +82,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import capitolInactiveImg from '../assets/images/capitol.png';
 import capitolActiveImg from '../assets/images/capitol1.png';
 import { BRAND } from '../theme';
+import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 
 interface Candidate {
   id: number;
@@ -184,6 +185,7 @@ const WardCandidateListPage = () => {
   const GOLD = isDark ? BRAND.yellow : BRAND.yellowLight;
 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [demoSopOpen, setDemoSopOpen] = useState(false);
   const [voteCounts, setVoteCounts] = useState<Record<number, number>>({});
   const [votePercentages, setVotePercentages] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(false);
@@ -2961,13 +2963,17 @@ const WardCandidateListPage = () => {
                         return (
                           <Box sx={{ width: '100%' }}>
                             {/* Signed SOP button */}
-                            {(candidate.sopUrl || candidate.sopKannadaUrl) && (
+                            {(isDemoCandidate(candidate) || candidate.sopUrl || candidate.sopKannadaUrl) && (
                               <Box sx={{ mb: 1 }}>
                                 <Button
                                   variant="outlined"
                                   size="small"
                                   fullWidth
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/aspirants/${candidate.id}/signed-sop`); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isDemoCandidate(candidate)) setDemoSopOpen(true);
+                                    else navigate(`/aspirants/${candidate.id}/signed-sop`);
+                                  }}
                                   sx={{
                                     height: 34,
                                     borderRadius: '8px',
@@ -3775,6 +3781,16 @@ const WardCandidateListPage = () => {
         </Fab>
       </Box>
 
+      {/* Demo aspirant SOP popup */}
+      <SopAgreementCard
+        sopAgreed
+        hidePill
+        name="Prajaakeeya Demo Aspirant"
+        sopAgreedAt={new Date().toISOString()}
+        open={demoSopOpen}
+        onClose={() => setDemoSopOpen(false)}
+        isKannada={(i18n.language || '').startsWith('kn')}
+      />
     </>
   );
 };

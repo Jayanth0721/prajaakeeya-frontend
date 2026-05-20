@@ -19,13 +19,25 @@ interface Props {
     name: string;
     sopAgreedAt?: string | null;
     isKannada?: boolean;
+    /** Hide the green "SOP Agreed" pill — useful when opening the dialog from elsewhere */
+    hidePill?: boolean;
+    /** Controlled open state. When provided, overrides internal state */
+    open?: boolean;
+    /** Required when `open` is controlled */
+    onClose?: () => void;
 }
 
-const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKannada = false }) => {
+const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKannada = false, hidePill = false, open: openProp, onClose }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    const [open, setOpen] = useState(false);
+    const [openState, setOpenState] = useState(false);
+    const isControlled = openProp !== undefined;
+    const open = isControlled ? openProp : openState;
+    const setOpen = (v: boolean) => {
+        if (isControlled) { if (!v) onClose?.(); }
+        else setOpenState(v);
+    };
 
     if (!sopAgreed) return null;
 
@@ -34,6 +46,7 @@ const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKan
     return (
         <>
             {/* SOP Agreed pill */}
+            {!hidePill && (
             <Box
                 sx={{
                     px: 1.75, py: 1.25,
@@ -87,6 +100,7 @@ const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKan
                     <OpenInNewIcon sx={{ fontSize: 18, color: 'rgba(43,180,104,0.9)' }} />
                 </Box>
             </Box>
+            )}
 
             {/* SOP Agreement Dialog */}
             <Dialog
