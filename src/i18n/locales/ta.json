@@ -594,6 +594,8 @@
       "requests": "நேரடி சந்திப்பு கோரிக்கைகள்",
       "profileTitle": "ஆர்வலர் சுயவிவரம்",
       "documentsTitle": "ஆவணங்கள் பதிவேற்றப்பட்டன",
+      "sopAgreementTitle": "SOP ஒப்பந்தம்",
+      "sopNotAgreed": "SOP-க்கு இன்னும் ஒப்புதல் அளிக்கப்படவில்லை.",
       "publicInteractionTitle": "வீடியோ அரட்டை இணைப்பு",
       "publicInteractionDesc": "இந்த இணைப்பு பொது தொடர்பு மற்றும் நேர்காணல்களுக்காக குடிமக்களுக்குத் தெரியும்.",
       "meetTitleLabel": "கூட்டத்தின் தலைப்பு",

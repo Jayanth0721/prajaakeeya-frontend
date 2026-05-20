@@ -594,6 +594,8 @@
       "requests": "थेट भेटीच्या विनंत्या",
       "profileTitle": "उमेदवार प्रोफाईल",
       "documentsTitle": "कागदपत्रे अपलोड केली",
+      "sopAgreementTitle": "SOP करार",
+      "sopNotAgreed": "अद्याप SOP ला सहमती दिलेली नाही.",
       "publicInteractionTitle": "व्हिडिओ चॅट लिंक",
       "publicInteractionDesc": "ही लिंक सार्वजनिक संवाद आणि मुलाखतींसाठी नागरिकांना दिसेल.",
       "meetTitleLabel": "बैठकीचे शीर्षक",

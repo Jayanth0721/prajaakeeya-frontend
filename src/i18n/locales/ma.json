@@ -594,6 +594,8 @@
       "requests": "നേരിട്ടുള്ള മീറ്റിംഗ് അഭ്യർത്ഥനകൾ",
       "profileTitle": "സ്ഥാനാർത്ഥി പ്രൊഫൈൽ",
       "documentsTitle": "പ്രമാണങ്ങൾ അപ്‌ലോഡ് ചെയ്തു",
+      "sopAgreementTitle": "SOP കരാർ",
+      "sopNotAgreed": "SOP-യിൽ ഇതുവരെ സമ്മതിച്ചിട്ടില്ല.",
       "publicInteractionTitle": "വീഡിയോ ചാറ്റ് ലിങ്ക്",
       "publicInteractionDesc": "പൊതു സംവാദങ്ങൾക്കും അഭിമുഖങ്ങൾക്കുമായി ഈ ലിങ്ക് പൗരന്മാർക്ക് കാണാനാകും.",
       "meetTitleLabel": "മീറ്റിംഗ് ശീർഷകം",

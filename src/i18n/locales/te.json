@@ -594,6 +594,8 @@
       "requests": "నేరుగా కలిసే అభ్యర్థనలు",
       "profileTitle": "ఆశావహుల ప్రొఫైల్",
       "documentsTitle": "పత్రాలు అప్‌లోడ్ చేయబడ్డాయి",
+      "sopAgreementTitle": "SOP ఒప్పందం",
+      "sopNotAgreed": "SOP కు ఇంకా అంగీకరించబడలేదు.",
       "publicInteractionTitle": "వీడియో చాట్ లింక్",
       "publicInteractionDesc": "ప్రజా పరస్పర చర్య మరియు ఇంటర్వ్యూల కోసం ఈ లింక్ పౌరులకు కనిపిస్తుంది.",
       "meetTitleLabel": "సమావేశం శీర్షిక",

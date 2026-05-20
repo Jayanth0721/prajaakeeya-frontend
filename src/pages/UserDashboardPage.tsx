@@ -44,6 +44,7 @@ import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
 import { fetchAllWards } from '../services/wardService';
+import { getVoters } from '../services/voterService';
 
 const UserDashboardPage = () => {
   const { user, token } = useAuthStore();
@@ -92,6 +93,21 @@ const UserDashboardPage = () => {
       .catch(() => { /* ignore — ward name stays empty */ });
   }, [user?.wardNumber, user?.wardName]);
 
+  // Total registered voters count, shown in the hero strip. Fetches a minimal
+  // page (limit=1) since we only need the `totalUsers` field from the response.
+  const [totalVoters, setTotalVoters] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    let cancelled = false;
+    getVoters(1, 1)
+      .then((resp) => {
+        if (cancelled) return;
+        const total = (resp?.data as any)?.totalUsers ?? (resp?.data as any)?.total ?? null;
+        if (typeof total === 'number') setTotalVoters(total);
+      })
+      .catch(() => { /* ignore — count stays hidden */ });
+    return () => { cancelled = true; };
+  }, []);
+
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.down('sm'));
   const [photoFrameOpen, setPhotoFrameOpen] = React.useState(false);
@@ -116,14 +132,15 @@ const UserDashboardPage = () => {
   };
 
   const actions = [
-    {
-      title: t('userDashboard.actions.voters') || 'View Voters',
-      description: t('userDashboard.actions.votersDesc') || 'See all registered voters',
-      icon: <img src={king1Img} alt="voters" width={30} height={30} />,
-      path: `/user/voters`,
-      variant: 'outlined' as const,
-      color: 'secondary' as const
-    },
+    // Registered Citizens tile — temporarily disabled
+    // {
+    //   title: t('userDashboard.actions.voters') || 'View Voters',
+    //   description: t('userDashboard.actions.votersDesc') || 'See all registered voters',
+    //   icon: <img src={king1Img} alt="voters" width={30} height={30} />,
+    //   path: `/user/voters`,
+    //   variant: 'outlined' as const,
+    //   color: 'secondary' as const
+    // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
       description: t('userDashboard.actions.registeredAspirantsDesc') || 'See all registered aspirants',
@@ -272,13 +289,14 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const,
     }] : []),
-    {
-      title: t('userDashboard.actions.voters') || 'View Voters',
-      icon: <img src={king1Img} alt="voters" width={30} height={30} />,
-      path: `/user/voters`,
-      variant: 'outlined' as const,
-      color: 'secondary' as const,
-    },
+    // Registered Citizens tile — temporarily disabled
+    // {
+    //   title: t('userDashboard.actions.voters') || 'View Voters',
+    //   icon: <img src={king1Img} alt="voters" width={30} height={30} />,
+    //   path: `/user/voters`,
+    //   variant: 'outlined' as const,
+    //   color: 'secondary' as const,
+    // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
       icon: <img src={employeesImg} alt="registered aspirants" width={30} height={30} />,
@@ -744,6 +762,28 @@ const UserDashboardPage = () => {
                 </Typography>
               )}
             </Box>
+            {totalVoters != null && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 1.2,
+                  px: { xs: 1.5, md: 2 },
+                  py: { xs: 1, md: 1.2 },
+                  borderRadius: 2,
+                  background: isDark ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.7)',
+                  border: `1px solid ${BORDER}`,
+                  alignSelf: { xs: 'flex-start', md: 'center' },
+                }}
+              >
+                <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textHigh, lineHeight: 1 }}>
+                  {t('userDashboard.totalVoters', { defaultValue: 'Total Voters' })}
+                </Typography>
+                <Typography sx={{ fontFamily: FF, fontSize: { xs: '1.2rem', md: '1.4rem' }, fontWeight: 800, color: textPrimary, lineHeight: 1 }}>
+                  {totalVoters.toLocaleString()}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       </motion.div>

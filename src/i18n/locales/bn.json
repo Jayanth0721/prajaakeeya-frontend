@@ -594,6 +594,8 @@
       "requests": "সরাসরি সাক্ষাতের অনুরোধ",
       "profileTitle": "প্রার্থীর প্রোফাইল",
       "documentsTitle": "নথিপত্র আপলোড করা হয়েছে",
+      "sopAgreementTitle": "SOP চুক্তি",
+      "sopNotAgreed": "এখনো SOP-এ সম্মত হওয়া হয়নি।",
       "publicInteractionTitle": "ভিডিও চ্যাট লিঙ্ক",
       "publicInteractionDesc": "এই লিঙ্কটি জনসাধারণের সাথে মিথস্ক্রিয়া এবং সাক্ষাৎকারের জন্য নাগরিকদের কাছে দৃশ্যমান হবে।",
       "meetTitleLabel": "মিটিংয়ের শিরোনাম",

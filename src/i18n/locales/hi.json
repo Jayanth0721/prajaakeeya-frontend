@@ -594,6 +594,8 @@
       "requests": "सीधे मिलने के अनुरोध",
       "profileTitle": "उम्मीदवार प्रोफ़ाइल",
       "documentsTitle": "दस्तावेज़ अपलोड किए गए",
+      "sopAgreementTitle": "SOP सहमति",
+      "sopNotAgreed": "SOP पर अभी सहमति नहीं दी गई।",
       "publicInteractionTitle": "वीडियो चैट लिंक",
       "publicInteractionDesc": "यह लिंक सार्वजनिक बातचीत और साक्षात्कार के लिए नागरिकों को दिखाई देगा।",
       "meetTitleLabel": "बैठक का शीर्षक",

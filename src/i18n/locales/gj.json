@@ -594,6 +594,8 @@
       "requests": "સીધી મુલાકાતની વિનંતીઓ",
       "profileTitle": "ઉમેદવાર પ્રોફાઇલ",
       "documentsTitle": "દસ્તાવેજો અપલોડ કર્યા",
+      "sopAgreementTitle": "SOP કરાર",
+      "sopNotAgreed": "હજુ સુધી SOP પર સંમતિ આપી નથી.",
       "publicInteractionTitle": "વીડિયો ચેટ લિંક",
       "publicInteractionDesc": "આ લિંક જાહેર વાર્તાલાપ અને ઇન્ટરવ્યુ માટે નાગરિકોને દેખાશે.",
       "meetTitleLabel": "મીટિંગનું શીર્ષક",

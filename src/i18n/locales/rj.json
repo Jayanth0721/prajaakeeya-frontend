@@ -594,6 +594,8 @@
       "requests": "सीधा मिलबा री विनती",
       "profileTitle": "उम्मीदवार प्रोफ़ाइल",
       "documentsTitle": "दस्तावेज़ अपलोड कर दिया",
+      "sopAgreementTitle": "SOP राजीनामो",
+      "sopNotAgreed": "अबार तांई SOP माथे राजी कोनी हुयो।",
       "publicInteractionTitle": "वीडियो चैट लिंक",
       "publicInteractionDesc": "ओ लिंक सार्वजनिक बातचीत और इंटरव्यू वास्ते वोटरां नै दीखैला।",
       "meetTitleLabel": "मीटिंग रो शीर्षक",
