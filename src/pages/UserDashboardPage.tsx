@@ -777,7 +777,7 @@ const UserDashboardPage = () => {
                 }}
               >
                 <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textHigh, lineHeight: 1 }}>
-                  {t('userDashboard.totalVoters', { defaultValue: 'Total Voters' })}
+                  {t('userDashboard.totalVoters', { defaultValue: 'No. of Registered Citizens' })}
                 </Typography>
                 <Typography sx={{ fontFamily: FF, fontSize: { xs: '1.2rem', md: '1.4rem' }, fontWeight: 800, color: textPrimary, lineHeight: 1 }}>
                   {totalVoters.toLocaleString()}
