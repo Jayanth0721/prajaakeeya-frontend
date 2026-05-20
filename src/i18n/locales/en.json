@@ -508,6 +508,10 @@
     "subtitle": "Manage your participation in the ward selection process",
     "numberOfVotes": "Number of Votes",
     "totalVoters": "No. of Registered Citizens",
+    "cards": {
+      "voters": "Registered Citizens",
+      "aspirants": "Aspirants"
+    },
     "addPhotoFrame": "Add Photo Frame",
     "noPosts": "No posts yet.",
     "detailsTitle": "Voter Details",

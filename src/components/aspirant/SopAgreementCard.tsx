@@ -122,56 +122,57 @@ const SopAgreementCard: React.FC<Props> = ({ sopAgreed, name, sopAgreedAt, isKan
                                     </Typography>
                                 </Stack>
 
+                                <Box sx={{ mb: 1.2 }}>
+                                    <Typography sx={{
+                                        fontFamily: '"Dancing Script","Brush Script MT",cursive',
+                                        fontWeight: 700,
+                                        fontSize: { xs: '1.2rem', sm: '2rem' },
+                                        color: isDark ? '#FFD27A' : '#B45309',
+                                        lineHeight: 1.1,
+                                        pb: 0.5,
+                                        borderBottom: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(180,83,9,0.4)'}`,
+                                        display: 'inline-block',
+                                        minWidth: { xs: 140, sm: 240 },
+                                    }}>
+                                        {name}
+                                    </Typography>
+                                </Box>
+
                                 <Stack
-                                    direction={{ xs: 'column', sm: 'row' }}
-                                    spacing={{ xs: 2, sm: 2 }}
-                                    alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
+                                    direction="row"
+                                    spacing={2}
+                                    alignItems="flex-end"
                                     justifyContent="space-between"
                                 >
-                                    {/* Left: Signature + Name */}
+                                    {/* Left: Name */}
                                     <Box sx={{ minWidth: 0 }}>
                                         <Typography sx={{
-                                            fontFamily: '"Dancing Script","Brush Script MT",cursive',
-                                            fontWeight: 700,
-                                            fontSize: { xs: '1.6rem', sm: '2rem' },
-                                            color: isDark ? '#FFD27A' : '#B45309',
-                                            lineHeight: 1.1,
-                                            pb: 0.5,
-                                            borderBottom: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(180,83,9,0.4)'}`,
-                                            display: 'inline-block',
-                                            minWidth: { xs: 180, sm: 240 },
+                                            fontFamily: FF, fontSize: { xs: '0.6rem', sm: '0.7rem' }, fontWeight: 600,
+                                            color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
+                                            textTransform: 'uppercase', letterSpacing: '0.08em',
+                                        }}>
+                                            {isKannada ? 'ಹೆಸರು' : 'Name'}
+                                        </Typography>
+                                        <Typography sx={{
+                                            fontFamily: FF, fontSize: { xs: '0.75rem', sm: '0.88rem' }, fontWeight: 700,
+                                            color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
                                         }}>
                                             {name}
                                         </Typography>
-                                        <Box sx={{ mt: 1.2 }}>
-                                            <Typography sx={{
-                                                fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
-                                                color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
-                                                textTransform: 'uppercase', letterSpacing: '0.08em',
-                                            }}>
-                                                {isKannada ? 'ಹೆಸರು' : 'Name'}
-                                            </Typography>
-                                            <Typography sx={{
-                                                fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
-                                                color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
-                                            }}>
-                                                {name}
-                                            </Typography>
-                                        </Box>
                                     </Box>
 
                                     {/* Right: Signed On */}
                                     {sopAgreedAt && (
-                                        <Box sx={{ textAlign: { xs: 'left', sm: 'right' }, flexShrink: 0 }}>
+                                        <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
                                             <Typography sx={{
-                                                fontFamily: FF, fontSize: '0.7rem', fontWeight: 600,
+                                                fontFamily: FF, fontSize: { xs: '0.6rem', sm: '0.7rem' }, fontWeight: 600,
                                                 color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.55)',
                                                 textTransform: 'uppercase', letterSpacing: '0.08em',
                                             }}>
                                                 {isKannada ? 'ಸಹಿ ಮಾಡಿದ ದಿನಾಂಕ' : 'Signed On'}
                                             </Typography>
                                             <Typography sx={{
-                                                fontFamily: FF, fontSize: '0.88rem', fontWeight: 700,
+                                                fontFamily: FF, fontSize: { xs: '0.75rem', sm: '0.88rem' }, fontWeight: 700,
                                                 color: isDark ? '#fff' : 'rgba(15,23,42,0.92)',
                                             }}>
                                                 {new Date(sopAgreedAt).toLocaleDateString('en-IN', {
