@@ -391,7 +391,7 @@ const DocumentsUploadPage = () => {
         onNext={handleNext}
         onCancel={handleHome}
         canProceed={canProceedStep4}
-        submitButtonText={t('forms.aspirant.navigation.next')}
+        submitButtonText={t('forms.aspirant.navigation.submit')}
         cameraActive={cameraActive}
         capturedPhoto={capturedPhoto}
         loading={loading}

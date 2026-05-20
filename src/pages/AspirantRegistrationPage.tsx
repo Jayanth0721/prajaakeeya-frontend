@@ -84,6 +84,15 @@ const AspirantRegistrationPage = () => {
     try { setSopAgreed(localStorage.getItem(SOP_AGREED_KEY) === 'true'); } catch { /* ignore */ }
   }, [location.key, SOP_AGREED_KEY]);
 
+  // Persist sopAgreed when the user toggles the checkbox in the declaration step
+  const handleSopAgreedChange = (v: boolean) => {
+    setSopAgreed(v);
+    try {
+      if (v) localStorage.setItem(SOP_AGREED_KEY, 'true');
+      else localStorage.removeItem(SOP_AGREED_KEY);
+    } catch { /* ignore */ }
+  };
+
   // Persist declaration fields so navigating to /user/sop and back doesn't reset them
   useEffect(() => {
     try {
@@ -459,6 +468,7 @@ const AspirantRegistrationPage = () => {
         {activeStep === 0 && (
           <DeclarationStep
             sopAgreed={sopAgreed}
+            setSopAgreed={handleSopAgreedChange}
             onSopClick={() => navigate('/user/sop', { state: { from: 'aspirant-registration' } })}
             declarationChecks={declarationChecks}
             setDeclarationChecks={setDeclarationChecks}

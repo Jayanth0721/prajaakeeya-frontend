@@ -36,6 +36,7 @@ export interface DeclarationChecks {
 
 interface Props {
   sopAgreed: boolean;
+  setSopAgreed: (v: boolean) => void;
   onSopClick: () => void;
   declarationChecks: DeclarationChecks;
   setDeclarationChecks: React.Dispatch<React.SetStateAction<DeclarationChecks>>;
@@ -50,7 +51,7 @@ interface Props {
 
 // ── Component ──────────────────────────────────────────────────────────────
 const DeclarationStep = ({
-  sopAgreed, onSopClick,
+  sopAgreed, setSopAgreed, onSopClick,
   declarationChecks, setDeclarationChecks,
   digitalSignature, setDigitalSignature,
   canProceed, loading,
@@ -242,10 +243,28 @@ const DeclarationStep = ({
                   transition: 'all 0.2s',
                 }}
               >
-                {sopAgreed
-                  ? <CheckBoxIcon sx={{ color: '#2fbf71', fontSize: 24 }} />
-                  : <CheckBoxOutlineBlankIcon sx={{ color: GOLD, fontSize: 24 }} />}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Checkbox
+                  checked={sopAgreed}
+                  onChange={e => setSopAgreed(e.target.checked)}
+                  icon={<CheckBoxOutlineBlankIcon sx={{ color: GOLD, fontSize: 24 }} />}
+                  checkedIcon={<CheckBoxIcon sx={{ color: '#2fbf71', fontSize: 24 }} />}
+                  sx={{ p: 0 }}
+                  inputProps={{
+                    'aria-label': t('forms.aspirant.declaration.sopAgreeLabel') || 'I have read and agree to the SOP',
+                  }}
+                />
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={onSopClick}
+                  aria-label={t('forms.aspirant.declaration.sopAgreeHint') || 'Tap to view SOP'}
+                  sx={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                    flex: 1, minWidth: 0,
+                    textAlign: 'left',
+                  }}
+                >
                   <Typography sx={{
                     fontFamily: FF, fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.15,
                     color: sopAgreed ? '#2fbf71' : (isDark ? '#fff' : 'rgba(15,23,42,0.92)'),
@@ -269,7 +288,7 @@ const DeclarationStep = ({
                   onClick={onSopClick}
                   aria-label={sopAgreed
                     ? (t('forms.aspirant.declaration.sopAgreedHint') || 'Review SOP')
-                    : (t('forms.aspirant.declaration.sopAgreeHint') || 'View & accept SOP')}
+                    : (t('forms.aspirant.declaration.sopAgreeHint') || 'View SOP')}
                   sx={{
                     all: 'unset',
                     cursor: 'pointer',

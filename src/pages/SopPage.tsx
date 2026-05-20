@@ -120,9 +120,38 @@ const SopPage = () => {
                     onCancel={fromAspirantRegistration
                         ? () => navigate('/user/aspirants/register', { replace: true })
                         : undefined}
-                    hideAgreement={!fromAspirantRegistration}
+                    hideAgreement
                 />
             </motion.div>
+
+            {/* ── Back to Registration (only when arriving from aspirant registration) ── */}
+            {fromAspirantRegistration && (
+                <Stack spacing={1.5} sx={{ mt: 2 }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => navigate('/user/aspirants/register', { replace: true })}
+                        sx={{
+                            borderRadius: 3,
+                            textTransform: 'none',
+                            fontWeight: 700,
+                            fontFamily: FF,
+                            py: 1.5,
+                            fontSize: '0.95rem',
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, #C8180A 0%, #F5A800 100%)',
+                            boxShadow: '0 6px 24px rgba(200,24,10,0.4)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #df210f 0%, #ffbe1a 100%)',
+                                boxShadow: '0 8px 30px rgba(200,24,10,0.55)',
+                            },
+                        }}
+                    >
+                        {t('forms.aspirant.navigation.back', { defaultValue: 'Back to Declaration' })}
+                    </Button>
+                </Stack>
+            )}
 
             {/* ── Action Buttons ── */}
             <Stack spacing={1.5} sx={{ mt: 2, display: fromAspirantRegistration ? 'none' : 'flex' }}>
