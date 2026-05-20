@@ -2885,7 +2885,15 @@ const WardCandidateListPage = () => {
                                 }}
                                 onClick={() => {
                                   void trackInteraction(candidate.id, '/users/track/phone-call');
-                                  window.open(`https://wa.me/${candidate.whatsappNumber!.replace(/[^0-9]/g, '')}`, '_blank', 'noopener');
+                                  const num = candidate.whatsappNumber!.replace(/[^0-9]/g, '');
+                                  const url = `https://wa.me/${num}`;
+                                  // iOS standalone PWAs silently no-op window.open('_blank'),
+                                  // breaking the wa.me universal-link handoff to WhatsApp.
+                                  const isStandalone =
+                                    window.matchMedia?.('(display-mode: standalone)').matches ||
+                                    (navigator as any).standalone === true;
+                                  if (isStandalone) window.location.href = url;
+                                  else window.open(url, '_blank', 'noopener');
                                 }}
                               >
                                 WhatsApp
