@@ -187,6 +187,29 @@ const WardCandidateListPage = () => {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [demoSopOpen, setDemoSopOpen] = useState(false);
   const [sopCandidate, setSopCandidate] = useState<Candidate | null>(null);
+
+  // When the SOP dialog opens we push a sentinel history entry so the browser
+  // / Android back button just closes the dialog instead of leaving the
+  // aspirants list (which previously dropped users on /user/dashboard).
+  useEffect(() => {
+    const dialogOpen = Boolean(sopCandidate) || demoSopOpen;
+    if (!dialogOpen) return;
+    const sentinel = { __sopDialog: true };
+    window.history.pushState(sentinel, '');
+    const onPop = () => {
+      setSopCandidate(null);
+      setDemoSopOpen(false);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      // If we leave the dialog state by other means (cross button, backdrop),
+      // pop the sentinel back off so the user's history isn't polluted.
+      if (window.history.state && (window.history.state as any).__sopDialog) {
+        window.history.back();
+      }
+    };
+  }, [sopCandidate, demoSopOpen]);
   const [voteCounts, setVoteCounts] = useState<Record<number, number>>({});
   const [votePercentages, setVotePercentages] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(false);
