@@ -137,6 +137,7 @@ const relativeTime = (ts: number): string => {
   const dateStr = date.toLocaleString(undefined, {
     hour: 'numeric',
     minute: '2-digit',
+    hour12: true,
   });
   if (bucketFor(ts) === 'yesterday') return `Yesterday, ${dateStr}`;
   return date.toLocaleString(undefined, {
@@ -144,6 +145,7 @@ const relativeTime = (ts: number): string => {
     month: 'short',
     hour: 'numeric',
     minute: '2-digit',
+    hour12: true,
   });
 };
 
