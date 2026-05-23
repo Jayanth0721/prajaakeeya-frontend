@@ -759,18 +759,7 @@ const CivicIssuesPage: React.FC = () => {
                       </Typography>
                     </Box>
                     {totalHandRaises != null && (
-                      <Box
-                        sx={{
-                          flexShrink: 0,
-                          textAlign: 'center',
-                          px: 1.4,
-                          py: 0.6,
-                          borderRadius: 2,
-                          background: 'rgba(245,168,0,0.12)',
-                          border: '1px solid rgba(245,168,0,0.35)',
-                          minWidth: 84,
-                        }}
-                      >
+                      <Box sx={{ flexShrink: 0, textAlign: 'center' }}>
                         <Typography sx={{ fontFamily: FF, fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textMid, lineHeight: 1.1 }}>
                           {t('civicIssues.totalReported', { defaultValue: 'Total Reported' })}
                         </Typography>
