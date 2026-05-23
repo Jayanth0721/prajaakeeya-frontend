@@ -6,31 +6,7 @@ import { BRAND } from '../theme';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getAspirantById } from '../services/aspirantService';
-
-const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-const Viewer = ({ url }: { url?: string | null }) => {
-    const theme = useTheme();
-    const isDark = theme.palette.mode === 'dark';
-    if (!url) return <Typography variant="body2">No document available</Typography>;
-
-    // Mobile browsers can't render PDFs inline — use Google Docs viewer as fallback
-    const viewerSrc = isMobile()
-        ? `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`
-        : url;
-
-    return (
-        <Box sx={{ height: { xs: '85vh', md: '90vh' }, borderRadius: 2, overflow: 'hidden', border: '1px solid rgba(0,0,0,0.08)' }}>
-            <iframe
-                title="pdf-viewer"
-                src={viewerSrc}
-                width="100%"
-                height="100%"
-                style={{ border: 'none' }}
-            />
-        </Box>
-    );
-};
+import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 
 const SignedSopPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -92,10 +68,21 @@ const SignedSopPage: React.FC = () => {
                                 </Box>
                             ) : (
                                 <Box>
-                                    <Typography variant="subtitle1" sx={{ fontFamily: FF, fontWeight: 600, mb: 1, color: textPrimary }}>
+                                    <Typography variant="subtitle1" sx={{ fontFamily: FF, fontWeight: 600, mb: 1.5, color: textPrimary }}>
                                         {t('userDashboard.aspirant.signedSOP') || 'Signed SOP'}
                                     </Typography>
-                                    <Viewer url={aspirant?.sopUrl} />
+                                    {(aspirant?.sopAgreed || aspirant?.sopUrl) ? (
+                                        <SopAgreementCard
+                                            sopAgreed
+                                            name={aspirant?.name || aspirant?.fullName || `${aspirant?.firstName || ''} ${aspirant?.lastName || ''}`.trim()}
+                                            sopAgreedAt={aspirant?.sopAgreedAt}
+                                            isKannada={(i18n.language || '').startsWith('kn')}
+                                        />
+                                    ) : (
+                                        <Typography variant="body2" sx={{ color: textFaint, fontFamily: FF }}>
+                                            {t('userDashboard.aspirant.sopNotAgreed') || 'SOP not agreed yet.'}
+                                        </Typography>
+                                    )}
                                 </Box>
                             )}
                         </CardContent>

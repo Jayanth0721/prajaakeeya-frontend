@@ -154,9 +154,13 @@ const AspirantViewDetailsPage: React.FC = () => {
     const dist = rating?.distribution ?? {};
 
 
+    // Render SOP as a signed agreement card whenever the aspirant has agreed
+    // OR has a legacy uploaded sopUrl — both flows mean "this person committed
+    // to the SOP", so the digital-signature card is a better presentation than
+    // a raw PDF link.
+    const hasSopRecord = Boolean(aspirant.sopAgreed || aspirant.sopUrl);
+
     const docs = [
-        // SOP is rendered separately as an agreement card when aspirant.sopAgreed is true
-        ...(aspirant.sopAgreed ? [] : [{ label: 'SOP', url: aspirant.sopUrl, status: aspirant.sopStatus }]),
         { label: 'SOP (Kannada)', url: aspirant.sopKannadaUrl, status: aspirant.sopKannadaStatus },
         { label: 'Agreement', url: aspirant.agreementUrl, status: aspirant.agreementStatus },
         { label: 'Property Declaration', url: aspirant.propertyDeclarationUrl, status: aspirant.propertyDeclarationStatus },
@@ -591,12 +595,12 @@ const AspirantViewDetailsPage: React.FC = () => {
             )}
 
             {/* ── SOP AGREEMENT ─────────────────────────────────── */}
-            {aspirant.sopAgreed && (
+            {hasSopRecord && (
                 <Card sx={{ mb: 2.5, borderRadius: 3, border: `1px solid ${border}`, background: cardBg, boxShadow: isDark ? '0 12px 40px rgba(0,0,0,0.35)' : '0 8px 24px rgba(17,24,39,0.07)' }}>
                     <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
                         <SectionHeader icon={<VerifiedIcon fontSize="small" />} title={isKannada ? 'SOP ಒಪ್ಪಂದ' : 'SOP Agreement'} />
                         <SopAgreementCard
-                            sopAgreed={Boolean(aspirant.sopAgreed)}
+                            sopAgreed
                             name={aspirant.name}
                             sopAgreedAt={aspirant.sopAgreedAt}
                             isKannada={isKannada}

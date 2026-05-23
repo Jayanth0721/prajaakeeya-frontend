@@ -186,6 +186,7 @@ const WardCandidateListPage = () => {
 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [demoSopOpen, setDemoSopOpen] = useState(false);
+  const [sopCandidate, setSopCandidate] = useState<Candidate | null>(null);
   const [voteCounts, setVoteCounts] = useState<Record<number, number>>({});
   const [votePercentages, setVotePercentages] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(false);
@@ -2975,7 +2976,7 @@ const WardCandidateListPage = () => {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (isDemoCandidate(candidate)) setDemoSopOpen(true);
-                                    else navigate(`/aspirants/${candidate.id}/signed-sop`);
+                                    else setSopCandidate(candidate);
                                   }}
                                   sx={{
                                     height: 34,
@@ -3792,6 +3793,18 @@ const WardCandidateListPage = () => {
         sopAgreedAt={new Date().toISOString()}
         open={demoSopOpen}
         onClose={() => setDemoSopOpen(false)}
+        isKannada={(i18n.language || '').startsWith('kn')}
+      />
+
+      {/* Real aspirant SOP popup — opens the signed-agreement card inline so
+          users stay on the candidate list instead of navigating to a viewer. */}
+      <SopAgreementCard
+        sopAgreed
+        hidePill
+        name={sopCandidate?.name ?? ''}
+        sopAgreedAt={(sopCandidate as any)?.sopAgreedAt}
+        open={Boolean(sopCandidate)}
+        onClose={() => setSopCandidate(null)}
         isKannada={(i18n.language || '').startsWith('kn')}
       />
     </>

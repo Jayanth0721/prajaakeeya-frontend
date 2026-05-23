@@ -72,6 +72,9 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
         );
     }
 
+    // SOP is intentionally excluded — it's surfaced via SopAgreementCard below
+    // so legacy aspirants with only sopUrl get the same signed-agreement UI as
+    // those with sopAgreed=true.
     const fieldMap = [
         { url: 'agreementUrl', status: 'agreementStatus', label: 'Agreement' },
         { url: 'propertyDeclarationUrl', status: 'propertyDeclarationStatus', label: 'Property Declaration' },
@@ -81,7 +84,6 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
         { url: 'epicCardBackUrl', status: 'epicCardBackStatus', label: 'EPIC Card (Back)' },
         { url: 'addressProofUrl', status: 'addressProofStatus', label: 'Address Proof' },
         { url: 'recentPhotoUrl', status: 'recentPhotoStatus', label: 'Recent Photo' },
-        { url: 'sopUrl', status: 'sopStatus', label: 'SOP Document' }
     ];
 
     const docs: any[] = fieldMap.map(f => {
@@ -333,9 +335,9 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
                                 </Typography>
                             </Stack>
 
-                            {aspirantProfile.sopAgreed ? (
+                            {(aspirantProfile.sopAgreed || (aspirantProfile as any).sopUrl) ? (
                                 <SopAgreementCard
-                                    sopAgreed={Boolean(aspirantProfile.sopAgreed)}
+                                    sopAgreed
                                     name={aspirantProfile.name}
                                     sopAgreedAt={aspirantProfile.sopAgreedAt}
                                 />
