@@ -1571,9 +1571,10 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     setDeleteDialogOpen(false);
                                 }
                             }}
-                            sx={{ textTransform: 'none', fontWeight: 700 }}
+                            size="small"
+                            sx={{ textTransform: 'none', fontWeight: 700, py: 0.6 }}
                         >
-                            {deleteLoading ? (t('common.deleting') || 'Deleting...') : (t('common.deletePermanently') || 'Delete Permanently')}
+                            {deleteLoading ? (t('common.deleting') || 'Deleting...') : (t('common.delete') || 'Delete')}
                         </Button>
                     )}
                 </DialogActions>

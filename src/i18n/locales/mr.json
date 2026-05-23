@@ -41,6 +41,7 @@
     "deleteAccountTitle": "खाते हटवा",
     "deleteAccountConfirm": "तुम्हाला तुमचे खाते कायमचे हटवायचे आहे का? ही क्रिया पूर्ववत करता येणार नाही. तुमचा सर्व डेटा काढला जाईल.",
     "deletePermanently": "कायमचे हटवा",
+    "delete": "हटवा",
     "deleting": "हटवत आहे...",
     "withdrawAspirantTitle": "आकांक्षी नोंदणी मागे घ्या",
     "withdrawAspirantMessage": "तुमचे खाते हटवण्यापूर्वी कृपया तुमची आकांक्षी नोंदणी मागे घ्या.",
