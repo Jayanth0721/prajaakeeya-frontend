@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Button, Typography, Stack } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, AccountTree as AccountTreeIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -13,14 +13,25 @@ const FF = "'Baloo 2', sans-serif";
 
 const SopPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const { t } = useTranslation();
     const { user } = useAuthStore();
     const [votingAllowed, setVotingAllowed] = React.useState(false);
     const telegramLink = (user as any)?.telegramGroupLink || 'https://t.me/prajakeeya';
-    // not used for navigation here, but SopFlowChart requires them
-    const [sopAgreed, setSopAgreed] = React.useState(false);
+    const fromAspirantRegistration =
+        (location.state as { from?: string } | null)?.from === 'aspirant-registration';
+    const SOP_AGREED_KEY = `aspirant_sop_agreed_${user?.id ?? 'guest'}`;
+    const [sopAgreed, setSopAgreed] = React.useState(() => {
+        if (!fromAspirantRegistration) return false;
+        try { return localStorage.getItem(SOP_AGREED_KEY) === 'true'; } catch { return false; }
+    });
+
+    const handleAgreeAndReturn = () => {
+        try { localStorage.setItem(SOP_AGREED_KEY, 'true'); } catch { /* ignore */ }
+        navigate('/user/aspirants/register', { replace: true });
+    };
 
     React.useEffect(() => {
         window.scrollTo(0, 0);
@@ -105,13 +116,45 @@ const SopPage = () => {
                 <SopFlowChart
                     sopAgreed={sopAgreed}
                     setSopAgreed={setSopAgreed}
-                    onAgree={() => undefined}
+                    onAgree={handleAgreeAndReturn}
+                    onCancel={fromAspirantRegistration
+                        ? () => navigate('/user/aspirants/register', { replace: true })
+                        : undefined}
                     hideAgreement
                 />
             </motion.div>
 
+            {/* ── Back to Registration (only when arriving from aspirant registration) ── */}
+            {fromAspirantRegistration && (
+                <Stack spacing={1.5} sx={{ mt: 2 }}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => navigate('/user/aspirants/register', { replace: true })}
+                        sx={{
+                            borderRadius: 3,
+                            textTransform: 'none',
+                            fontWeight: 700,
+                            fontFamily: FF,
+                            py: 1.5,
+                            fontSize: '0.95rem',
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, #C8180A 0%, #F5A800 100%)',
+                            boxShadow: '0 6px 24px rgba(200,24,10,0.4)',
+                            '&:hover': {
+                                background: 'linear-gradient(135deg, #df210f 0%, #ffbe1a 100%)',
+                                boxShadow: '0 8px 30px rgba(200,24,10,0.55)',
+                            },
+                        }}
+                    >
+                        {t('forms.aspirant.navigation.back', { defaultValue: 'Back to Declaration' })}
+                    </Button>
+                </Stack>
+            )}
+
             {/* ── Action Buttons ── */}
-            <Stack spacing={1.5} sx={{ mt: 2 }}>
+            <Stack spacing={1.5} sx={{ mt: 2, display: fromAspirantRegistration ? 'none' : 'flex' }}>
                 <Button
                     fullWidth
                     variant="contained"

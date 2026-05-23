@@ -33,6 +33,21 @@ export const fetchConstituenciesByScope = (scope: string) =>
     `/elections/constituencies/by-scope?scope=${encodeURIComponent(scope)}`
   );
 
+export interface ConstituencyStats {
+  electionId: number;
+  constituencyId: number;
+  electionType: string;
+  electionName: string;
+  constituencyName: string;
+  totalVoters: number;
+  totalAspirants: number;
+}
+
+export const fetchConstituencyStats = (electionId: number, constituencyId: number) =>
+  apiClient.get<ConstituencyStats>('/stats/constituency', {
+    params: { electionId, constituencyId },
+  });
+
 // ── Grama Panchayat APIs ──────────────────────────────────────────────
 export const fetchGPStates = () =>
   apiClient.get<string[]>('/grama-panchayat/states');

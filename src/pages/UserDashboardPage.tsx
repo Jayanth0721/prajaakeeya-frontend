@@ -34,6 +34,8 @@ import sopImg from '../assets/images/sop.png';
 import meetImg from '../assets/images/meet.png';
 import leaderImg from '../assets/images/leader.png';
 import managerImg from '../assets/images/manager.png';
+import advisorImg from '../assets/images/office.png';
+import staffImg from '../assets/images/staff.png';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -42,6 +44,7 @@ import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
 import { fetchAllWards } from '../services/wardService';
+import { getVoters } from '../services/voterService';
 
 const UserDashboardPage = () => {
   const { user, token } = useAuthStore();
@@ -90,6 +93,21 @@ const UserDashboardPage = () => {
       .catch(() => { /* ignore — ward name stays empty */ });
   }, [user?.wardNumber, user?.wardName]);
 
+  // Total registered voters count, shown in the hero strip. Fetches a minimal
+  // page (limit=1) since we only need the `totalUsers` field from the response.
+  const [totalVoters, setTotalVoters] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    let cancelled = false;
+    getVoters(1, 1)
+      .then((resp) => {
+        if (cancelled) return;
+        const total = (resp?.data as any)?.totalUsers ?? (resp?.data as any)?.total ?? null;
+        if (typeof total === 'number') setTotalVoters(total);
+      })
+      .catch(() => { /* ignore — count stays hidden */ });
+    return () => { cancelled = true; };
+  }, []);
+
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.down('sm'));
   const [photoFrameOpen, setPhotoFrameOpen] = React.useState(false);
@@ -114,14 +132,15 @@ const UserDashboardPage = () => {
   };
 
   const actions = [
-    {
-      title: t('userDashboard.actions.voters') || 'View Voters',
-      description: t('userDashboard.actions.votersDesc') || 'See all registered voters',
-      icon: <img src={king1Img} alt="voters" width={30} height={30} />,
-      path: `/user/voters`,
-      variant: 'outlined' as const,
-      color: 'secondary' as const
-    },
+    // Registered Citizens tile — temporarily disabled
+    // {
+    //   title: t('userDashboard.actions.voters') || 'View Voters',
+    //   description: t('userDashboard.actions.votersDesc') || 'See all registered voters',
+    //   icon: <img src={king1Img} alt="voters" width={30} height={30} />,
+    //   path: `/user/voters`,
+    //   variant: 'outlined' as const,
+    //   color: 'secondary' as const
+    // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
       description: t('userDashboard.actions.registeredAspirantsDesc') || 'See all registered aspirants',
@@ -152,7 +171,7 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
       description: t('userDashboard.actions.myStateAssemblyAspirantsDesc') || 'Aspirants in your Assembly constituency',
-      icon: <img src={managerImg} alt="state assembly aspirants" width={30} height={30} />,
+      icon: <img src={advisorImg} alt="state assembly aspirants" width={30} height={30} />,
       path: `/user/aspirantslist?type=state_assembly`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -164,7 +183,7 @@ const UserDashboardPage = () => {
     ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
       title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
       description: t('userDashboard.actions.myMunicipalCorporationAspirantsDesc') || 'Aspirants in your corporation ward',
-      icon: <img src={employeesImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      icon: <img src={staffImg} alt="municipal corporation aspirants" width={30} height={30} />,
       path: `/user/aspirantslist?type=municipal_corporation`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -249,7 +268,7 @@ const UserDashboardPage = () => {
     },
     {
       title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
-      icon: <img src={managerImg} alt="state assembly aspirants" width={30} height={30} />,
+      icon: <img src={advisorImg} alt="state assembly aspirants" width={30} height={30} />,
       path: `/user/aspirantslist?type=state_assembly`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -258,7 +277,7 @@ const UserDashboardPage = () => {
     // saved one — a person belongs to exactly one local body, never both.
     ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
       title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
-      icon: <img src={employeesImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      icon: <img src={staffImg} alt="municipal corporation aspirants" width={30} height={30} />,
       path: `/user/aspirantslist?type=municipal_corporation`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -270,13 +289,14 @@ const UserDashboardPage = () => {
       variant: 'outlined' as const,
       color: 'secondary' as const,
     }] : []),
-    {
-      title: t('userDashboard.actions.voters') || 'View Voters',
-      icon: <img src={king1Img} alt="voters" width={30} height={30} />,
-      path: `/user/voters`,
-      variant: 'outlined' as const,
-      color: 'secondary' as const,
-    },
+    // Registered Citizens tile — temporarily disabled
+    // {
+    //   title: t('userDashboard.actions.voters') || 'View Voters',
+    //   icon: <img src={king1Img} alt="voters" width={30} height={30} />,
+    //   path: `/user/voters`,
+    //   variant: 'outlined' as const,
+    //   color: 'secondary' as const,
+    // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
       icon: <img src={employeesImg} alt="registered aspirants" width={30} height={30} />,
@@ -718,12 +738,12 @@ const UserDashboardPage = () => {
             {[BRAND.red, BRAND.blue, BRAND.brown].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
           </Box>
           <Box sx={{
-            px: { xs: 2.2, sm: 3.2, md: 4 },
-            py: { xs: 2.4, md: 3.2 },
+            px: 2.2,
+            py: 1,
             display: 'flex',
-            alignItems: { xs: 'flex-start', md: 'center' },
+            alignItems: 'flex-start',
             justifyContent: 'space-between',
-            flexDirection: { xs: 'column', md: 'row' },
+            flexDirection: 'column',
             gap: 2,
             position: 'relative',
             zIndex: 1,
@@ -742,6 +762,28 @@ const UserDashboardPage = () => {
                 </Typography>
               )}
             </Box>
+            {totalVoters != null && (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 1.2,
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 2,
+                  background: isDark ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.7)',
+                  border: `1px solid ${BORDER}`,
+                  alignSelf: 'flex-start',
+                }}
+              >
+                <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textHigh, lineHeight: 1 }}>
+                  {t('userDashboard.totalVoters', { defaultValue: 'No. of Registered Citizens' })}
+                </Typography>
+                <Typography sx={{ fontFamily: FF, fontSize: { xs: '1.2rem', md: '1.4rem' }, fontWeight: 800, color: textPrimary, lineHeight: 1 }}>
+                  {totalVoters.toLocaleString()}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       </motion.div>

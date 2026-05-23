@@ -63,6 +63,7 @@ import {
   fetchConstituencies,
   fetchMunicipalities,
   fetchConstituenciesByScope,
+  fetchConstituencyStats,
   fetchGPStates,
   fetchGPDistricts,
   fetchGPTaluks,
@@ -71,6 +72,7 @@ import {
   type Election,
   type Constituency,
   type GPVillage,
+  type ConstituencyStats,
 } from '../services/electionService';
 import { fetchVotingWindow, submitVote, fetchMyVote } from '../services/voteService';
 import { getAspirantMessages, postUserChatMessage, AspirantChatMessageDto } from '../services/aspirantChatService';
@@ -80,6 +82,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import capitolInactiveImg from '../assets/images/capitol.png';
 import capitolActiveImg from '../assets/images/capitol1.png';
 import { BRAND } from '../theme';
+import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 
 interface Candidate {
   id: number;
@@ -182,6 +185,7 @@ const WardCandidateListPage = () => {
   const GOLD = isDark ? BRAND.yellow : BRAND.yellowLight;
 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [demoSopOpen, setDemoSopOpen] = useState(false);
   const [voteCounts, setVoteCounts] = useState<Record<number, number>>({});
   const [votePercentages, setVotePercentages] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(false);
@@ -502,6 +506,7 @@ const WardCandidateListPage = () => {
   }, [selectedElectionId, selectedConstituency, selectedMunicipality, selectedGpState, selectedGpDistrict, selectedGpTaluk, selectedGpGram, selectedGpVillage]);
   const [votingWindow, setVotingWindow] = useState<{ startTime: number; endTime: number; description?: string; isActive?: boolean; electionName?: string; electionId?: number } | null>(null);
   const [eligibilityDialogOpen, setEligibilityDialogOpen] = useState(false);
+  const [constituencyStats, setConstituencyStats] = useState<ConstituencyStats | null>(null);
 
   const isVotingActiveForThisElection =
     votingWindowActive &&
@@ -1191,6 +1196,23 @@ const WardCandidateListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConstituency, loadAspirants]);
 
+  // Fetch voter + aspirant counts for the active election/constituency
+  useEffect(() => {
+    const eId = selectedElectionId ? Number(selectedElectionId) : null;
+    const cId = isGramPanchayat
+      ? (selectedGpVillage ? Number(selectedGpVillage.id) : null)
+      : (selectedConstituency ? selectedConstituency.id : null);
+    if (!eId || !cId) {
+      setConstituencyStats(null);
+      return;
+    }
+    let cancelled = false;
+    fetchConstituencyStats(eId, cId)
+      .then(({ data }) => { if (!cancelled) setConstituencyStats(data); })
+      .catch(() => { if (!cancelled) setConstituencyStats(null); });
+    return () => { cancelled = true; };
+  }, [selectedElectionId, selectedConstituency, selectedGpVillage, isGramPanchayat]);
+
   // Fetch aspirants for Gram Panchayat only when GP village changes
   useEffect(() => {
     if (selectedGpVillage && selectedElectionId && isGramPanchayat) {
@@ -1300,9 +1322,9 @@ const WardCandidateListPage = () => {
                   textTransform: 'none',
                   fontWeight: 700,
                   whiteSpace: 'nowrap',
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                  px: { xs: 1.5, sm: 2 },
-                  py: { xs: 1, sm: 1.25 },
+                  fontSize: { xs: '0.65rem', sm: '0.78rem' },
+                  px: { xs: 1.2, sm: 1.6 },
+                  py: { xs: 0.8, sm: 1 },
                   background: `linear-gradient(135deg, #ef4444 0%, #dc2626 100%)`,
                   boxShadow: '0 4px 18px rgba(239,68,68,0.4)',
                   '&:hover': {
@@ -1870,51 +1892,112 @@ const WardCandidateListPage = () => {
                 ? 'linear-gradient(135deg, rgba(245,168,0,0.06) 0%, rgba(224,32,16,0.04) 100%)'
                 : 'linear-gradient(135deg, rgba(245,168,0,0.08) 0%, rgba(224,32,16,0.04) 100%)',
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: { xs: 'flex-start', sm: 'center' },
-              gap: { xs: 0.75, sm: 1.5 },
+              flexDirection: 'column',
+              gap: { xs: 0.75, sm: 1 },
             }}
           >
             <Box
-              component="span"
               sx={{
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: BRAND.yellow,
-                px: 0.9,
-                py: 0.3,
-                borderRadius: 1,
-                border: `1px solid ${BRAND.yellow}`,
-                lineHeight: 1.2,
-                alignSelf: 'flex-start',
-                maxWidth: '100%',
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 0.75, sm: 1.5 },
               }}
             >
-              {selectedElection.name}
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: BRAND.yellow,
+                  px: 0.9,
+                  py: 0.3,
+                  borderRadius: 1,
+                  border: `1px solid ${BRAND.yellow}`,
+                  lineHeight: 1.2,
+                  alignSelf: 'flex-start',
+                  maxWidth: '100%',
+                }}
+              >
+                {selectedElection.name}
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: { xs: '0.95rem', sm: '0.95rem' },
+                  fontWeight: 700,
+                  color: isDark ? '#fff' : 'rgba(17,24,39,0.92)',
+                  lineHeight: 1.3,
+                  flex: 1,
+                  minWidth: 0,
+                  wordBreak: 'break-word',
+                }}
+              >
+                {isGramPanchayat
+                  ? selectedGpVillage?.villageName
+                  : isMunicipalElection
+                    ? selectedConstituency
+                      ? `${selectedMunicipality?.name ?? ''}${selectedMunicipality?.name && selectedConstituency ? ' · ' : ''}${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
+                      : selectedMunicipality?.name
+                    : selectedConstituency
+                      ? `${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
+                      : ''}
+              </Typography>
             </Box>
-            <Typography
-              sx={{
-                fontSize: { xs: '0.95rem', sm: '0.95rem' },
-                fontWeight: 700,
-                color: isDark ? '#fff' : 'rgba(17,24,39,0.92)',
-                lineHeight: 1.3,
-                flex: 1,
-                minWidth: 0,
-                wordBreak: 'break-word',
-              }}
-            >
-              {isGramPanchayat
-                ? selectedGpVillage?.villageName
-                : isMunicipalElection
-                  ? selectedConstituency
-                    ? `${selectedMunicipality?.name ?? ''}${selectedMunicipality?.name && selectedConstituency ? ' · ' : ''}${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
-                    : selectedMunicipality?.name
-                  : selectedConstituency
-                    ? `${selectedConstituency.number ? `${selectedConstituency.number} - ` : ''}${selectedConstituency.name}`
-                    : ''}
-            </Typography>
+            {constituencyStats && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: { xs: 0.75, sm: 1 },
+                  pt: { xs: 0.5, sm: 0.25 },
+                  borderTop: `1px dashed ${isDark ? 'rgba(245,168,0,0.18)' : 'rgba(245,168,0,0.35)'}`,
+                  mt: { xs: 0.25, sm: 0.25 },
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 999,
+                    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)',
+                    border: `1px solid ${isDark ? 'rgba(245,168,0,0.25)' : 'rgba(245,168,0,0.3)'}`,
+                  }}
+                >
+                  <GroupsIcon sx={{ fontSize: '1rem', color: BRAND.yellow }} />
+                  <Typography sx={{ fontSize: '0.78rem', color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(17,24,39,0.65)', fontWeight: 600 }}>
+                    {t('userDashboard.cards.voters', { defaultValue: 'Registered Citizens' })}:
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.88rem', color: isDark ? '#fff' : 'rgba(17,24,39,0.92)', fontWeight: 800 }}>
+                    {constituencyStats.totalVoters.toLocaleString()}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.75,
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 999,
+                    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)',
+                    border: `1px solid ${isDark ? 'rgba(224,32,16,0.3)' : 'rgba(224,32,16,0.3)'}`,
+                  }}
+                >
+                  <HowToVoteIcon sx={{ fontSize: '1rem', color: '#e02010' }} />
+                  <Typography sx={{ fontSize: '0.78rem', color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(17,24,39,0.65)', fontWeight: 600 }}>
+                    {t('userDashboard.cards.aspirants', { defaultValue: 'Aspirants' })}:
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.88rem', color: isDark ? '#fff' : 'rgba(17,24,39,0.92)', fontWeight: 800 }}>
+                    {constituencyStats.totalAspirants.toLocaleString()}
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
         )}
 
@@ -2804,7 +2887,18 @@ const WardCandidateListPage = () => {
                                 }}
                                 onClick={() => {
                                   void trackInteraction(candidate.id, '/users/track/phone-call');
-                                  window.open(`https://wa.me/${candidate.whatsappNumber!.replace(/[^0-9]/g, '')}`, '_blank', 'noopener');
+                                  const digits = candidate.whatsappNumber!.replace(/[^0-9]/g, '');
+                                  // wa.me requires full international format. PWA path (window.location.href)
+                                  // strictly rejects numbers without a country code; browser path is forgiving.
+                                  const num = digits.length === 10 ? `91${digits}` : digits;
+                                  const url = `https://wa.me/${num}`;
+                                  // iOS standalone PWAs silently no-op window.open('_blank'),
+                                  // breaking the wa.me universal-link handoff to WhatsApp.
+                                  const isStandalone =
+                                    window.matchMedia?.('(display-mode: standalone)').matches ||
+                                    (navigator as any).standalone === true;
+                                  if (isStandalone) window.location.href = url;
+                                  else window.open(url, '_blank', 'noopener');
                                 }}
                               >
                                 WhatsApp
@@ -2872,13 +2966,17 @@ const WardCandidateListPage = () => {
                         return (
                           <Box sx={{ width: '100%' }}>
                             {/* Signed SOP button */}
-                            {(candidate.sopUrl || candidate.sopKannadaUrl) && (
+                            {(isDemoCandidate(candidate) || candidate.sopUrl || candidate.sopKannadaUrl) && (
                               <Box sx={{ mb: 1 }}>
                                 <Button
                                   variant="outlined"
                                   size="small"
                                   fullWidth
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/aspirants/${candidate.id}/signed-sop`); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (isDemoCandidate(candidate)) setDemoSopOpen(true);
+                                    else navigate(`/aspirants/${candidate.id}/signed-sop`);
+                                  }}
                                   sx={{
                                     height: 34,
                                     borderRadius: '8px',
@@ -3686,6 +3784,16 @@ const WardCandidateListPage = () => {
         </Fab>
       </Box>
 
+      {/* Demo aspirant SOP popup */}
+      <SopAgreementCard
+        sopAgreed
+        hidePill
+        name="Prajaakeeya Demo Aspirant"
+        sopAgreedAt={new Date().toISOString()}
+        open={demoSopOpen}
+        onClose={() => setDemoSopOpen(false)}
+        isKannada={(i18n.language || '').startsWith('kn')}
+      />
     </>
   );
 };

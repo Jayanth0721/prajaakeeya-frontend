@@ -44,7 +44,8 @@ import ReportIssuePage from "./pages/ReportIssuePage";
 import CivicIssueDetailPage from "./pages/CivicIssueDetailPage";
 import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
 import DocumentsUploadPage from "./pages/DocumentsUploadPage";
-import SopUploadPage from "./pages/SopUploadPage";
+// SOP upload step removed from aspirant registration flow
+// import SopUploadPage from "./pages/SopUploadPage";
 import SopPage from "./pages/SopPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import SignedSopPage from "./pages/SignedSopPage";
@@ -344,10 +345,11 @@ const App = () => {
               path="aspirants/documents"
               element={<DocumentsUploadPage />}
             />
-            <Route
+            {/* SOP upload step removed from aspirant registration flow */}
+            {/* <Route
               path="aspirants/sop"
               element={<SopUploadPage />}
-            />
+            /> */}
             <Route
               path="aspirants/verify-otp"
               element={<AspirantOtpVerificationPage />}

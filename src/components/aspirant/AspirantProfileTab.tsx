@@ -18,11 +18,13 @@ import {
 } from '@mui/material';
 import {
     FileDownload as FileDownloadIcon,
-    InsertDriveFile as InsertDriveFileIcon
+    InsertDriveFile as InsertDriveFileIcon,
+    Verified as VerifiedIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { BRAND } from '../../theme';
+import SopAgreementCard from './SopAgreementCard';
 
 interface AspirantProfileTabProps {
     aspirantProfile: any;
@@ -317,61 +319,33 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
                     </Card>
                 </Grid>
 
-                {/* ── Documents card ── */}
+                {/* ── SOP Agreement card ── */}
                 <Grid item xs={12} md={8}>
                     <Card sx={{ borderRadius: 3, bgcolor: cardBg, boxShadow: cardShadow, border: `1px solid ${border}`, overflow: 'hidden' }}>
                         <Box sx={{ display: 'flex', height: '3px' }}>
                             {[BRAND.red, BRAND.blue, BRAND.brown].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
                         </Box>
                         <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-                            <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 800, mb: 2, color: textPri }}>
-                                {t('userDashboard.aspirant.documentsTitle') || 'Documents Uploaded'}
-                            </Typography>
-
-                            <Stack spacing={2}>
-                                {docs.length > 0 ? (
-                                    docs.map((doc: any) => (
-                                        <Box key={doc.name} sx={{
-                                            p: { xs: 1.4, md: 1.8 }, borderRadius: 2.4, bgcolor: insetBg, border: `1px solid ${border}`,
-                                            transition: 'all .22s ease',
-                                            '&:hover': { borderColor: goldd, transform: 'translateY(-1px)', boxShadow: isDark ? '0 10px 24px rgba(0,0,0,0.28)' : '0 6px 16px rgba(17,24,39,0.1)' },
-                                        }}>
-                                            <Box
-                                            sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 2, cursor: 'pointer' }}
-                                            onClick={() => handleDownload(doc.url)}
-                                        >
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0, flex: 1 }}>
-                                                    <Box sx={{
-                                                        width: 50, height: 50, borderRadius: '50%',
-                                                        background: `linear-gradient(135deg,${BRAND.red} 0%,${BRAND.yellow} 100%)`,
-                                                        color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                                                    }}>
-                                                        <InsertDriveFileIcon />
-                                                    </Box>
-                                                    <Box sx={{ minWidth: 0, flex: 1 }}>
-                                                        <Typography variant="subtitle1" sx={{ fontWeight: 800, fontFamily: FF, color: textPri }}>{doc.name}</Typography>
-                                                        {doc.description && <Typography variant="body2" sx={{ color: textSec, fontFamily: FF }}>{doc.description}</Typography>}
-                                                    </Box>
-                                                </Box>
-
-                                                {doc.verified && (
-                                                    <Chip
-                                                        label={(doc.status || 'verified').charAt(0).toUpperCase() + (doc.status || 'verified').slice(1).toLowerCase()}
-                                                        size="small"
-                                                        sx={{ bgcolor: 'rgba(43,180,104,0.15)', color: isDark ? '#d8ffe9' : '#15803D', fontWeight: 700, border: '1px solid rgba(43,180,104,0.4)', fontFamily: FF }}
-                                                    />
-                                                )}
-                                            </Box>
-                                        </Box>
-                                    ))
-                                ) : (
-                                    <Box sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: insetBg, border: `1px dashed ${border}` }}>
-                                        <Typography variant="body2" sx={{ color: textSec, fontFamily: FF }}>
-                                            No documents uploaded yet. Complete your aspirant registration to upload required documents.
-                                        </Typography>
-                                    </Box>
-                                )}
+                            <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 2 }}>
+                                <VerifiedIcon sx={{ color: BRAND.yellow }} />
+                                <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 800, color: textPri }}>
+                                    {t('userDashboard.aspirant.sopAgreementTitle') || 'SOP Agreement'}
+                                </Typography>
                             </Stack>
+
+                            {aspirantProfile.sopAgreed ? (
+                                <SopAgreementCard
+                                    sopAgreed={Boolean(aspirantProfile.sopAgreed)}
+                                    name={aspirantProfile.name}
+                                    sopAgreedAt={aspirantProfile.sopAgreedAt}
+                                />
+                            ) : (
+                                <Box sx={{ p: 3, textAlign: 'center', borderRadius: 2, bgcolor: insetBg, border: `1px dashed ${border}` }}>
+                                    <Typography variant="body2" sx={{ color: textSec, fontFamily: FF }}>
+                                        {t('userDashboard.aspirant.sopNotAgreed') || 'SOP not agreed yet.'}
+                                    </Typography>
+                                </Box>
+                            )}
                         </CardContent>
                     </Card>
                 </Grid>

@@ -362,6 +362,11 @@ const UserConstituencyOnboardingPage = () => {
     try {
       const { data } = await updateUserConstituencies(payload);
       setAuth(token, data);
+      // The POST response only carries the constituency IDs, not the nested
+      // `municipalCorporationConstituency` / `gramPanchayatConstituency` objects
+      // that the dashboard checks to render local-body tiles. Refresh from
+      // /auth/me so the user object matches the canonical shape before nav.
+      await fetchProfileFn().catch(() => {});
       navigate("/user/dashboard", { replace: true });
     } catch (err: any) {
       const msg =
@@ -494,7 +499,6 @@ const UserConstituencyOnboardingPage = () => {
     choice: NonNullable<LocalBody>,
     title: string,
     badge: string,
-    desc: string,
     IconComp: React.ComponentType<{ sx?: any }>,
     iconBg: string,
     iconBorder: string,
@@ -538,9 +542,9 @@ const UserConstituencyOnboardingPage = () => {
       >
         <Box
           sx={{
-            width: 56,
-            height: 56,
-            borderRadius: 2,
+            width: 40,
+            height: 40,
+            borderRadius: 1.5,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -549,10 +553,10 @@ const UserConstituencyOnboardingPage = () => {
             flexShrink: 0,
           }}
         >
-          <IconComp sx={{ fontSize: 30, color: iconColor }} />
+          <IconComp sx={{ fontSize: 20, color: iconColor }} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+          <Stack direction="row" alignItems="center" spacing={1}>
             <Typography
               sx={{
                 fontSize: { xs: "1rem", sm: "1.1rem" },
@@ -578,14 +582,6 @@ const UserConstituencyOnboardingPage = () => {
               {badge}
             </Box>
           </Stack>
-          <Typography
-            sx={{
-              fontSize: "0.85rem",
-              color: isDark ? "rgba(255,255,255,0.6)" : "rgba(17,24,39,0.6)",
-            }}
-          >
-            {desc}
-          </Typography>
         </Box>
         <Box
           className="lb-arrow"
@@ -675,7 +671,6 @@ const UserConstituencyOnboardingPage = () => {
               "municipality",
               t("pages.constituencyOnboarding.localBodyMunicipality"),
               t("pages.constituencyOnboarding.localBodyUrban"),
-              t("pages.constituencyOnboarding.localBodyMunicipalityDesc"),
               LocationCityIcon,
               "linear-gradient(135deg, rgba(96,165,250,0.18) 0%, rgba(59,130,246,0.10) 100%)",
               "rgba(96,165,250,0.45)",
@@ -687,7 +682,6 @@ const UserConstituencyOnboardingPage = () => {
               "gram_panchayat",
               t("pages.constituencyOnboarding.localBodyGramPanchayat"),
               t("pages.constituencyOnboarding.localBodyRural"),
-              t("pages.constituencyOnboarding.localBodyGramPanchayatDesc"),
               SpaIcon,
               "linear-gradient(135deg, rgba(74,222,128,0.18) 0%, rgba(34,197,94,0.10) 100%)",
               "rgba(74,222,128,0.45)",
