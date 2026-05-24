@@ -525,7 +525,20 @@ const AspirantMeetingLinksTab: React.FC<AspirantMeetingLinksTabProps> = ({
                                                     borderLeftColor: isCompleted ? undefined : t.palette.primary.main,
                                                     '&:hover': isCompleted ? { transform: 'none' } : { transform: 'translateY(-4px)', boxShadow: isDark ? '0 18px 40px rgba(0,0,0,0.5)' : '0 18px 40px rgba(255,106,0,0.08)' }
                                                 })}
-                                                onClick={() => meeting.meetingLink && window.open(normalizeMeetingUrl(meeting.meetingLink), '_blank')}
+                                                onClick={() => {
+                                                    if (!meeting.meetingLink) return;
+                                                    const link = normalizeMeetingUrl(meeting.meetingLink);
+                                                    // See note in WardCandidateListPage — iOS WebView / standalone
+                                                    // PWA silently no-ops window.open('_blank'), causing blank
+                                                    // Instagram links. Use same-window nav so iOS routes the
+                                                    // universal link to the native app.
+                                                    const isStandalone =
+                                                        window.matchMedia?.('(display-mode: standalone)').matches ||
+                                                        (navigator as any).standalone === true ||
+                                                        !!(window as any).ReactNativeWebView;
+                                                    if (isStandalone) window.location.href = link;
+                                                    else window.open(link, '_blank', 'noopener');
+                                                }}
                                             >
                                                 {/* Mobile: delete icon at top-right */}
                                                 {isMobile && (
