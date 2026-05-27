@@ -300,8 +300,13 @@ const CivicIssuesPage: React.FC = () => {
       .then((resp) => {
         const data = resp.data?.constituencies ?? [];
         setConstituencies(data);
-        // If filters from WardCandidateListPage, pre-select constituency
-        if (filterConstituencyId) {
+        // If filters from WardCandidateListPage, pre-select constituency.
+        // Only apply the deep-link filter to the election it was meant for —
+        // constituency IDs are NOT unique across election types, so matching a
+        // Lok Sabha `filterConstituencyId` against the State Assembly list (or
+        // vice-versa) would resolve to the wrong constituency. The per-tab
+        // profile effect supplies the correct value for the other tabs.
+        if (filterConstituencyId && filterElectionId === selected.id) {
           const matching = data.find((c) => c.id === filterConstituencyId);
           if (matching) {
             setSelectedConstituency(matching);
@@ -310,7 +315,7 @@ const CivicIssuesPage: React.FC = () => {
       })
       .catch((err) => console.error('Failed to fetch constituencies:', err))
       .finally(() => setLoadingConstituencies(false));
-  }, [selectedElectionType, filterConstituencyId, elections]);
+  }, [selectedElectionType, filterConstituencyId, filterElectionId, elections]);
 
   // Fetch municipalities when election type is municipal_corporation
   useEffect(() => {
