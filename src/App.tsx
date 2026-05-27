@@ -3,95 +3,102 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Box } from "@mui/material";
 
-import ComingSoonPage from "./pages/ComingSoonPage";
-import ChildSafetyPage from "./pages/ChildSafetyPage";
-
-// ── Set to false to disable the Coming Soon banner and restore normal routes ──
-const COMING_SOON = false;
-import AdminLoginPage from "./pages/AdminLoginPage";
-import AdminDashboardPage from "./pages/AdminDashboardPage";
-import CreateWardPage from "./pages/CreateWardPage";
-import UploadBoothPdfsPage from "./pages/UploadBoothPdfsPage";
-import VoterCountPage from "./pages/VoterCountPage";
-import ReportsListPage from "./pages/admin/ReportsListPage";
-import ReportDetailsPage from "./pages/admin/ReportDetailsPage";
-import AdminUsersListPage from "./pages/admin/AdminUsersListPage";
-import AdminUserDetailsPage from "./pages/admin/AdminUserDetailsPage";
-import AdminCreateUserPage from "./pages/admin/AdminCreateUserPage";
-import AdminEditUserPage from "./pages/admin/AdminEditUserPage";
-import AdminMeetingsPage from "./pages/admin/AdminMeetingsPage";
-import AdminCreateMeetingPage from "./pages/admin/AdminCreateMeetingPage";
-import AdminEditMeetingPage from "./pages/admin/AdminEditMeetingPage";
-import AdminVotingWindowPage from "./pages/admin/AdminVotingWindowPage";
-import AdminTelegramLinksPage from "./pages/admin/AdminTelegramLinksPage";
-import AdminElectionsPage from "./pages/admin/AdminElectionsPage";
-import AdminParliamentaryPage from "./pages/admin/AdminParliamentaryPage";
-import AdminAssemblyPage from "./pages/admin/AdminAssemblyPage";
-import AdminMunicipalityPage from "./pages/admin/AdminMunicipalityPage";
-import AdminGramaPanchayatPage from "./pages/admin/AdminGramaPanchayatPage";
-import AdminUploadSopPage from "./pages/admin/AdminUploadSopPage";
-import AdminAspirantListPage from "./pages/admin/AdminAspirantListPage";
-import UserLoginPage from "./pages/UserLoginPage";
-import UserRegisterPage from "./pages/UserRegisterPage";
-import AuthCallbackPage from "./pages/AuthCallbackPage";
-
-import UserPledgePage from "./pages/UserPledgePage";
-import ProfileCompletionPage from "./pages/ProfileCompletionPage";
-import UserConstituencyOnboardingPage from "./pages/UserConstituencyOnboardingPage";
-import UserDashboardPage from "./pages/UserDashboardPage";
-import CivicIssuesPage from "./pages/CivicIssuesPage";
-import ReportIssuePage from "./pages/ReportIssuePage";
-import CivicIssueDetailPage from "./pages/CivicIssueDetailPage";
-import AspirantRegistrationPage from "./pages/AspirantRegistrationPage";
-import DocumentsUploadPage from "./pages/DocumentsUploadPage";
-// SOP upload step removed from aspirant registration flow
-// import SopUploadPage from "./pages/SopUploadPage";
-import SopPage from "./pages/SopPage";
-import NotificationsPage from "./pages/NotificationsPage";
-import SignedSopPage from "./pages/SignedSopPage";
-import AspirantApprovalPage from "./pages/AspirantApprovalPage";
-import WardCandidateListPage from "./pages/WardCandidateListPage";
-import WardVotersPage from "./pages/WardVotersPage";
-import RegisteredAspirantsPage from "./pages/RegisteredAspirantsPage";
-import AspirantViewDetailsPage from "./pages/AspirantViewDetailsPage";
-import DemoAspirantViewPage from "./pages/DemoAspirantViewPage";
-import CandidateDetailsPage from "./pages/CandidateDetailsPage";
-import AspirantOtpVerificationPage from "./pages/AspirantOtpVerificationPage";
-import VotingPage from "./pages/VotingPage";
-import VotingResultPage from "./pages/VotingResultPage";
-import WardDiscussionPage from "./pages/WardDiscussionPage";
-import ErrorPage from "./pages/ErrorPage";
-import LoadingPage from "./pages/LoadingPage";
-import ContactUsPage from "./pages/ContactUsPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
-import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage";
-import HomePage from "./pages/HomePage";
-import OathPage from "./pages/OathPage";
+// ── Static imports ──
+// Layouts, store and always-on components are rendered outside <Suspense>,
+// so they stay in the entry chunk.
 import AdminLayout from "./layouts/AdminLayout";
 import UserLayout from "./layouts/UserLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
+import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
+// Coming Soon branch renders these BEFORE the <Suspense> boundary, so keep
+// them static (the legal pages are tiny and also reused in normal routes).
+import ComingSoonPage from "./pages/ComingSoonPage";
+import ChildSafetyPage from "./pages/ChildSafetyPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
+import CommunityGuidelinesPage from "./pages/CommunityGuidelinesPage";
+
+// ── Set to false to disable the Coming Soon banner and restore normal routes ──
+const COMING_SOON = false;
+
+// ── Lazy-loaded route pages (each becomes its own on-demand chunk) ──
+const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
+const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
+const CreateWardPage = lazy(() => import("./pages/CreateWardPage"));
+const UploadBoothPdfsPage = lazy(() => import("./pages/UploadBoothPdfsPage"));
+const VoterCountPage = lazy(() => import("./pages/VoterCountPage"));
+const ReportsListPage = lazy(() => import("./pages/admin/ReportsListPage"));
+const ReportDetailsPage = lazy(() => import("./pages/admin/ReportDetailsPage"));
+const AdminUsersListPage = lazy(() => import("./pages/admin/AdminUsersListPage"));
+const AdminUserDetailsPage = lazy(() => import("./pages/admin/AdminUserDetailsPage"));
+const AdminCreateUserPage = lazy(() => import("./pages/admin/AdminCreateUserPage"));
+const AdminEditUserPage = lazy(() => import("./pages/admin/AdminEditUserPage"));
+const AdminMeetingsPage = lazy(() => import("./pages/admin/AdminMeetingsPage"));
+const AdminCreateMeetingPage = lazy(() => import("./pages/admin/AdminCreateMeetingPage"));
+const AdminEditMeetingPage = lazy(() => import("./pages/admin/AdminEditMeetingPage"));
+const AdminVotingWindowPage = lazy(() => import("./pages/admin/AdminVotingWindowPage"));
+const AdminTelegramLinksPage = lazy(() => import("./pages/admin/AdminTelegramLinksPage"));
+const AdminElectionsPage = lazy(() => import("./pages/admin/AdminElectionsPage"));
+const AdminParliamentaryPage = lazy(() => import("./pages/admin/AdminParliamentaryPage"));
+const AdminAssemblyPage = lazy(() => import("./pages/admin/AdminAssemblyPage"));
+const AdminMunicipalityPage = lazy(() => import("./pages/admin/AdminMunicipalityPage"));
+const AdminGramaPanchayatPage = lazy(() => import("./pages/admin/AdminGramaPanchayatPage"));
+const AdminUploadSopPage = lazy(() => import("./pages/admin/AdminUploadSopPage"));
+const AdminAspirantListPage = lazy(() => import("./pages/admin/AdminAspirantListPage"));
+const UserLoginPage = lazy(() => import("./pages/UserLoginPage"));
+const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
+const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
+const UserPledgePage = lazy(() => import("./pages/UserPledgePage"));
+const ProfileCompletionPage = lazy(() => import("./pages/ProfileCompletionPage"));
+const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
+const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
+const CivicIssuesPage = lazy(() => import("./pages/CivicIssuesPage"));
+const ReportIssuePage = lazy(() => import("./pages/ReportIssuePage"));
+const CivicIssueDetailPage = lazy(() => import("./pages/CivicIssueDetailPage"));
+const AspirantRegistrationPage = lazy(() => import("./pages/AspirantRegistrationPage"));
+const DocumentsUploadPage = lazy(() => import("./pages/DocumentsUploadPage"));
+// SOP upload step removed from aspirant registration flow
+// const SopUploadPage = lazy(() => import("./pages/SopUploadPage"));
+const SopPage = lazy(() => import("./pages/SopPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+const SignedSopPage = lazy(() => import("./pages/SignedSopPage"));
+const AspirantApprovalPage = lazy(() => import("./pages/AspirantApprovalPage"));
+const WardCandidateListPage = lazy(() => import("./pages/WardCandidateListPage"));
+const WardVotersPage = lazy(() => import("./pages/WardVotersPage"));
+const RegisteredAspirantsPage = lazy(() => import("./pages/RegisteredAspirantsPage"));
+const AspirantViewDetailsPage = lazy(() => import("./pages/AspirantViewDetailsPage"));
+const DemoAspirantViewPage = lazy(() => import("./pages/DemoAspirantViewPage"));
+const CandidateDetailsPage = lazy(() => import("./pages/CandidateDetailsPage"));
+const AspirantOtpVerificationPage = lazy(() => import("./pages/AspirantOtpVerificationPage"));
+const VotingPage = lazy(() => import("./pages/VotingPage"));
+const VotingResultPage = lazy(() => import("./pages/VotingResultPage"));
+const WardDiscussionPage = lazy(() => import("./pages/WardDiscussionPage"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage"));
+const LoadingPage = lazy(() => import("./pages/LoadingPage"));
+const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
+const HomePage = lazy(() => import("./pages/HomePage"));
+const OathPage = lazy(() => import("./pages/OathPage"));
+
 // Aspirant mobile route pages
-import AspirantProfilePage from "./pages/aspirant/AspirantProfilePage";
-import AspirantMeetingLinksPage from "./pages/aspirant/AspirantMeetingLinksPage";
-import AspirantChatPage from "./pages/aspirant/AspirantChatPage";
-import AspirantDiscussionPage from "./pages/AspirantDiscussionPage";
-import AspirantPostsPage from "./pages/aspirant/AspirantPostsPage";
-import AspirantRequestsPage from "./pages/aspirant/AspirantRequestsPage";
+const AspirantProfilePage = lazy(() => import("./pages/aspirant/AspirantProfilePage"));
+const AspirantMeetingLinksPage = lazy(() => import("./pages/aspirant/AspirantMeetingLinksPage"));
+const AspirantChatPage = lazy(() => import("./pages/aspirant/AspirantChatPage"));
+const AspirantDiscussionPage = lazy(() => import("./pages/AspirantDiscussionPage"));
+const AspirantPostsPage = lazy(() => import("./pages/aspirant/AspirantPostsPage"));
+const AspirantRequestsPage = lazy(() => import("./pages/aspirant/AspirantRequestsPage"));
 
 // Guest route pages
-import GuestLayout from "./layouts/GuestLayout";
-import GuestDashboardPage from "./pages/guest/GuestDashboardPage";
-import GuestVotersPage from "./pages/guest/GuestVotersPage";
-import GuestAspirantsPage from "./pages/guest/GuestAspirantsPage";
-import GuestRegisteredAspirantsPage from "./pages/guest/GuestRegisteredAspirantsPage";
-import GuestCivicIssuesPage from "./pages/guest/GuestCivicIssuesPage";
-import GuestSopPage from "./pages/guest/GuestSopPage";
+const GuestDashboardPage = lazy(() => import("./pages/guest/GuestDashboardPage"));
+const GuestVotersPage = lazy(() => import("./pages/guest/GuestVotersPage"));
+const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage"));
+const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
+const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
+const GuestSopPage = lazy(() => import("./pages/guest/GuestSopPage"));
 
 const UserChatPage = lazy(() => import("./pages/UserChatPage"));
 

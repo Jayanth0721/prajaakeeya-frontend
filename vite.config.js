@@ -101,6 +101,29 @@ export default defineConfig({
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          // Keep React + MUI + emotion + framer-motion in ONE chunk.
+          // Splitting React away from MUI creates a circular chunk reference
+          // that can break module init order at runtime — keep them together.
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('react-router') ||
+            id.includes('@mui') ||
+            id.includes('@emotion') ||
+            id.includes('framer-motion')
+          ) {
+            return 'vendor';
+          }
+          if (id.includes('i18next')) return 'i18n-vendor';
+        },
+      },
+    },
+  },
   server: {
     host: true,
     port: 5173,

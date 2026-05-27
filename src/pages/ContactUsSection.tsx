@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 import bgContent from '../assets/images/bg-content.jpg';
 import prajakeeyaLogo from '../assets/images/prajakeeya.png';
-import prajakeeyaImg from '../assets/images/prajakeeya4.jpg';
+import prajakeeyaImg from '../assets/images/prajakeeya4.webp';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 24 },
