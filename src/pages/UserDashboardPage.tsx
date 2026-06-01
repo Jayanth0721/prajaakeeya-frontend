@@ -23,19 +23,19 @@ import {
   AddAPhoto as AddAPhotoIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import prajakeeyaLogo from '../assets/images/prajakeeya.png';
-import chatImg from '../assets/images/chat.png';
-import alertImg from '../assets/images/alert.png';
-import employeesImg from '../assets/images/employees.png';
-import videoCameraImg from '../assets/images/video.png';
-import userImg from '../assets/images/user.png';
+import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
+import chatImg from '../assets/images/chat.webp';
+import alertImg from '../assets/images/alert.webp';
+import employeesImg from '../assets/images/employees.webp';
+import videoCameraImg from '../assets/images/video.webp';
+import userImg from '../assets/images/user.webp';
 import king1Img from '../assets/images/king1.png';
-import sopImg from '../assets/images/sop.png';
-import meetImg from '../assets/images/meet.png';
-import leaderImg from '../assets/images/leader.png';
-import managerImg from '../assets/images/manager.png';
-import advisorImg from '../assets/images/office.png';
-import staffImg from '../assets/images/staff.png';
+import sopImg from '../assets/images/sop.webp';
+import meetImg from '../assets/images/meet.webp';
+import leaderImg from '../assets/images/leader.webp';
+import managerImg from '../assets/images/manager.webp';
+import advisorImg from '../assets/images/office.webp';
+import staffImg from '../assets/images/staff.webp';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';

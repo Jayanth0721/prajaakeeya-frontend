@@ -47,15 +47,15 @@ import {
   type Election, type Constituency, type GPVillage,
 } from '../services/electionService';
 import { BRAND } from '../theme';
-import roadMapImg from '../assets/images/road-map.png';
-import architectImg from '../assets/images/architect.png';
-import wasteImg from '../assets/images/waste.png';
-import waterTapImg from '../assets/images/water-tap.png';
-import garbageImg from '../assets/images/garbage.png';
-import streetLightImg from '../assets/images/street-light.png';
-import savePlanetImg from '../assets/images/save-the-planet.png';
+import roadMapImg from '../assets/images/road-map.webp';
+import architectImg from '../assets/images/architect.webp';
+import wasteImg from '../assets/images/waste.webp';
+import waterTapImg from '../assets/images/water-tap.webp';
+import garbageImg from '../assets/images/garbage.webp';
+import streetLightImg from '../assets/images/street-light.webp';
+import savePlanetImg from '../assets/images/save-the-planet.webp';
 import capitolInactiveImg from '../assets/images/capitol.png';
-import capitolActiveImg from '../assets/images/capitol1.png';
+import capitolActiveImg from '../assets/images/capitol1.webp';
 
 const FF = "'Baloo 2', sans-serif";
 

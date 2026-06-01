@@ -55,8 +55,8 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import googleMeetImg from '../assets/images/googl-meet.png';
-import zoomImg from '../assets/images/zoom.png';
+import googleMeetImg from '../assets/images/googl-meet.webp';
+import zoomImg from '../assets/images/zoom.webp';
 import { fetchAspirantsByConstituency, respondVisit, respondMeeting, getAspirantVisits, rateAspirantMeeting, rateAspirantVisit } from '../services/aspirantService';
 import {
   fetchElections,
@@ -80,7 +80,7 @@ import useAuthStore from '../store/useAuthStore';
 import apiClient from '../services/apiClient';
 import CloseIcon from '@mui/icons-material/Close';
 import capitolInactiveImg from '../assets/images/capitol.png';
-import capitolActiveImg from '../assets/images/capitol1.png';
+import capitolActiveImg from '../assets/images/capitol1.webp';
 import { BRAND } from '../theme';
 import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 

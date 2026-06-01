@@ -21,8 +21,8 @@ import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-import bgContent from '../assets/images/bg-content.jpg';
-import prajakeeyaLogo from '../assets/images/prajakeeya.png';
+import bgContent from '../assets/images/bg-content.webp';
+import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
 import prajakeeyaImg from '../assets/images/prajakeeya4.webp';
 
 const fadeInUp = {

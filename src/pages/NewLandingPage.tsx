@@ -15,8 +15,8 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { DarkModeRounded, LightModeRounded } from '@mui/icons-material';
-import prajakeeyaLogo from '../assets/images/prajakeeya.png';
-import bgContent from '../assets/images/bg-content.jpg';
+import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
+import bgContent from '../assets/images/bg-content.webp';
 import aspirantLoginImg from '../assets/images/prajaakeeya_aspirant_login.png';
 import voterLoginImg from '../assets/images/prajaakeeya_voter_login.png';
 import { useNavigate } from 'react-router-dom';

@@ -21,7 +21,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
 import useThemeStore from '../store/useThemeStore';
-import prajakeeyaLogo from '../assets/images/prajakeeya.png';
+import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
 import { BRAND } from '../theme';
 import LanguageSelector from '../components/LanguageSelector';
 import NotificationBell from '../components/NotificationBell';
