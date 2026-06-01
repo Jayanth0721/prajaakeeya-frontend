@@ -301,7 +301,7 @@ const UserLayout = () => {
           backgroundColor: isDark ? '#0a0808' : '#ffffff',
           backgroundImage: navBg,
           borderTop: `1px solid ${theme.palette.divider}`,
-          pb: 'calc(5px + env(safe-area-inset-bottom))',
+          pb: 'calc(8px + env(safe-area-inset-bottom))',
         }}
       >
         <BottomNavigation
@@ -320,7 +320,7 @@ const UserLayout = () => {
               // same row regardless of how many lines its label wraps to.
               justifyContent: 'flex-start',
               gap: 0.5,
-              color: isDark ? 'rgba(255,255,255,0.55)' : 'rgba(17,24,39,0.5)',
+              color: isDark ? '#fff' : 'rgba(17,24,39,0.5)',
             },
             '& .MuiBottomNavigationAction-root.Mui-selected': {
               color: isDark ? BRAND.yellow : BRAND.saffron,
