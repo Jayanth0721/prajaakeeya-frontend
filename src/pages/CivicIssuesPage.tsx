@@ -857,14 +857,7 @@ const CivicIssuesPage: React.FC = () => {
       ) : (
         <Stack spacing={1.5}>
           <AnimatePresence>
-            {[...categories].sort((a, b) => {
-              const priority = ['jobs', 'education', 'health'];
-              const ai = priority.indexOf(a.name.toLowerCase());
-              const bi = priority.indexOf(b.name.toLowerCase());
-              const ap = ai >= 0 ? ai : priority.length;
-              const bp = bi >= 0 ? bi : priority.length;
-              return ap - bp;
-            }).map((cat, idx) => {
+            {[...categories].sort((a, b) => (b.count ?? 0) - (a.count ?? 0)).map((cat, idx) => {
               const isRaised = cat.isRaised ?? false;  // Use isRaised from API response
               const isRaising = raisingCat === cat.name;
               // pick an icon + color based on the category name (case-insensitive match)
