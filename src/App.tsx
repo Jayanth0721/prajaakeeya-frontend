@@ -54,7 +54,6 @@ const UserLoginPage = lazy(() => import("./pages/UserLoginPage"));
 const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
 const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
 const UserPledgePage = lazy(() => import("./pages/UserPledgePage"));
-const ProfileCompletionPage = lazy(() => import("./pages/ProfileCompletionPage"));
 const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
 const CivicIssuesPage = lazy(() => import("./pages/CivicIssuesPage"));
@@ -325,7 +324,7 @@ const App = () => {
             <Route path="dashboard" element={<UserDashboardPage />} />
             <Route
               path="complete-profile"
-              element={<ProfileCompletionPage />}
+              element={<AspirantProfilePage />}
             />
             <Route path="civic-issues" element={<CivicIssuesPage />} />
             <Route path="civic-issues/report" element={<ReportIssuePage />} />

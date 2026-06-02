@@ -355,7 +355,7 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
 
             {/* Withdraw button — below Documents Uploaded, full width */}
             {onWithdraw && (
-                <Box sx={{ mt: 3 }}>
+                <Box id="withdraw-application" sx={{ mt: 3, scrollMarginTop: 80 }}>
                     <Button
                         fullWidth
                         variant="outlined"

@@ -85,7 +85,10 @@ const AspirantDeclarationPage = () => {
   const handleContinue = () => {
     // Forward any `?type=` query (e.g. from "Register as Aspirant" on a specific
     // election tab) to the Candidate Information page so it opens on that tab.
-    navigate(`/user/aspirants/register${location.search}`);
+    // Pass `resume: true` so the register page restores any draft the user had
+    // already typed — otherwise going Declaration → Register wipes fields like
+    // education/occupation/about that aren't backed by the user profile.
+    navigate(`/user/aspirants/register${location.search}`, { state: { resume: true } });
   };
 
   return (
