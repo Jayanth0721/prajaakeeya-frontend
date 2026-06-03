@@ -13,7 +13,7 @@ interface AuthState {
   isAuthenticated: boolean;
   setAuth: (token: string, user: AuthUser) => void;
   clearSession: () => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
 }
 
@@ -67,13 +67,21 @@ const useAuthStore = create<AuthState>()(
         localStorage.clear();
         Object.entries(preserved).forEach(([key, val]) => localStorage.setItem(key, val));
       },
-      logout: () => {
-        // Best-effort: drop this device's push token (auth header still valid
-        // here). Dynamic import avoids a circular dependency; fire-and-forget —
-        // the backend also self-prunes stale tokens, so it's non-critical.
-        import('../services/pushNotifications')
-          .then(m => m.disablePushNotifications())
-          .catch(() => undefined);
+      logout: async () => {
+        // Remove this device's FCM push token FIRST — while the JWT is still
+        // valid — and AWAIT it so the backend DELETE actually completes (and
+        // FCM's deleteToken runs) before we wipe auth and hard-reload. Capped at
+        // 3s so a slow/unreachable API can't block logout. (Dynamic import
+        // avoids a circular dependency with apiClient.)
+        try {
+          const push = await import('../services/pushNotifications');
+          await Promise.race([
+            push.disablePushNotifications(),
+            new Promise((resolve) => setTimeout(resolve, 3000)),
+          ]);
+        } catch {
+          /* best-effort — backend also self-prunes stale tokens */
+        }
         set({ token: null, user: null, isAdmin: false, isAuthenticated: false });
         delete apiClient.defaults.headers.common.Authorization;
         // Clear all localStorage except theme, language, and civic raised state
