@@ -8,6 +8,15 @@ interface Props {
     onView: (id: string) => void;
 }
 
+// Mirrors UsersTable: Google profile pictures are blocked by ORB (no CORS
+// headers) so they render broken — skip them and let the Avatar fall back to
+// initials. Returns valid URLs unchanged.
+const safeAvatarSrc = (url?: string | null) => {
+    if (!url) return undefined;
+    if (url.includes('googleusercontent.com') || url.includes('lh3.google')) return undefined;
+    return url;
+};
+
 const statusColor = (s: string) => {
     switch (s) {
         case 'pending': return 'warning';
@@ -57,7 +66,7 @@ const ReportsTable: React.FC<Props> = ({ reports, onView }) => {
                         <TableRow key={id} hover>
                             <TableCell>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                    <Avatar src={reportedUserPic} alt={reportedUserName} sx={{ width: 32, height: 32 }}>
+                                    <Avatar src={safeAvatarSrc(reportedUserPic)} alt={reportedUserName} sx={{ width: 32, height: 32 }}>
                                         {reportedUserName?.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{reportedUserName}</Typography>
@@ -66,7 +75,7 @@ const ReportsTable: React.FC<Props> = ({ reports, onView }) => {
                             <TableCell>{reportedUserType}</TableCell>
                             <TableCell>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                    <Avatar src={reportedByPic} alt={reportedByName} sx={{ width: 32, height: 32 }}>
+                                    <Avatar src={safeAvatarSrc(reportedByPic)} alt={reportedByName} sx={{ width: 32, height: 32 }}>
                                         {reportedByName?.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Typography variant="body2">{reportedByName}</Typography>

@@ -9,8 +9,10 @@
 //     list, a TextField for typing, and a Send button.
 //   - Typing text + clicking Send calls postUserChatMessage and appends the
 //     returned message to the list.
-//   - It POLLS every 5s (setInterval) calling getAspirantMessages again — the
-//     polled calls pass no options, so they silently no-op on errors.
+//   - It subscribes to a live SSE stream (subscribeToAspirantChat) for realtime
+//     message create/delete, with a 30s fallback poll (getAspirantMessages) in
+//     case the stream drops. Polled calls pass no options, so they silently
+//     no-op on errors.
 //
 // Setup notes:
 //   - react-i18next is mocked with STABLE module-level t/i18n refs so the
@@ -47,7 +49,10 @@ vi.mock('react-router-dom', async (orig) => ({
   useParams: () => ({ aspirantId: '1' }),
 }));
 
-// Chat service — message list + send both resolve with valid shapes.
+// Chat service — message list + send resolve with valid shapes.
+// subscribeToAspirantChat opens a live SSE (EventSource) stream in the real
+// page; we stub it to return an EventSource-like object exposing close(), which
+// the page calls on cleanup. (jsdom has no EventSource, so this must be mocked.)
 vi.mock('../services/aspirantChatService', () => ({
   getAspirantMessages: vi.fn(() => Promise.resolve({ data: { data: [] } })),
   postUserChatMessage: vi.fn(() =>
@@ -63,6 +68,7 @@ vi.mock('../services/aspirantChatService', () => ({
       },
     }),
   ),
+  subscribeToAspirantChat: vi.fn(() => ({ close: vi.fn() })),
 }));
 
 // Aspirant list lookup on mount — resolve with one aspirant.

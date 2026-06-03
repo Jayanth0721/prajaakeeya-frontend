@@ -95,7 +95,9 @@ const AspirantRequestsPage = lazy(() => import("./pages/aspirant/AspirantRequest
 
 // Guest route pages
 const GuestDashboardPage = lazy(() => import("./pages/guest/GuestDashboardPage"));
-const GuestVotersPage = lazy(() => import("./pages/guest/GuestVotersPage"));
+// GuestVotersPage route removed (H4): voter-roll page de-linked from guests to
+// avoid exposing voter PII to anonymous users. Component kept at
+// pages/guest/GuestVotersPage.tsx for future re-enable behind auth.
 const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage"));
 const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
 const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
@@ -405,7 +407,6 @@ const App = () => {
           {/* test comment */}
           <Route path="/guest" element={<GuestLayout />}>
             <Route path="dashboard" element={<GuestDashboardPage />} />
-            <Route path="voters" element={<GuestVotersPage />} />
             <Route path="aspirants" element={<GuestAspirantsPage />} />
             <Route path="civic-issues" element={<GuestCivicIssuesPage />} />
             <Route path="sop" element={<GuestSopPage />} />

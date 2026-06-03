@@ -172,6 +172,7 @@ const ContactPage: React.FC = () => {
                             size="small"
                             href="https://en.wikipedia.org/wiki/Uttama_Prajaakeeya_Party"
                             target="_blank"
+                            rel="noopener noreferrer"
                             sx={{ color: accent }}
                         >
                             {t('pages.landing.contact.footer.readMore')}

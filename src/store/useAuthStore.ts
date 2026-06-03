@@ -122,7 +122,6 @@ const useAuthStore = create<AuthState>()(
             wardName: apiUser.ward?.name ?? apiUser.wardName,
             assembly: apiUser.ward?.assembly ?? apiUser.assembly
           };
-          console.debug('[auth] fetchProfile normalized user:', normalizedUser);
           // If API returned only wardId, fetch ward details to populate wardNumber/wardName/assembly
           if ((normalizedUser.wardNumber === undefined || normalizedUser.wardName === undefined) && normalizedUser.wardId) {
             try {
