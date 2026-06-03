@@ -33,6 +33,9 @@ const isConfigured = Boolean(
 );
 
 const FCM_SW_SCOPE = '/firebase-cloud-messaging-push-scope';
+/** Persisted copy of the registered FCM token so logout can unregister it even
+ *  after a page reload (before initPush re-runs and repopulates currentToken). */
+const DEVICE_TOKEN_KEY = 'fcm_device_token';
 
 let app: FirebaseApp | null = null;
 let messaging: Messaging | null = null;
@@ -116,6 +119,11 @@ export async function initPushNotifications(
     if (!token) return;
     currentToken = token;
     await registerDeviceToken(token, detectPlatform());
+    try {
+      localStorage.setItem(DEVICE_TOKEN_KEY, token);
+    } catch {
+      /* ignore — persistence is only a fallback for logout teardown */
+    }
 
     if (!foregroundWired) {
       foregroundWired = true;
@@ -175,13 +183,46 @@ export function setupPushForUser(): () => void {
 
 /** Best-effort teardown on logout: remove the token server-side and locally. */
 export async function disablePushNotifications(): Promise<void> {
-  const token = currentToken;
+  // Resolve the token to unregister. Prefer the one captured at register time,
+  // then the persisted copy (survives page reloads), then ask FCM for the live
+  // token. Without these fallbacks, logging out right after a reload — before
+  // setupPushForUser re-runs — leaves currentToken null and the device-token
+  // row is never deleted server-side.
+  let token = currentToken;
+  if (!token) {
+    try {
+      token = localStorage.getItem(DEVICE_TOKEN_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
   try {
+    if (!messaging && (await isPushSupported())) {
+      messaging = getMessaging(getApp());
+    }
+    if (!token && messaging && Notification.permission === 'granted') {
+      try {
+        const registration = await registerSw();
+        token = await getToken(messaging, {
+          vapidKey,
+          serviceWorkerRegistration: registration,
+        });
+      } catch {
+        /* ignore — fall through with whatever we have */
+      }
+    }
     if (token) await unregisterDeviceToken(token).catch(() => undefined);
-    if (messaging && token) await deleteToken(messaging).catch(() => undefined);
+    // Invalidate the token in FCM so this device stops receiving pushes and the
+    // next login mints a fresh one — run even if the server delete failed.
+    if (messaging) await deleteToken(messaging).catch(() => undefined);
   } catch {
     /* ignore */
   } finally {
     currentToken = null;
+    try {
+      localStorage.removeItem(DEVICE_TOKEN_KEY);
+    } catch {
+      /* ignore */
+    }
   }
 }
