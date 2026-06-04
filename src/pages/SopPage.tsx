@@ -159,7 +159,7 @@ const SopPage = () => {
                     fullWidth
                     variant="contained"
                     onClick={() => {
-                        navigate('/user/aspirantslist');
+                        navigate('/user/dashboard');
                     }}
                     sx={{
                         borderRadius: 3,

@@ -782,11 +782,9 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     }}
                                     MenuListProps={{ sx: { py: 0.25 } }}
                                 >
-                                    {/*
                                     <MenuItem sx={{ py: 0.5, px: 1, fontSize: '0.8rem' }} onClick={() => { setLivenessOpen(true); setPhotoMenuAnchor(null); }}>
                                         {t('profile.takePhoto') || 'Take Photo'}
                                     </MenuItem>
-                                    */}
                                     <MenuItem sx={{ py: 0.5, px: 1, fontSize: '0.8rem' }} onClick={() => { fileInputRef.current?.click(); setPhotoMenuAnchor(null); }}>
                                         {t('profile.uploadPhoto') || 'Upload Photo'}
                                     </MenuItem>

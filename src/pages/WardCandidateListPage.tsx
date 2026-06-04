@@ -2333,7 +2333,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                               )}
                               <Button
                                 size="small"
-                                onClick={() => navigate(`/guest/aspirants/${candidate.id}/view`, { state: { candidate } })}
+                                onClick={() => navigate(`/user/aspirants/${candidate.id}/view`, { state: { candidate } })}
                                 sx={{
                                   px: 0.68, py: 0.68, minWidth: 82, borderRadius: 1.5, minHeight: 25,
                                   textTransform: 'none', fontWeight: 700, fontSize: '0.55rem', lineHeight: 1,
