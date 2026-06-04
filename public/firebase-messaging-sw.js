@@ -37,11 +37,38 @@ if (
   firebase.messaging();
 }
 
+// ─── TEMPORARY DEBUG — remove once push payloads are confirmed ───────────────
+// Logs the RAW push payload exactly as the backend sent it (notification + data
+// blocks), so we can see whether the routing ids (type/aspirantId/electionId)
+// are present. View in DevTools → Application → Service Workers → "inspect" on
+// firebase-messaging-sw.js → Console.
+self.addEventListener("push", (event) => {
+  try {
+    console.log("[push DEBUG] raw payload:", event.data ? event.data.json() : null);
+  } catch (e) {
+    console.log("[push DEBUG] payload (text):", event.data && event.data.text());
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Mirror of NotificationsPage's electionNameToTypeSlug: "State Assembly (MP)"
+// → "state_assembly". Used to turn a voting-window election name into the tab
+// slug the ward list expects.
+function electionNameToTypeSlug(name) {
+  const base = name.replace(/\(.*?\)/g, "").trim().toLowerCase();
+  return base ? base.replace(/\s+/g, "_") : undefined;
+}
+
 // Build the in-app path to open for a tapped notification. Prefer an explicit
 // `link` from the payload; otherwise derive one from the notification type +
-// ids, mirroring the in-app routing in src/pages/NotificationsPage.tsx. Falls
-// back to "/" so a tap always at least opens the web app.
+// ids, mirroring the in-app routing (hrefFor) in src/pages/NotificationsPage.tsx.
+// Falls back to /user/dashboard so a tap always lands on a useful signed-in page.
 function resolveTarget(data) {
+  // FCM auto-displays background notifications and may nest the original payload
+  // under FCM_MSG — unwrap it so we read the real data fields (type/ids/link).
+  if (data && data.FCM_MSG && data.FCM_MSG.data) {
+    data = { ...data, ...data.FCM_MSG.data };
+  }
   if (data.link) return data.link;
   const aspirantId = data.aspirantId;
   const electionId = data.electionId;
@@ -54,8 +81,12 @@ function resolveTarget(data) {
       return aspirantId ? `/user/chat/${aspirantId}` : "/user/aspirantslist";
     case "meeting":
       return "/user/dashboard/meetings";
-    case "voting_window":
-      return "/user/aspirantslist";
+    case "voting_window": {
+      const slug = data.electionName
+        ? electionNameToTypeSlug(data.electionName)
+        : undefined;
+      return slug ? `/user/aspirantslist?type=${slug}` : "/user/aspirantslist";
+    }
     case "aspirant_meeting":
     case "aspirant_visit":
     case "meeting_started":
@@ -67,7 +98,9 @@ function resolveTarget(data) {
       return qs ? `/user/aspirantslist?${qs}` : "/user/aspirantslist";
     }
     default:
-      return "/";
+      // Unknown/missing type → land on the signed-in dashboard, not the public
+      // homepage. This is the guaranteed fallback for any tapped notification.
+      return "/user/dashboard";
   }
 }
 
@@ -79,6 +112,9 @@ self.addEventListener("notificationclick", (event) => {
   const data = event.notification.data || {};
   const path = resolveTarget(data);
   const targetUrl = new URL(path, self.location.origin).href;
+
+  // TEMPORARY DEBUG — remove once routing is confirmed.
+  console.log("[push DEBUG] notification.data:", data, "→ resolved path:", path);
 
   event.waitUntil(
     self.clients
