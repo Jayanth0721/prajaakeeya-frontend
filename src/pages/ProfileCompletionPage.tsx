@@ -782,9 +782,11 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     }}
                                     MenuListProps={{ sx: { py: 0.25 } }}
                                 >
+                                    {/*
                                     <MenuItem sx={{ py: 0.5, px: 1, fontSize: '0.8rem' }} onClick={() => { setLivenessOpen(true); setPhotoMenuAnchor(null); }}>
                                         {t('profile.takePhoto') || 'Take Photo'}
                                     </MenuItem>
+                                    */}
                                     <MenuItem sx={{ py: 0.5, px: 1, fontSize: '0.8rem' }} onClick={() => { fileInputRef.current?.click(); setPhotoMenuAnchor(null); }}>
                                         {t('profile.uploadPhoto') || 'Upload Photo'}
                                     </MenuItem>
@@ -1528,7 +1530,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 <DialogContent>
                     {isAspirant ? (
                         <Typography sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                            {t('common.withdrawAspirantMessage') || 'Please withdraw your aspirant registration before deleting your account. You can withdraw from your aspirant dashboard.'}
+                            {t('common.withdrawAspirantMessage') || 'Please withdraw your aspirant registration before deleting your account. You can withdraw below.'}
                         </Typography>
                     ) : (
                         <Typography sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
@@ -1538,21 +1540,23 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button
-                        onClick={() => setDeleteDialogOpen(false)}
+                        onClick={() => {
+                            setDeleteDialogOpen(false);
+                            // For aspirants, the close button doubles as "take me to
+                            // the Withdraw action" — scroll it into view on the page.
+                            if (isAspirant) {
+                                setTimeout(() => {
+                                    document
+                                        .getElementById('withdraw-application')
+                                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 100);
+                            }
+                        }}
                         sx={{ textTransform: 'none', fontWeight: 600 }}
                     >
                         {t('common.cancel') || 'Cancel'}
                     </Button>
-                    {isAspirant ? (
-                        <Button
-                            variant="contained"
-                            color="warning"
-                            onClick={() => { setDeleteDialogOpen(false); navigate('/user/dashboard/profile'); }}
-                            sx={{ textTransform: 'none', fontWeight: 700 }}
-                        >
-                            {t('common.goToDashboard') || 'Go to Dashboard'}
-                        </Button>
-                    ) : (
+                    {!isAspirant && (
                         <Button
                             variant="contained"
                             color="error"

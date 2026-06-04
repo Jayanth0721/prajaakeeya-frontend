@@ -58,6 +58,19 @@ const DocumentsUploadPage = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDark = theme.palette.mode === 'dark';
 
+  // Release the camera (camera/LED off) when the page unmounts — e.g. the user
+  // navigates away while the camera is still active. Without this the
+  // MediaStream tracks keep running after the component is gone. Self-contained
+  // (reads videoRef directly) so it always stops whatever stream is current,
+  // including one swapped in by the front/back camera switch.
+  useEffect(() => {
+    return () => {
+      const stream = videoRef.current?.srcObject as MediaStream | null;
+      stream?.getTracks().forEach((track) => track.stop());
+      if (videoRef.current) videoRef.current.srcObject = null;
+    };
+  }, []);
+
   // Load aspirant data on mount and hydrate already-uploaded documents from server
   useEffect(() => {
     const aspirantId = user?.aspirantId;
@@ -387,7 +400,7 @@ const DocumentsUploadPage = () => {
         documents={documents}
         setDocuments={setDocuments}
         handleFileUpload={handleFileUpload}
-        onBack={() => navigate('/user/aspirants/register', { state: { goToStep: 1, resume: true } })}
+        onBack={() => navigate('/user/aspirants/register', { state: { resume: true } })}
         onNext={handleNext}
         onCancel={handleHome}
         canProceed={canProceedStep4}

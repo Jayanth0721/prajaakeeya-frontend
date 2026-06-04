@@ -12,6 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
+import { setupPushForUser } from "./services/pushNotifications";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -54,12 +55,12 @@ const UserLoginPage = lazy(() => import("./pages/UserLoginPage"));
 const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
 const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
 const UserPledgePage = lazy(() => import("./pages/UserPledgePage"));
-const ProfileCompletionPage = lazy(() => import("./pages/ProfileCompletionPage"));
 const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
 const CivicIssuesPage = lazy(() => import("./pages/CivicIssuesPage"));
 const ReportIssuePage = lazy(() => import("./pages/ReportIssuePage"));
 const CivicIssueDetailPage = lazy(() => import("./pages/CivicIssueDetailPage"));
+const AspirantDeclarationPage = lazy(() => import("./pages/AspirantDeclarationPage"));
 const AspirantRegistrationPage = lazy(() => import("./pages/AspirantRegistrationPage"));
 const DocumentsUploadPage = lazy(() => import("./pages/DocumentsUploadPage"));
 // SOP upload step removed from aspirant registration flow
@@ -94,7 +95,9 @@ const AspirantRequestsPage = lazy(() => import("./pages/aspirant/AspirantRequest
 
 // Guest route pages
 const GuestDashboardPage = lazy(() => import("./pages/guest/GuestDashboardPage"));
-const GuestVotersPage = lazy(() => import("./pages/guest/GuestVotersPage"));
+// GuestVotersPage route removed (H4): voter-roll page de-linked from guests to
+// avoid exposing voter PII to anonymous users. Component kept at
+// pages/guest/GuestVotersPage.tsx for future re-enable behind auth.
 const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage"));
 const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
 const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
@@ -122,6 +125,15 @@ const App = () => {
       void fetchProfile();
     }
   }, [token, fetchProfile]);
+
+  useEffect(() => {
+    // Wire web push (FCM) for the signed-in user: registers silently if the
+    // user already granted notifications, otherwise prompts on their next
+    // gesture. No-op unless Firebase env is configured + push is supported.
+    if (isAuthenticated && token) {
+      return setupPushForUser();
+    }
+  }, [isAuthenticated, token]);
 
   useEffect(() => {
     // Dismiss the preloader after the animation completes (~5 s)
@@ -324,7 +336,7 @@ const App = () => {
             <Route path="dashboard" element={<UserDashboardPage />} />
             <Route
               path="complete-profile"
-              element={<ProfileCompletionPage />}
+              element={<AspirantProfilePage />}
             />
             <Route path="civic-issues" element={<CivicIssuesPage />} />
             <Route path="civic-issues/report" element={<ReportIssuePage />} />
@@ -343,6 +355,10 @@ const App = () => {
             <Route
               path="dashboard/requests"
               element={<AspirantRequestsPage />}
+            />
+            <Route
+              path="aspirants/declaration"
+              element={<AspirantDeclarationPage />}
             />
             <Route
               path="aspirants/register"
@@ -391,7 +407,6 @@ const App = () => {
           {/* test comment */}
           <Route path="/guest" element={<GuestLayout />}>
             <Route path="dashboard" element={<GuestDashboardPage />} />
-            <Route path="voters" element={<GuestVotersPage />} />
             <Route path="aspirants" element={<GuestAspirantsPage />} />
             <Route path="civic-issues" element={<GuestCivicIssuesPage />} />
             <Route path="sop" element={<GuestSopPage />} />
