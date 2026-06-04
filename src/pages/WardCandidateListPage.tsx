@@ -55,7 +55,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import googleMeetImg from '../assets/images/googl-meet.webp';
 import zoomImg from '../assets/images/zoom.webp';
-import { fetchAspirantsByConstituency, respondVisit, respondMeeting, getAspirantVisits, rateAspirantMeeting, rateAspirantVisit } from '../services/aspirantService';
+import { fetchAspirantsByConstituency, respondVisit, respondMeeting, getAspirantVisits, rateAspirantMeeting, rateAspirantVisit, rateAspirantContact } from '../services/aspirantService';
 import {
   fetchElections,
   fetchConstituencies,
@@ -104,6 +104,10 @@ interface Candidate {
   allowPhone?: boolean;
   allowWhatsapp?: boolean;
   allowChat?: boolean;
+  canRateContact?: boolean;
+  isContactRated?: boolean;
+  contactedAt?: number | null;
+  contactRating?: { averageRating: number; totalRatings: number; distribution?: Record<string, number> };
 }
 
 const getPlatformIcon = (platform?: string | null, size = 18, variant: 'default' | 'white' = 'default') => {
@@ -231,6 +235,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
   const [now, setNow] = useState(Date.now());
   // Ratings state: meetingId/visitId → rating value (1=bad,2=average,3=good,4=excellent)
   const [meetingRatings, setMeetingRatings] = useState<Record<number, number>>({});
+  const [contactRatings, setContactRatings] = useState<Record<number, number>>({});
   const [visitRatings, setVisitRatings] = useState<Record<number, number>>({});
   // Overall/activity ratings from API
   const [candidateOverallRatings, setCandidateOverallRatings] = useState<Record<number, { averageRating: number; totalRatings: number }>>({});
@@ -277,6 +282,10 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
   };
   const getStoredVisitRating = (visitId: number): number => {
     try { return parseInt(localStorage.getItem(getVisitRatingKey(visitId)) || '0', 10) || 0; } catch { return 0; }
+  };
+  const getContactRatingKey = (aspirantId: number) => `contact_rating_${user?.id ?? 'guest'}_${aspirantId}`;
+  const getStoredContactRating = (aspirantId: number): number => {
+    try { return parseInt(localStorage.getItem(getContactRatingKey(aspirantId)) || '0', 10) || 0; } catch { return 0; }
   };
 
   // Helper to optimistically update rating distribution in a meetings/visits map
@@ -341,6 +350,29 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
       const confirmed = resp?.data?.rating ?? rating;
       localStorage.setItem(getVisitRatingKey(visitId), String(confirmed));
       setVisitRatings(prev => ({ ...prev, [visitId]: confirmed }));
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Failed to submit rating';
+      setErrorMsg(msg);
+      setErrorOpen(true);
+    }
+  };
+
+  const handleRateContact = async (aspirantId: number, rating: number) => {
+    // Optimistic: persist locally and reflect on the card immediately.
+    localStorage.setItem(getContactRatingKey(aspirantId), String(rating));
+    setContactRatings(prev => ({ ...prev, [aspirantId]: rating }));
+    setCandidates(prev => prev.map(c => {
+      if (c.id !== aspirantId) return c;
+      const dist: Record<string, number> = { ...((c.contactRating?.distribution) ?? {}) };
+      dist[String(rating)] = (dist[String(rating)] || 0) + 1;
+      const total = (c.contactRating?.totalRatings ?? 0) + 1;
+      let sum = 0;
+      for (let i = 1; i <= 5; i++) sum += (dist[String(i)] || 0) * i;
+      return { ...c, isContactRated: true, canRateContact: false, contactRating: { distribution: dist, totalRatings: total, averageRating: total > 0 ? sum / total : 0 } };
+    }));
+    if (aspirantId <= 0) return;
+    try {
+      await rateAspirantContact(aspirantId, { rating });
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to submit rating';
       setErrorMsg(msg);
@@ -688,11 +720,16 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
   };
 
   // Track aspirant interaction on chat/meeting/phone/direct meet.
-  const trackInteraction = async (aspirantId: number, endpoint = '/users/track/chat') => {
+  const trackInteraction = async (aspirantId: number, endpoint = '/users/track/chat', timestamp?: number) => {
     // Skip tracking for demo aspirant
-    if (aspirantId <= 0) return;
+    if (aspirantId <= 0) return false;
     try {
-      const resp = await apiClient.post(endpoint, { aspirantId });
+      // Phone/WhatsApp tracking passes the click time (epoch ms); the backend
+      // stores it as phoneCallAt and makes the voter eligible to rate this
+      // aspirant's contact.
+      const body: { aspirantId: number; timestamp?: number } = { aspirantId };
+      if (timestamp != null) body.timestamp = timestamp;
+      const resp = await apiClient.post(endpoint, body);
       const apiUser = resp?.data?.user ?? resp?.data ?? null;
       if (apiUser) {
         const current = useAuthStore.getState().user as any;
@@ -700,9 +737,11 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
         // Update auth store user with returned flags so UI (Vote button) updates
         (useAuthStore as any).setState({ user: merged });
       }
+      return true;
     } catch (e) {
       // ignore tracking failures
       // console.warn('[track] failed', e);
+      return false;
     }
   };
 
@@ -2994,7 +3033,12 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                   '&:hover': { background: '#1fa851' },
                                 }}
                                 onClick={() => {
-                                  void trackInteraction(candidate.id, '/users/track/phone-call');
+                                  const _contactTs = Date.now();
+                                  void trackInteraction(candidate.id, '/users/track/phone-call', _contactTs).then((ok) => {
+                                    // Reflect the new contact state immediately so the
+                                    // rating-window message appears without a refetch.
+                                    if (ok) setCandidates((prev) => prev.map((c) => c.id === candidate.id ? { ...c, canRateContact: true, isContactRated: false, contactedAt: _contactTs } : c));
+                                  });
                                   const digits = candidate.whatsappNumber!.replace(/[^0-9]/g, '');
                                   // wa.me requires full international format. PWA path (window.location.href)
                                   // strictly rejects numbers without a country code; browser path is forgiving.
@@ -3018,7 +3062,12 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                 fullWidth
                                 startIcon={<PhoneIcon sx={{ fontSize: 16 }} />}
                                 onClick={() => {
-                                  void trackInteraction(candidate.id, '/users/track/phone-call');
+                                  const _contactTs = Date.now();
+                                  void trackInteraction(candidate.id, '/users/track/phone-call', _contactTs).then((ok) => {
+                                    // Reflect the new contact state immediately so the
+                                    // rating-window message appears without a refetch.
+                                    if (ok) setCandidates((prev) => prev.map((c) => c.id === candidate.id ? { ...c, canRateContact: true, isContactRated: false, contactedAt: _contactTs } : c));
+                                  });
                                   window.open(`tel:${candidate.phone}`, '_self');
                                 }}
                                 sx={{
@@ -3060,6 +3109,143 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             </Button>
                           </Box>
                         )}
+                        {/* Contact prompt / rating-window message — shown when phone
+                            or WhatsApp is enabled. Once the voter has contacted
+                            (canRateContact), the eligibility prompt is replaced by the
+                            rating-window info. Window = next day after contact, 10 AM–10 PM
+                            (same calculation as meeting ratings). Hidden once rated. */}
+                        {(candidate.allowWhatsapp || candidate.allowPhone) && (() => {
+                          const helperSx = { mt: 0.6, fontFamily: '"Baloo 2", cursive', fontSize: '0.72rem', lineHeight: 1.4, color: '#FFCB00', textAlign: 'center' as const };
+                          const currentRating = contactRatings[candidate.id] ?? getStoredContactRating(candidate.id);
+                          const rated = candidate.isContactRated || currentRating > 0;
+
+                          // Rating window: next day after contact, 10:00–22:00 (same as meetings).
+                          let ratingStart: number | null = null;
+                          let ratingEnd: number | null = null;
+                          if (candidate.contactedAt) {
+                            const d = new Date(Number(candidate.contactedAt));
+                            d.setDate(d.getDate() + 1);
+                            d.setHours(10, 0, 0, 0);
+                            ratingStart = d.getTime();
+                            d.setHours(22, 0, 0, 0);
+                            ratingEnd = d.getTime();
+                          }
+                          const contacted = candidate.canRateContact || rated || candidate.contactedAt != null;
+                          const beforeWindow = ratingStart != null && now < ratingStart;
+                          const afterWindow = ratingEnd != null && now > ratingEnd;
+
+                          // Never contacted → eligibility prompt.
+                          if (!contacted) {
+                            return (
+                              <Typography sx={helperSx}>
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                              </Typography>
+                            );
+                          }
+
+                          // After the rating window closes → hide the card (rated or not).
+                          if (afterWindow) return null;
+
+                          // Contacted but the window hasn't opened yet → info message.
+                          if (beforeWindow) {
+                            return (
+                              <Typography sx={helperSx}>
+                                {t('pages.wardCandidates.contactRatingWindowInfo', { defaultValue: 'Rating will open from 10 AM to 10 PM.' })}
+                              </Typography>
+                            );
+                          }
+
+                          // Within the window (or contactedAt missing) → rating widget,
+                          // clickable until rated, read-only once rated.
+                          const showContactButtons = !rated;
+                          return (
+                            <Box sx={{ mt: 1.2, mb: 0.5 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.6, mb: 0.9 }}>
+                                <Box component="span" sx={{ color: '#10b981', fontSize: '0.8rem', lineHeight: 1 }}>⚡</Box>
+                                <Typography sx={{ fontSize: '0.6rem', fontWeight: 900, color: GOLD, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                                  {showContactButtons
+                                    ? t('pages.wardCandidates.rateContact', { defaultValue: 'Rate this Contact' })
+                                    : t('pages.wardCandidates.contactRated', { defaultValue: 'Contact Rating' })}
+                                </Typography>
+                              </Box>
+                              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0.5 }}>
+                                {RATING_OPTIONS.map(opt => {
+                                  const isSelected = currentRating === opt.value;
+                                  const breakdown = candidate.contactRating?.distribution ?? null;
+                                  const totalB: number = candidate.contactRating?.totalRatings ?? 0;
+                                  const pct = breakdown && totalB > 0 ? Math.round(((breakdown[String(opt.value)] || 0) / totalB) * 100) : null;
+                                  const r = 22;
+                                  const circ = 2 * Math.PI * r;
+                                  const dashOffset = circ - (circ * (pct ?? (isSelected ? 100 : 0)) / 100);
+                                  const hoverAnim = ({ 1: 'rShake 0.35s ease infinite', 2: 'rNod 0.55s ease-in-out infinite', 3: 'rTada 0.75s ease-in-out infinite', 4: 'rHeartBeat 0.45s ease-in-out infinite', 5: 'rFireDance 0.4s ease-in-out infinite' } as Record<number, string>)[opt.value];
+                                  return (
+                                    <Box
+                                      key={opt.value}
+                                      onClick={showContactButtons ? () => handleRateContact(candidate.id, opt.value) : undefined}
+                                      sx={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.4,
+                                        cursor: showContactButtons ? 'pointer' : 'default',
+                                        transition: 'transform 0.2s ease',
+                                        opacity: !showContactButtons && !isSelected ? 0.45 : 1,
+                                        userSelect: 'none',
+                                        ...(showContactButtons && {
+                                          '&:hover': { transform: 'translateY(-5px) scale(1.06)' },
+                                          '&:hover .ri-ring': { filter: `drop-shadow(0 0 9px ${opt.color})`, transition: 'filter 0.2s ease' },
+                                          '&:hover .ri-emoji': { animation: `${hoverAnim} !important` },
+                                        }),
+                                      }}
+                                    >
+                                      <Box sx={{ position: 'relative', width: 50, height: 50 }}>
+                                        <svg width="50" height="50" style={{ position: 'absolute', top: 0, left: 0 }}>
+                                          <circle cx="25" cy="25" r={r} fill={isSelected ? opt.bg : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')} stroke={isSelected ? opt.color : (isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)')} strokeWidth="1.5" />
+                                        </svg>
+                                        <Box component="span" className="ri-ring" sx={{ position: 'absolute', top: 0, left: 0, display: 'block', lineHeight: 0, transition: 'filter 0.2s ease' }}>
+                                          <svg width="50" height="50" style={{ display: 'block', transform: 'rotate(-90deg)' }}>
+                                            <circle
+                                              cx="25" cy="25" r={r}
+                                              fill="none"
+                                              stroke={opt.color}
+                                              strokeWidth="3"
+                                              strokeDasharray={circ}
+                                              strokeDashoffset={dashOffset}
+                                              strokeLinecap="round"
+                                              style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+                                            />
+                                          </svg>
+                                        </Box>
+                                        <Box
+                                          className="ri-emoji"
+                                          sx={{
+                                            position: 'absolute', inset: 0,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: '1.25rem', lineHeight: 1,
+                                            '@keyframes emojiFloat': { '0%, 100%': { transform: 'translateY(0) scale(1)' }, '50%': { transform: 'translateY(-2px) scale(1.1)' } },
+                                            '@keyframes emojiPulse': { '0%, 100%': { transform: 'scale(1.1)' }, '50%': { transform: 'scale(1.28)' } },
+                                            '@keyframes rShake': { '0%, 100%': { transform: 'translateX(0) rotate(0deg)' }, '20%': { transform: 'translateX(-4px) rotate(-10deg)' }, '40%': { transform: 'translateX(4px) rotate(10deg)' }, '60%': { transform: 'translateX(-3px) rotate(-6deg)' }, '80%': { transform: 'translateX(3px) rotate(6deg)' } },
+                                            '@keyframes rNod': { '0%, 100%': { transform: 'translateY(0) scale(1.1)' }, '50%': { transform: 'translateY(-5px) scale(1.25)' } },
+                                            '@keyframes rTada': { '0%': { transform: 'scale(1)' }, '10%, 20%': { transform: 'scale(0.85) rotate(-10deg)' }, '30%, 50%, 70%, 90%': { transform: 'scale(1.3) rotate(10deg)' }, '40%, 60%, 80%': { transform: 'scale(1.3) rotate(-10deg)' }, '100%': { transform: 'scale(1) rotate(0deg)' } },
+                                            '@keyframes rHeartBeat': { '0%': { transform: 'scale(1)' }, '14%': { transform: 'scale(1.35)' }, '28%': { transform: 'scale(1)' }, '42%': { transform: 'scale(1.35)' }, '70%': { transform: 'scale(1)' } },
+                                            '@keyframes rFireDance': { '0%, 100%': { transform: 'scale(1.1) rotate(0deg)' }, '20%': { transform: 'scale(1.4) rotate(-12deg) translateY(-3px)' }, '40%': { transform: 'scale(1.15) rotate(12deg)' }, '60%': { transform: 'scale(1.4) rotate(-8deg) translateY(-3px)' }, '80%': { transform: 'scale(1.15) rotate(8deg)' } },
+                                            animation: isSelected ? 'emojiPulse 0.8s ease-in-out infinite' : 'emojiFloat 3s ease-in-out infinite',
+                                            animationDelay: `${opt.value * 0.18}s`,
+                                          }}
+                                        >
+                                          {opt.emoji}
+                                        </Box>
+                                      </Box>
+                                      <Typography sx={{ fontSize: '0.65rem', fontWeight: 900, color: isSelected ? opt.color : textPrimary, lineHeight: 1, minHeight: '0.8rem' }}>
+                                        {pct !== null ? `${pct}%` : ''}
+                                      </Typography>
+                                      <Typography sx={{ fontSize: '0.4rem', fontWeight: 800, color: isSelected ? opt.color : (isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)'), letterSpacing: '0.03em', textAlign: 'center', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
+                                        {opt.label.toUpperCase()}
+                                      </Typography>
+                                    </Box>
+                                  );
+                                })}
+                              </Box>
+                            </Box>
+                          );
+                        })()}
                         {/* Divider after contact buttons */}
                         <Box sx={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(245,168,0,0.25), transparent)' }} />
                       </>

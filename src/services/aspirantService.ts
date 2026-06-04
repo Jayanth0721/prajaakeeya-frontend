@@ -138,3 +138,7 @@ export const rateAspirantMeeting = (meetingId: number, payload: { rating: number
 // Rate an aspirant visit/direct-meet (1=bad, 2=average, 3=good, 4=excellent)
 export const rateAspirantVisit = (visitId: number, payload: { rating: number }) =>
   apiClient.post(`/aspirants/visits/${visitId}/rate`, payload);
+
+// Rate an aspirant's contact (phone/WhatsApp). 1=bad … 5=excellent.
+export const rateAspirantContact = (aspirantId: number, payload: { rating: number }) =>
+  apiClient.post(`/aspirants/${aspirantId}/contact/rate`, payload);
