@@ -1,9 +1,16 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => {
+  // Load ALL env vars (empty prefix) so we can read the build-only, un-prefixed
+  // SENTRY_* secrets here in the Node config. These are used solely to upload
+  // source maps at build time — they never reach the browser bundle.
+  const env = loadEnv(mode, process.cwd(), '');
+
+  return {
   // ---- Vitest test configuration ----
   // Kept inside vite.config.js (not a separate vitest.config.ts) so tests reuse
   // the same plugins/resolve config as the app. This block only affects tests.
@@ -80,6 +87,12 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Don't emit source maps for the generated service worker. When the
+        // app build enables source maps (for Sentry upload), Workbox would
+        // otherwise also emit sw.js.map / workbox-*.js.map into dist — and
+        // those are produced after Sentry's cleanup step, so they'd ship
+        // publicly. The SW is generic boilerplate, so no map is needed.
+        sourcemap: false,
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
@@ -118,11 +131,36 @@ export default defineConfig({
         ],
       },
     }),
+    // Upload source maps to Sentry so production stack traces show real file
+    // names / line numbers instead of minified code. Runs ONLY when an auth
+    // token is present (CI / Amplify), so a plain local `vite build` is
+    // unaffected. The org auth token (sntrys_*) encodes the EU region, so the
+    // plugin routes uploads to the correct data centre automatically.
+    ...(command === 'build' && env.SENTRY_AUTH_TOKEN
+      ? [
+          sentryVitePlugin({
+            org: env.SENTRY_ORG,
+            project: env.SENTRY_PROJECT,
+            authToken: env.SENTRY_AUTH_TOKEN,
+            // Don't send plugin-usage telemetry to Sentry.
+            telemetry: false,
+            sourcemaps: {
+              // Delete the .map files after upload so they are never served
+              // publicly from the dist bundle.
+              filesToDeleteAfterUpload: ['./dist/**/*.map'],
+            },
+          }),
+        ]
+      : []),
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   build: {
+    // 'hidden' emits source maps for Sentry to upload but omits the
+    // //# sourceMappingURL comment, so the deleted maps aren't referenced.
+    // Only generate them when we actually upload (token present).
+    sourcemap: command === 'build' && env.SENTRY_AUTH_TOKEN ? 'hidden' : false,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -156,4 +194,5 @@ export default defineConfig({
       }
     },
   }
+  };
 });
