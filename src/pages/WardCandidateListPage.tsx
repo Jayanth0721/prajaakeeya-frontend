@@ -40,8 +40,8 @@ import {
   ThumbUp as ThumbUpIcon,
   ThumbUpOffAlt as ThumbUpOffAltIcon,
   HowToVote as HowToVoteIcon,
-  ReportProblem as ReportProblemIcon,
-  Home as HomeIcon,
+  // ReportProblem as ReportProblemIcon, // unused — Public Issue button commented out
+  // Home as HomeIcon, // unused — Home button commented out
   Star as StarIcon,
   StarHalf as StarHalfIcon,
   StarBorder as StarBorderIcon,
@@ -1228,6 +1228,12 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
   // (e.g. state_assembly → municipal_corporation) loads the right data and
   // clears any stale selections from the previous type.
   useEffect(() => {
+    // A ?electionId= deep-link (e.g. a meeting notification) is rewritten to
+    // ?type= by the conversion effect above. Until that runs, urlType is null
+    // and autoElectionType falls back to the stale saved tab — bail out so we
+    // don't fetch the wrong election type first and have it race the correct
+    // load that fires once the URL is normalized.
+    if (searchParams.get('electionId') && !urlType) return;
     if (!autoFilterMode) return;
     if (lastAutoLoadedTypeRef.current === autoElectionType) return;
     if (!elections.length || !autoUserConstituencyId) return;
@@ -1374,8 +1380,10 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
 
   return (
     <>
-      {/* Home & Report Issue buttons — hidden when embedded in the dashboard,
-          which provides its own navigation (hero + bottom nav). */}
+      {/* Home & Public Issue buttons commented out per request.
+          (Previously: hidden when embedded in the dashboard, which provides
+          its own navigation — hero + bottom nav.) */}
+      {/*
       {!embedded && (
       <Box
         sx={{
@@ -1470,6 +1478,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
         </Stack>
       </Box>
       )}
+      */}
 
       <Stack className="ward-candidates-page" spacing={3}>
         {/* Voting window notification (temporarily disabled) */}
