@@ -37,6 +37,13 @@ if (
   firebase.messaging();
 }
 
+// Activate a new version of this SW immediately instead of waiting for every
+// tab to close — so push/click fixes reach devices on the next visit, not days
+// later. (This SW lives at its own scope and controls no pages, so claiming is
+// harmless.)
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+
 // ─── TEMPORARY DEBUG — remove once push payloads are confirmed ───────────────
 // Logs the RAW push payload exactly as the backend sent it (notification + data
 // blocks), so we can see whether the routing ids (type/aspirantId/electionId)
