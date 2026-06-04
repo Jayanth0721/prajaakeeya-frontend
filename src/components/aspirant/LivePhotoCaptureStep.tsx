@@ -284,6 +284,7 @@ const LivePhotoCaptureStep = ({
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
                 <Stack spacing={2.2} alignItems="center">
                   <CameraAltIcon sx={{ fontSize: 80, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.5)' }} />
+                  {/* Commented out per request — live photo description & instructions
                   <Typography sx={{ fontFamily: FF, color: isDark ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.78)', textAlign: 'center' }}>
                     {t('forms.aspirant.livePhoto.description')}
                   </Typography>
@@ -292,6 +293,8 @@ const LivePhotoCaptureStep = ({
                       {t('forms.aspirant.livePhoto.instructions')}
                     </Typography>
                   </Alert>
+                  */}
+                  {/* Commented out per request — Take Photo (live camera capture) button
                   {startCamera && (
                     <Button
                       variant="contained"
@@ -315,6 +318,7 @@ const LivePhotoCaptureStep = ({
                       {t('forms.aspirant.livePhoto.takePhoto')}
                     </Button>
                   )}
+                  */}
                   <Button
                     variant="outlined"
                     size="large"
@@ -562,6 +566,7 @@ const LivePhotoCaptureStep = ({
                     )}
 
                     <Stack direction="row" spacing={1.2}>
+                      {/* Commented out per request — Retake Photo button (uploaded state)
                       <Button
                         variant="outlined"
                         size="small"
@@ -580,6 +585,7 @@ const LivePhotoCaptureStep = ({
                       >
                         {t('forms.aspirant.livePhoto.retake')}
                       </Button>
+                      */}
                       <Button
                         variant="outlined"
                         size="small"
