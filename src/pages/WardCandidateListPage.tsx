@@ -370,6 +370,13 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
       for (let i = 1; i <= 5; i++) sum += (dist[String(i)] || 0) * i;
       return { ...c, isContactRated: true, canRateContact: false, contactRating: { distribution: dist, totalRatings: total, averageRating: total > 0 ? sum / total : 0 } };
     }));
+    // Reflect the new rating in the header's overall rating immediately (no refresh).
+    setCandidateOverallRatings(prev => {
+      const cur = prev[aspirantId] ?? { averageRating: 0, totalRatings: 0 };
+      const newTotal = cur.totalRatings + 1;
+      const newSum = cur.averageRating * cur.totalRatings + rating;
+      return { ...prev, [aspirantId]: { averageRating: newSum / newTotal, totalRatings: newTotal } };
+    });
     if (aspirantId <= 0) return;
     try {
       await rateAspirantContact(aspirantId, { rating });
@@ -2339,8 +2346,9 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                   </Typography> */}
                                 </Box>
                                 {(() => {
-                                  const or = candidateOverallRatings[candidate.id];
-                                  if (!or || or.totalRatings === 0) return null;
+                                  // Always show the overall rating, even when there are
+                                  // no ratings yet (empty stars + "0.0 (0 ratings)").
+                                  const or = candidateOverallRatings[candidate.id] ?? { averageRating: 0, totalRatings: 0 };
                                   return (
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
                                       <Box sx={{ display: 'flex', alignItems: 'center' }}>{renderStars(or.averageRating, 11)}</Box>
@@ -3114,7 +3122,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             (canRateContact), the eligibility prompt is replaced by the
                             rating-window info. Window = next day after contact, 10 AM–10 PM
                             (same calculation as meeting ratings). Hidden once rated. */}
-                        {(candidate.allowWhatsapp || candidate.allowPhone) && (() => {
+                        {(!!candidate.phone || !!candidate.whatsappNumber) && (() => {
                           const helperSx = { mt: 0.6, fontFamily: '"Baloo 2", cursive', fontSize: '0.72rem', lineHeight: 1.4, color: '#FFCB00', textAlign: 'center' as const };
                           const currentRating = contactRatings[candidate.id] ?? getStoredContactRating(candidate.id);
                           const rated = candidate.isContactRated || currentRating > 0;
