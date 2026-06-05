@@ -6,8 +6,15 @@ const useExtractionPolling = (onUpdate: (data: unknown) => void) => {
 
   useEffect(() => {
     intervalRef.current = setInterval(async () => {
-      const { data } = await apiClient.get('/admin/dashboard');
-      onUpdate(data);
+      // Guard the poll so a transient failure doesn't surface as an unhandled
+      // promise rejection every 5s. Polling cadence and onUpdate are unchanged;
+      // we only stop the error from going unhandled (polling continues).
+      try {
+        const { data } = await apiClient.get('/admin/dashboard');
+        onUpdate(data);
+      } catch (err) {
+        console.warn('[useExtractionPolling] poll failed', err);
+      }
     }, 5000);
 
     return () => {

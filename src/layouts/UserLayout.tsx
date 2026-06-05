@@ -50,8 +50,10 @@ const UserLayout = () => {
   const isVotersPage = location.pathname === '/user/voters';
   const isCivicIssuesPage = location.pathname === '/user/civic-issues';
   const isSopPage = location.pathname === '/user/sop';
-  const isAspirantRegister = location.pathname === '/user/aspirants/register';
+  const isAspirantRegister = location.pathname === '/user/aspirants/register' || location.pathname === '/user/aspirants/declaration' || location.pathname === '/user/aspirants/documents';
   const isNotificationsPage = location.pathname === '/user/notifications';
+  const isRegisteredAspirants = location.pathname === '/user/registered-aspirants';
+  const isProfilePage = location.pathname === '/user/complete-profile' || location.pathname === '/user/dashboard/profile';
 
   const [aspirantName, setAspirantName] = useState<string | null>(null);
   const [aspirantLoading, setAspirantLoading] = useState(user?.role === 'aspirant');
@@ -89,7 +91,7 @@ const UserLayout = () => {
     { label: t('userDashboard.actions.howUPPWorks', { defaultValue: 'SOP' }), icon: <DescriptionRoundedIcon />, path: '/user/sop' },
     isAspirant
       ? { label: t('userDashboard.actions.myProfile', { defaultValue: 'My Profile' }), icon: <PersonRoundedIcon />, path: '/user/dashboard/profile' }
-      : { label: t('userDashboard.actions.registerAspirant', { defaultValue: 'Register Aspirant' }), icon: <PersonAddAlt1RoundedIcon />, path: '/user/aspirants/register' },
+      : { label: t('userDashboard.actions.registerAspirant', { defaultValue: 'Register Aspirant' }), icon: <PersonAddAlt1RoundedIcon />, path: '/user/aspirants/declaration' },
   ];
   const currentNavIndex = bottomNavItems.findIndex((item) =>
     item.path === '/user/dashboard'
@@ -128,8 +130,8 @@ const UserLayout = () => {
           <Toolbar sx={{ justifyContent: 'space-between', py: { xs: 0.9, sm: 1.2 }, minHeight: { xs: 56, sm: 72 }, px: { xs: 1 } }}>
             {/* Left: back button (mobile, non-dashboard) or logo */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              {/* Mobile back button — shown on all pages except dashboard, voters, civic issues, sop, and aspirant register */}
-              {!isDashboard && !isVotersPage && !isCivicIssuesPage && !isSopPage && !isAspirantRegister && !isNotificationsPage && (
+              {/* Mobile back button — shown on all pages except dashboard, voters, civic issues, sop, aspirant register, notifications, and registered-aspirants */}
+              {!isDashboard && !isVotersPage && !isCivicIssuesPage && !isSopPage && !isAspirantRegister && !isNotificationsPage && !isRegisteredAspirants && !isProfilePage && (
                 <IconButton
                   onClick={() => navigate(-1)}
                   size="small"
@@ -148,7 +150,7 @@ const UserLayout = () => {
 
               {/* Logo — always on desktop, on dashboard/voters/civic-issues/sop on mobile */}
               <Box
-                sx={{ display: { xs: (isDashboard || isVotersPage || isCivicIssuesPage || isSopPage || isAspirantRegister || isNotificationsPage) ? 'flex' : 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
+                sx={{ display: { xs: (isDashboard || isVotersPage || isCivicIssuesPage || isSopPage || isAspirantRegister || isNotificationsPage || isRegisteredAspirants || isProfilePage) ? 'flex' : 'none', sm: 'flex' }, alignItems: 'center', gap: 1.5, cursor: 'pointer' }}
                 onClick={() => navigate('/user/dashboard')}
               >
                 <Box sx={{
@@ -280,6 +282,45 @@ const UserLayout = () => {
             </Box>
           </Toolbar>
         </Container>
+
+        {/* Desktop primary nav — mirrors the mobile bottom nav, shown on sm+.
+            Same items / paths / active-state; replaces the bottom bar on desktop. */}
+        <Box sx={{ display: { xs: 'none', sm: 'block' }, borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: { sm: 0.5, md: 1 }, py: 0.5 }}>
+              {bottomNavItems.map((item, idx) => {
+                const active = idx === currentNavIndex;
+                return (
+                  <Button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    startIcon={item.icon}
+                    sx={{
+                      fontFamily: FF,
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      px: { sm: 1.2, md: 2 },
+                      py: 0.9,
+                      fontSize: { sm: '0.8rem', md: '0.9rem' },
+                      color: active
+                        ? (isDark ? BRAND.yellow : BRAND.saffron)
+                        : (isDark ? 'rgba(255,255,255,0.72)' : 'text.secondary'),
+                      bgcolor: active ? 'rgba(245,168,0,0.12)' : 'transparent',
+                      '& .MuiButton-startIcon': { mr: 0.6 },
+                      '&:hover': {
+                        bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'action.hover',
+                        color: isDark ? '#fff' : 'text.primary',
+                      },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                );
+              })}
+            </Box>
+          </Container>
+        </Box>
       </AppBar>
 
       <Container maxWidth="lg" sx={{ pt: { xs: 3, sm: 4, md: 5 }, pb: { xs: 'calc(90px + env(safe-area-inset-bottom))', sm: 4, md: 5 } }}>

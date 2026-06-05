@@ -20,7 +20,10 @@ env:
   AWS_REGION: ap-south-1
 
 jobs:
-  deploy:
+  # ── Gate: lint + unit/UI tests must pass before anything deploys ──────────
+  # The `deploy` job below declares `needs: test`, so if a single test fails
+  # this job fails and the deployment never starts.
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,14 +32,62 @@ jobs:
         with:
           node-version: 20
 
+      # The lockfile is generated with npm 11 (dev machines). node 20 ships
+      # npm 10, whose stricter reader rejects npm 11's nested-dependency
+      # lockfile format ("Missing esbuild@... from lock file"). Pin CI to
+      # npm 11 so `npm ci` reads the lockfile exactly as it was written.
+      # npm 11 also reads older lockfile formats, so this stays correct no
+      # matter which npm a teammate uses.
+      - name: Pin npm to match the lockfile
+        run: npm install -g npm@11
+
       - name: Install deps
-        run: npm install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:run
+
+  deploy:
+    needs: test                 # ← deploy ONLY runs if the `test` job succeeded
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The lockfile is generated with npm 11 (dev machines). node 20 ships
+      # npm 10, whose stricter reader rejects npm 11's nested-dependency
+      # lockfile format ("Missing esbuild@... from lock file"). Pin CI to
+      # npm 11 so `npm ci` reads the lockfile exactly as it was written.
+      # npm 11 also reads older lockfile formats, so this stays correct no
+      # matter which npm a teammate uses.
+      - name: Pin npm to match the lockfile
+        run: npm install -g npm@11
+
+      - name: Install deps
+        run: npm ci
 
       - name: Build
         run: npm run build
         env:
           VITE_APP_MODE: ${{ vars.VITE_APP_MODE }}
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          # Firebase web-push config — baked into the bundle at build time. These
+          # are public (shipped to the browser), so repo Variables are fine. Without
+          # them isConfigured=false and FCM is silently disabled (no token, no API call).
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_FIREBASE_VAPID_KEY: ${{ vars.VITE_FIREBASE_VAPID_KEY }}
 
       # Pick the target bucket + distribution based on the branch that triggered
       # this run. main → production, anything else (staging) → staging.
@@ -65,6 +116,7 @@ jobs:
             --exclude "index.html" \
             --exclude "sw.js" \
             --exclude "registerSW.js" \
+            --exclude "firebase-messaging-sw.js" \
             --exclude "manifest.webmanifest" \
             --cache-control "public,max-age=31536000,immutable"
 
@@ -78,6 +130,8 @@ jobs:
             --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
           [ -f dist/registerSW.js ] && aws s3 cp dist/registerSW.js s3://$B/registerSW.js \
             --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
+          [ -f dist/firebase-messaging-sw.js ] && aws s3 cp dist/firebase-messaging-sw.js s3://$B/firebase-messaging-sw.js \
+            --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
           [ -f dist/manifest.webmanifest ] && aws s3 cp dist/manifest.webmanifest s3://$B/manifest.webmanifest \
             --cache-control "no-cache" --content-type "application/manifest+json" || true
 
@@ -85,4 +139,4 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ steps.env.outputs.dist }} \
-            --paths "/" "/index.html" "/sw.js" "/registerSW.js" "/manifest.webmanifest"
+            --paths "/" "/index.html" "/sw.js" "/registerSW.js" "/firebase-messaging-sw.js" "/manifest.webmanifest"

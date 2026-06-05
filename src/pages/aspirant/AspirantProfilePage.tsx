@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, CircularProgress, Snackbar, Alert as MuiAlert, Button } from '@mui/material';
 import { Logout as LogoutIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 import { getAspirantById, withdrawMe } from '../../services/aspirantService';
 import AspirantProfileTab from '../../components/aspirant/AspirantProfileTab';
@@ -11,7 +11,21 @@ import ProfileCompletionPage from '../ProfileCompletionPage';
 const AspirantProfilePage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
     const { user, logout } = useAuthStore();
+
+    // Only fully-registered aspirants get the "My Profile" section (Aspirant
+    // Profile card, SOP agreement, withdraw). Everyone else just sees the
+    // shared profile-completion form — this lets the same component back both
+    // /user/dashboard/profile and /user/complete-profile.
+    const isAspirantUser = user?.role === 'aspirant';
+
+    // On /user/complete-profile, the "My Profile" section is hidden while the
+    // aspirant's documents are still pending — they only see the form there
+    // until their registration is approved (documentStatus === 'completed').
+    const isCompleteProfileRoute = location.pathname.includes('/complete-profile');
+    const docsCompleted = (user as any)?.documentStatus === 'completed';
+    const showMyProfile = isAspirantUser && (!isCompleteProfileRoute || docsCompleted);
 
     const [aspirantProfile, setAspirantProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -39,6 +53,14 @@ const AspirantProfilePage: React.FC = () => {
             try {
                 if (!user?.id) {
                     navigate('/register');
+                    return;
+                }
+
+                // No "My Profile" section to render (non-aspirant, or aspirant
+                // with pending docs on the complete-profile route) — skip the
+                // fetch, they only see the form.
+                if (!showMyProfile) {
+                    setLoading(false);
                     return;
                 }
 
@@ -92,6 +114,13 @@ const AspirantProfilePage: React.FC = () => {
             window.open(url, '_blank');
         }
     };
+
+    // When there's no "My Profile" section to show (non-aspirant, or an
+    // aspirant with pending documents on the complete-profile route), render
+    // just the shared profile-completion form.
+    if (!showMyProfile) {
+        return <ProfileCompletionPage />;
+    }
 
     if (loading) {
         return (
@@ -157,6 +186,20 @@ const AspirantProfilePage: React.FC = () => {
                 >
                     {t('common.logout') || 'Logout'}
                 </Button>
+            </Box>
+
+            {/* Support contact line — bottom of the My Profile view */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 4, px: { xs: 2, md: 0 } }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.85rem' }}>
+                    {t('profile.supportLine', { defaultValue: 'Facing an issue? Reach us at ' })}
+                    <Box
+                        component="a"
+                        href="mailto:support@prajaakeeya.org"
+                        sx={{ color: '#F5A800', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                        support@prajaakeeya.org
+                    </Box>
+                </Typography>
             </Box>
 
             <Snackbar

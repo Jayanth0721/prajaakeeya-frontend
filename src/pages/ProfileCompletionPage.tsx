@@ -682,6 +682,42 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
         }
     };
 
+    // Auto-save a contact preference the moment its switch is toggled, instead
+    // of waiting for the full profile submit. Optimistic: reflect the new value
+    // immediately, PATCH the permissions endpoint, and revert if it fails. The
+    // payload always carries all three flags, so toggling one never clobbers the
+    // other two.
+    const handleContactToggle = async (field: 'whatsapp' | 'phone' | 'chat', value: boolean) => {
+        const prev = { whatsapp: contactWhatsapp, phone: contactPhoneCall, chat: contactChat };
+        const next = { ...prev, [field]: value };
+
+        // Optimistic UI.
+        setContactWhatsapp(next.whatsapp);
+        setContactPhoneCall(next.phone);
+        setContactChat(next.chat);
+
+        // Only fully-registered aspirants have a permissions record to persist to.
+        if (!user?.aspirantId) return;
+
+        try {
+            await apiClient.patch(`/aspirants/${user.aspirantId}/permissions`, {
+                allowWhatsapp: next.whatsapp,
+                allowPhone: next.phone,
+                allowChat: next.chat,
+            });
+        } catch (err: any) {
+            // Revert the optimistic change on failure.
+            setContactWhatsapp(prev.whatsapp);
+            setContactPhoneCall(prev.phone);
+            setContactChat(prev.chat);
+            showMessage(
+                err?.response?.data?.message ||
+                    t('profile.permissionSaveFailed', { defaultValue: 'Failed to save preference. Please try again.' }),
+                'error',
+            );
+        }
+    };
+
     if (!user || initialLoading) {
         return (
             <Box
@@ -980,7 +1016,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                                 </Box>
                                                 <BigSwitch
                                                     checked={contactWhatsapp}
-                                                    onChange={(e) => setContactWhatsapp(e.target.checked)}
+                                                    onChange={(e) => handleContactToggle('whatsapp', e.target.checked)}
                                                 />
                                             </Box>
                                             <Divider />
@@ -1004,7 +1040,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                                 </Box>
                                                 <BigSwitch
                                                     checked={contactPhoneCall}
-                                                    onChange={(e) => setContactPhoneCall(e.target.checked)}
+                                                    onChange={(e) => handleContactToggle('phone', e.target.checked)}
                                                 />
                                             </Box>
                                             <Divider />
@@ -1023,7 +1059,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                                 </Box>
                                                 <BigSwitch
                                                     checked={contactChat}
-                                                    onChange={(e) => setContactChat(e.target.checked)}
+                                                    onChange={(e) => handleContactToggle('chat', e.target.checked)}
                                                 />
                                             </Box>
                                         </Box>
@@ -1450,7 +1486,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
             </Card>
 
             {/* Add Photo Frame */}
-            <Button
+            {/* <Button
                 variant="outlined"
                 fullWidth
                 startIcon={<AutoAwesomeIcon />}
@@ -1466,7 +1502,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 }}
             >
                 {t('userDashboard.framePrompt.title', { defaultValue: 'Add Frame' })}
-            </Button>
+            </Button> */}
 
             {/* Mobile-only Logout button below card */}
             <Box sx={{ display: hideLogout ? 'none' : { xs: 'flex', sm: 'none' }, justifyContent: 'center', mt: 1 }}>
@@ -1511,6 +1547,24 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 </Button>
             </Box>
 
+            {/* Support contact line — hidden when embedded in the aspirant
+                "My Profile" view (hideLogout); that view renders it at the very
+                bottom, after its own logout button, instead. */}
+            {!hideLogout && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 4 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.85rem' }}>
+                        {t('profile.supportLine', { defaultValue: 'Facing an issue? Reach us at ' })}
+                        <Box
+                            component="a"
+                            href="mailto:support@prajaakeeya.org"
+                            sx={{ color: '#F5A800', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                        >
+                            support@prajaakeeya.org
+                        </Box>
+                    </Typography>
+                </Box>
+            )}
+
             {/* Delete Account Confirmation Dialog */}
             <Dialog
                 open={deleteDialogOpen}
@@ -1528,7 +1582,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 <DialogContent>
                     {isAspirant ? (
                         <Typography sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                            {t('common.withdrawAspirantMessage') || 'Please withdraw your aspirant registration before deleting your account. You can withdraw from your aspirant dashboard.'}
+                            {t('common.withdrawAspirantMessage') || 'Please withdraw your aspirant registration before deleting your account. You can withdraw below.'}
                         </Typography>
                     ) : (
                         <Typography sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
@@ -1538,21 +1592,23 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>
                     <Button
-                        onClick={() => setDeleteDialogOpen(false)}
+                        onClick={() => {
+                            setDeleteDialogOpen(false);
+                            // For aspirants, the close button doubles as "take me to
+                            // the Withdraw action" — scroll it into view on the page.
+                            if (isAspirant) {
+                                setTimeout(() => {
+                                    document
+                                        .getElementById('withdraw-application')
+                                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 100);
+                            }
+                        }}
                         sx={{ textTransform: 'none', fontWeight: 600 }}
                     >
                         {t('common.cancel') || 'Cancel'}
                     </Button>
-                    {isAspirant ? (
-                        <Button
-                            variant="contained"
-                            color="warning"
-                            onClick={() => { setDeleteDialogOpen(false); navigate('/user/dashboard/profile'); }}
-                            sx={{ textTransform: 'none', fontWeight: 700 }}
-                        >
-                            {t('common.goToDashboard') || 'Go to Dashboard'}
-                        </Button>
-                    ) : (
+                    {!isAspirant && (
                         <Button
                             variant="contained"
                             color="error"

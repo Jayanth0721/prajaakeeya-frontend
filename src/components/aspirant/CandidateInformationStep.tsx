@@ -23,7 +23,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import GavelIcon from '@mui/icons-material/Gavel';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
-import AgricultureIcon from '@mui/icons-material/Agriculture';
+import PlaceIcon from '@mui/icons-material/Place';
 import EditIcon from '@mui/icons-material/Edit';
 import { BRAND } from '../../theme';
 import { getMinAgeForElectionType } from '../../utils/validation';
@@ -180,7 +180,7 @@ const getDisabledFieldSx = (isDark: boolean) => ({
 const CandidateInformationStep = ({
   register, errors, watch, setValue, trigger, setError, clearErrors,
   loading, user,
-  onNext, onBack, onCancel,
+  onNext, onBack,
 }: Props) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -447,14 +447,26 @@ const CandidateInformationStep = ({
   // "Register as Aspirant" from the aspirants list on a specific tab opens
   // the registration form already focused on that election type.
   const [searchParams] = useSearchParams();
+  const TAB_KEY = `aspirant_active_tab_${storeUser?.id ?? 'guest'}`;
   const initialTabFromQuery: AspirantTab = (() => {
     const ty = searchParams.get('type');
     if (ty === 'lok_sabha') return 'mp';
     if (ty === 'state_assembly') return 'mla';
     if (ty === 'municipal_corporation' || ty === 'gram_panchayat') return 'ward_panchayat';
+    // No query param (e.g. returning from the Documents page via "Back") —
+    // restore the last-selected tab so the chosen election type isn't lost.
+    try {
+      const saved = sessionStorage.getItem(TAB_KEY);
+      if (saved === 'mp' || saved === 'mla' || saved === 'ward_panchayat') return saved;
+    } catch { /* ignore */ }
     return 'mp';
   })();
   const [activeTab, setActiveTab] = useState<AspirantTab>(initialTabFromQuery);
+
+  // Persist the active tab so navigating away and back restores the selection.
+  useEffect(() => {
+    try { sessionStorage.setItem(TAB_KEY, activeTab); } catch { /* ignore */ }
+  }, [activeTab, TAB_KEY]);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   // If a voting window is currently open for a given election type, registration
@@ -792,7 +804,7 @@ const CandidateInformationStep = ({
           : hasGp
             ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
             : (t('forms.aspirant.tabWardPanchayat') || 'Municipal / Gram Panchayat');
-        const wardTabIcon = hasGp && !hasMunicipal ? AgricultureIcon : LocationCityIcon;
+        const wardTabIcon = hasGp && !hasMunicipal ? PlaceIcon : LocationCityIcon;
         // MLA tab uses image assets (capitol1.png inactive, capitol.png active)
         // matching the Civic Issues page; the others stay on SvgIcons.
         const tabs: {
@@ -1229,6 +1241,8 @@ const CandidateInformationStep = ({
 
           return (
             <Stack direction="row" spacing={1.5} sx={{ ml: 'auto', width: { xs: '100%', sm: 'auto' }, justifyContent: { xs: 'space-between', sm: 'flex-end' } }}>
+              {/* Home button — commented out per request. To restore: uncomment this
+                  block and re-add `onCancel` to the props destructure above.
               {onCancel && (
                 <Button
                   variant="outlined"
@@ -1243,6 +1257,7 @@ const CandidateInformationStep = ({
                   {t('common.home')}
                 </Button>
               )}
+              */}
 
               <Button
                 variant="outlined"

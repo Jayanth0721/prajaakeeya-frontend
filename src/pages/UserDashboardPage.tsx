@@ -65,7 +65,9 @@ const UserDashboardPage = () => {
 
   const { t, i18n } = useTranslation();
   const isKannada = (i18n.language || '').startsWith('kn');
+  /* actionTitleFontSize — unused (desktop card grid commented out below)
   const actionTitleFontSize = isKannada ? { xs: '0.9rem', md: '1rem' } : { xs: '1rem', md: '1.125rem' };
+  */
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -132,6 +134,8 @@ const UserDashboardPage = () => {
     psName: ''
   };
 
+  /* ── Desktop card-grid actions & handlers — COMMENTED OUT (unused now that the
+     dashboard renders WardCandidateListPage above). Kept for easy revert. ──
   const actions = [
     // Registered Citizens tile — temporarily disabled
     // {
@@ -313,18 +317,23 @@ const UserDashboardPage = () => {
     const disabledForThis = (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') || (action as any).disabled;
     if (disabledForThis) return;
 
+    // The aspirant flow now starts on the standalone Declaration page.
+    const target = action.path === '/user/aspirants/register'
+      ? '/user/aspirants/declaration'
+      : action.path;
     try {
       if (action.path === '/user/aspirants/register' && shouldShowContinue) {
-        navigate(action.path, { state: { resume: true } });
+        navigate(target, { state: { resume: true } });
         return;
       }
 
-      navigate(action.path);
+      navigate(target);
     } catch (err) {
       console.warn('[handleActionClick] error', err);
-      navigate(action.path);
+      navigate(target);
     }
   };
+  */
 
   const DRAFT_KEY = `aspirant_registration_draft_${user?.id ?? 'guest'}`;
   const [hasLocalDraft, setHasLocalDraft] = React.useState(false);
@@ -340,8 +349,10 @@ const UserDashboardPage = () => {
   const hasIncompleteAspirant = Boolean(user?.role === 'aspirant' && (user as any)?.documentStatus !== 'completed');
   const shouldShowContinue = hasLocalDraft || hasIncompleteAspirant;
 
+  /* isAspirantRegistrationComplete — unused (desktop card grid commented out)
   // Aspirant registration is complete when role=aspirant and documentStatus=completed
   const isAspirantRegistrationComplete = isAspirant;
+  */
 
   const FF = "'Baloo 2', sans-serif";
   const isDark = theme.palette.mode === 'dark';
@@ -358,9 +369,11 @@ const UserDashboardPage = () => {
   const borderSubtle = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.10)';
   const borderFaint = isDark ? 'rgba(255,255,255,0.09)' : 'rgba(17,24,39,0.08)';
 
+  /* heroBg — unused (desktop hero commented out below)
   const heroBg = isDark
     ? 'radial-gradient(130% 150% at 6% 0%, rgba(200,24,10,0.2) 0%, rgba(10,8,8,1) 55%), radial-gradient(120% 130% at 100% 0%, rgba(37,58,154,0.16) 0%, rgba(10,8,8,1) 55%)'
     : 'linear-gradient(135deg, rgba(200,24,10,0.07) 0%, rgba(245,168,0,0.07) 50%, rgba(37,58,154,0.05) 100%)';
+  */
   const gridOverlay = isDark
     ? 'linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px)'
     : 'linear-gradient(rgba(17,24,39,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(17,24,39,.02) 1px,transparent 1px)';
@@ -815,15 +828,69 @@ const UserDashboardPage = () => {
     </Box>
   );
 
+  const pendingAspirantAlert = user?.role === 'aspirant' && (user as any)?.documentStatus !== 'completed' && !pendingAlertDismissed && (
+    <Alert
+      severity="warning"
+      sx={{
+        borderRadius: 2,
+        border: `1px solid ${BORDER}`,
+        '& .MuiAlert-message': { width: '100%', fontFamily: FF },
+      }}
+      action={isSm ? undefined : (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button
+            color="inherit"
+            size="small"
+            variant="outlined"
+            onClick={() => navigate('/user/aspirants/declaration', { state: { resume: true } })}
+            sx={{ whiteSpace: 'nowrap', fontFamily: FF, fontWeight: 700 }}
+          >
+            {t('userDashboard.actions.continueAspirantRegistration')}
+          </Button>
+          <IconButton size="small" color="inherit" onClick={() => setPendingAlertDismissed(true)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+      )}
+    >
+      <Stack spacing={1}>
+        <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: FF }}>
+          {t('userDashboard.actions.pendingAspirantAlert')}
+        </Typography>
+        {isSm && (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button
+              color="inherit"
+              size="small"
+              variant="outlined"
+              fullWidth
+              onClick={() => navigate('/user/aspirants/declaration', { state: { resume: true } })}
+              sx={{ fontFamily: FF, fontWeight: 700 }}
+            >
+              {t('userDashboard.actions.continueAspirantRegistration')}
+            </Button>
+            <IconButton size="small" color="inherit" onClick={() => setPendingAlertDismissed(true)}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+        )}
+      </Stack>
+    </Alert>
+  );
+
   return (
     <>
-      {isSm ? (
-        <Stack spacing={2.5} sx={{ fontFamily: FF, pb: 2 }}>
-          {mobileHero}
-          {isAspirant && mobileAspirantTiles}
-          <WardCandidateListPage embedded />
-        </Stack>
-      ) : (
+      {/* Unified layout: desktop now mirrors the mobile home (full-width).
+          The aspirants list (WardCandidateListPage) reflows to a 2–3 column
+          grid on larger screens automatically. */}
+      <Stack spacing={{ xs: 2.5, md: 3 }} sx={{ fontFamily: FF, pb: { xs: 2, md: 4 } }}>
+        {mobileHero}
+        {pendingAspirantAlert}
+        {isAspirant && mobileAspirantTiles}
+        <WardCandidateListPage embedded />
+      </Stack>
+
+      {/* Original desktop card-grid layout — COMMENTED OUT (unused; dashboard renders WardCandidateListPage above). Kept for easy revert.
       <Stack spacing={3} sx={{ fontFamily: FF, pb: { xs: 2, md: 4 } }}>
       <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42 }}>
         <Box sx={{
@@ -865,7 +932,7 @@ const UserDashboardPage = () => {
               </Typography>
               {(user?.wardNumber || resolvedWardName) && (
                 <Typography sx={{ fontFamily: FF, mt: 1, fontSize: '0.95rem', color: textHigh }}>
-                  {user?.wardNumber && <Box component="span" sx={{ fontWeight: 700 }}>{t('userDashboard.details.ward', { defaultValue: 'Ward' })} {user.wardNumber}</Box>}
+                  {user?.wardNumber && <Box component="span" sx={{ fontWeight: 700 }}>{t('userDashboard.details.ward', { defaultValue: 'Ward' })} {user?.wardNumber}</Box>}
                   {user?.wardNumber && resolvedWardName && ' — '}
                   {resolvedWardName && <Box component="span">{resolvedWardName}</Box>}
                 </Typography>
@@ -889,7 +956,7 @@ const UserDashboardPage = () => {
                   {t('userDashboard.totalVoters', { defaultValue: 'No. of Registered Citizens' })}
                 </Typography>
                 <Typography sx={{ fontFamily: FF, fontSize: { xs: '1.2rem', md: '1.4rem' }, fontWeight: 800, color: textPrimary, lineHeight: 1 }}>
-                  {totalVoters.toLocaleString()}
+                  {totalVoters?.toLocaleString()}
                 </Typography>
               </Box>
             )}
@@ -897,55 +964,7 @@ const UserDashboardPage = () => {
         </Box>
       </motion.div>
 
-      {user?.role === 'aspirant' && (user as any)?.documentStatus !== 'completed' && !pendingAlertDismissed && (
-        <Alert
-          severity="warning"
-          sx={{
-            borderRadius: 2,
-            border: `1px solid ${BORDER}`,
-            '& .MuiAlert-message': { width: '100%', fontFamily: FF },
-          }}
-          action={isSm ? undefined : (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Button
-                color="inherit"
-                size="small"
-                variant="outlined"
-                onClick={() => navigate('/user/aspirants/register', { state: { resume: true } })}
-                sx={{ whiteSpace: 'nowrap', fontFamily: FF, fontWeight: 700 }}
-              >
-                {t('userDashboard.actions.continueAspirantRegistration')}
-              </Button>
-              <IconButton size="small" color="inherit" onClick={() => setPendingAlertDismissed(true)}>
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Stack>
-          )}
-        >
-          <Stack spacing={1}>
-            <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: FF }}>
-              {t('userDashboard.actions.pendingAspirantAlert')}
-            </Typography>
-            {isSm && (
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Button
-                  color="inherit"
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                  onClick={() => navigate('/user/aspirants/register', { state: { resume: true } })}
-                  sx={{ fontFamily: FF, fontWeight: 700 }}
-                >
-                  {t('userDashboard.actions.continueAspirantRegistration')}
-                </Button>
-                <IconButton size="small" color="inherit" onClick={() => setPendingAlertDismissed(true)}>
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Stack>
-            )}
-          </Stack>
-        </Alert>
-      )}
+      {pendingAspirantAlert}
 
 
       <Box
@@ -1026,7 +1045,7 @@ const UserDashboardPage = () => {
                   <Typography sx={{ fontFamily: FF, fontWeight: 800, color: isDark ? '#fff' : textPrimary, fontSize: actionTitleFontSize, lineHeight: 1.2, textAlign: 'center', letterSpacing: '-0.01em', textShadow: isDark ? '0 0 18px rgba(255,255,255,0.25)' : 'none' }}>
                     {action.title}
                   </Typography>
-                  {/* <Button
+                  <Button
                     size="small"
                     variant="contained"
                     sx={{
@@ -1052,7 +1071,7 @@ const UserDashboardPage = () => {
                     }}
                   >
                     {t('common.clickHere', { defaultValue: 'Click here' })}
-                  </Button> */}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
@@ -1060,7 +1079,7 @@ const UserDashboardPage = () => {
         ))}
       </Box>
       </Stack>
-      )}
+      */}
 
       <Dialog
         open={photoFrameOpen}

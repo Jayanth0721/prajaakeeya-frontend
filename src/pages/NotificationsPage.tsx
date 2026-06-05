@@ -70,6 +70,7 @@ const typeToKind = (type: string): Kind => {
       return 'chat';
     case 'meeting':
     case 'visit':
+    case 'visit_started':
       return 'meeting';
     case 'announcement':
     default:
@@ -100,7 +101,10 @@ const hrefFor = (n: ApiNotification): string | undefined => {
     case 'meeting':
       return '/user/dashboard/meetings';
     case 'aspirant_meeting':
-    case 'aspirant_visit': {
+    case 'aspirant_visit':
+    case 'visit_started':
+    case 'meeting_started':
+    case 'meeting_reminder': {
       const params = new URLSearchParams();
       if (n.electionId != null) params.set('electionId', String(n.electionId));
       if (n.aspirantId != null) params.set('aspirantId', String(n.aspirantId));

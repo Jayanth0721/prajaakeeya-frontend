@@ -122,10 +122,6 @@ const AspirantMeetingLinksPage: React.FC = () => {
             setMeetSavedOpen(true);
         } catch (err: any) {
             console.error('Failed to save meeting', err);
-            // log server response body when available
-            if (err?.response?.data) {
-                console.debug('Server response for failed meeting save:', err.response.data);
-            }
 
             if (err?.response?.status === 404) {
                 setMeetSaveError('Aspirant not found (404). Please confirm you have an aspirant profile.');

@@ -45,8 +45,11 @@ const AdminLayout = () => {
   const { logout, user } = useAuthStore();
   const { mode, toggleTheme } = useThemeStore();
 
-  // Dummy user for demo - bypass auth
-  const displayUser = user || { name: 'Admin User', role: 'admin' };
+  // Display the signed-in admin's own identity. The /admin route guard in
+  // App.tsx already requires isAuthenticated && isAdmin before this layout
+  // mounts, so `user` is present in normal use; the optional chaining below is
+  // null-safety only — no fabricated demo-admin identity.
+  const displayUser = user;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -62,8 +65,8 @@ const AdminLayout = () => {
       { label: 'Create Municipality', to: '/admin/municipalities', icon: <LocationCityIcon /> },
       { label: 'Create Ward', to: '/admin/wards/create', icon: <AddLocationIcon /> },
       { label: 'Create Grama Panchayat', to: '/admin/grama-panchayat', icon: <GrassIcon /> },
-      { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
-      { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
+      // { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
+      // { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
     ],
     [t]
   );
@@ -223,14 +226,14 @@ const AdminLayout = () => {
               }}
             >
               <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                {displayUser.name?.charAt(0).toUpperCase() || 'A'}
+                {displayUser?.name?.charAt(0).toUpperCase() || 'A'}
               </Avatar>
               <Box>
                 <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                  {displayUser.name}
+                  {displayUser?.name}
                 </Typography>
                 <Chip
-                  label={displayUser.role}
+                  label={displayUser?.role}
                   size="small"
                   sx={{
                     height: 18,

@@ -11,6 +11,11 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_MESSAGING_SENDER_ID?: string;
   readonly VITE_FIREBASE_APP_ID?: string;
   readonly VITE_FIREBASE_MEASUREMENT_ID?: string;
+  // Sentry error tracking (client-side). DSN is public-safe; the auth token is
+  // intentionally NOT prefixed with VITE_ so it stays build-only.
+  readonly VITE_SENTRY_DSN?: string;
+  readonly VITE_SENTRY_ENVIRONMENT?: string;
+  readonly VITE_SENTRY_RELEASE?: string;
 }
 
 interface ImportMeta {
