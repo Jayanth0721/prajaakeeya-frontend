@@ -1267,6 +1267,19 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFilterMode, elections, autoUserConstituencyId, autoElectionType, loadAspirants]);
 
+  // When the active tab/type has no saved constituency (e.g. the user switched
+  // to the State Assembly tab but never set their MLA constituency), there is
+  // nothing to load — only the "Update Profile" prompt should show. The
+  // auto-load effect above bails early here (autoFilterMode is false), so it
+  // never clears the previous tab's results. Clear them ourselves so a stale
+  // aspirant list isn't shown beneath the prompt.
+  useEffect(() => {
+    if (!missingConstituencyForType) return;
+    setCandidates([]);
+    setConstituencyStats(null);
+    setSelectedConstituency(null);
+  }, [missingConstituencyForType]);
+
   // In auto mode, resolve the context-strip name directly from the nested
   // constituency object on /auth/me — it already carries id + name + parent
   // metadata, so we don't need to wait for `constituencies` to load or hit
@@ -3160,8 +3173,16 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             );
                           }
 
-                          // After the rating window closes → hide the card (rated or not).
-                          if (afterWindow) return null;
+                          // After the rating window closes → restart the cycle:
+                          // show the contact-eligibility prompt again (rated or not),
+                          // so the voter can contact via WhatsApp/Phone and rate next time.
+                          if (afterWindow) {
+                            return (
+                              <Typography sx={helperSx}>
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                              </Typography>
+                            );
+                          }
 
                           // Contacted but the window hasn't opened yet → info message.
                           if (beforeWindow) {

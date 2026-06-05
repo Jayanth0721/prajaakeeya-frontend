@@ -81,7 +81,6 @@ const VotingResultPage = lazy(() => import("./pages/VotingResultPage"));
 const WardDiscussionPage = lazy(() => import("./pages/WardDiscussionPage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const LoadingPage = lazy(() => import("./pages/LoadingPage"));
-const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const OathPage = lazy(() => import("./pages/OathPage"));
 
@@ -262,7 +261,6 @@ const App = () => {
           {/* Public routes accessible from landing page */}
           <Route element={<PublicLayout />}>
             {/* <Route path="/aspirantslist" element={<WardCandidateListPage />} /> */}
-            <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/elections" element={<VotingResultPage />} />
             <Route path="/aspirants" element={<AspirantApprovalPage />} />
           </Route>
