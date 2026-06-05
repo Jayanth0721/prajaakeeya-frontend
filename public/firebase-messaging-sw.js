@@ -96,6 +96,7 @@ function resolveTarget(data) {
     }
     case "aspirant_meeting":
     case "aspirant_visit":
+    case "visit_started":
     case "meeting_started":
     case "meeting_reminder": {
       const params = new URLSearchParams();

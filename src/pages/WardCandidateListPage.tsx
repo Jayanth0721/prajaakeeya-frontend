@@ -176,6 +176,23 @@ const PLATFORM_TEXT_KEYS: Record<string, string> = {
   facebook: 'pages.wardCandidates.platformFacebook',
 };
 
+type MeetingTimeStatus = 'live' | 'past' | 'upcoming';
+// A meeting/visit is "live" while now sits between its start and end time;
+// "past" only AFTER the end time (not merely after it started — that was the
+// bug that showed an in-progress meeting as "Past Meeting"); otherwise
+// "upcoming". Demo cards and missing start times always read as "upcoming".
+const getMeetingTimeStatus = (
+  startMs: number | null,
+  endMs: number | null,
+  nowMs: number,
+  isDemo: boolean,
+): MeetingTimeStatus => {
+  if (isDemo || startMs == null) return 'upcoming';
+  if (nowMs < startMs) return 'upcoming';
+  const end = endMs ?? startMs + 3600000; // 1h fallback window when no end time
+  return nowMs <= end ? 'live' : 'past';
+};
+
 // Helper: check if a candidate is the backend-provided demo aspirant
 const isDemoCandidate = (c: any): boolean => Boolean(c?.isDemo);
 
@@ -2462,6 +2479,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                               if (et != null && !isNaN(Number(et))) { const n = Number(et); return n > 1e12 ? n : n * 1000; }
                               return scheduledAt ? scheduledAt.getTime() + 3600000 : null;
                             })();
+                            const meetingStatus = getMeetingTimeStatus(scheduledAt ? scheduledAt.getTime() : null, meetEndMs, now, isDemo);
                             return (
                               <Box key={meeting.id || mIdx} sx={{ mb: mIdx < visibleMeetings.length - 1 ? 1 : 0, p: 1, borderRadius: '8px', bgcolor: insetBg, border: `1px solid ${BRAND.red}` }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
@@ -2483,21 +2501,25 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                           </Box>
                                           <Chip
                                             size="small"
-                                            label={(!isDemo && scheduledAt < new Date()) ? 'Past Meeting' : 'Upcoming Meeting'}
+                                            label={meetingStatus === 'live' ? 'Live' : meetingStatus === 'past' ? 'Past Meeting' : 'Upcoming Meeting'}
                                             sx={{
                                               height: 16,
                                               fontSize: '0.55rem',
                                               fontWeight: 600,
                                               borderRadius: '6px',
                                               flexShrink: 0,
-                                              background: (!isDemo && scheduledAt < new Date())
-                                                ? 'rgba(251,146,60,0.15)'
-                                                : 'rgba(34,197,94,0.15)',
-                                              color: (!isDemo && scheduledAt < new Date()) ? '#fb923c' : '#22c55e',
+                                              background: meetingStatus === 'live'
+                                                ? 'rgba(239,68,68,0.18)'
+                                                : meetingStatus === 'past'
+                                                  ? 'rgba(251,146,60,0.15)'
+                                                  : 'rgba(34,197,94,0.15)',
+                                              color: meetingStatus === 'live' ? '#ef4444' : meetingStatus === 'past' ? '#fb923c' : '#22c55e',
                                               boxShadow: 'none',
-                                              border: (!isDemo && scheduledAt < new Date())
-                                                ? '1px solid rgba(251,146,60,0.35)'
-                                                : '1px solid rgba(34,197,94,0.35)',
+                                              border: meetingStatus === 'live'
+                                                ? '1px solid rgba(239,68,68,0.45)'
+                                                : meetingStatus === 'past'
+                                                  ? '1px solid rgba(251,146,60,0.35)'
+                                                  : '1px solid rgba(34,197,94,0.35)',
                                               '& .MuiChip-label': { px: 0.8 }
                                             }}
                                           />
@@ -2777,6 +2799,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             const endNum = endRaw ? Number(endRaw) : NaN;
                             const startDate = !isNaN(startNum) ? new Date(startNum > 1e12 ? startNum : startNum * 1000) : null;
                             const endDate = !isNaN(endNum) ? new Date(endNum > 1e12 ? endNum : endNum * 1000) : null;
+                            const visitStatus = getMeetingTimeStatus(startDate ? startDate.getTime() : null, endDate ? endDate.getTime() : null, now, isDemoCandidate(candidate));
                             const mapsLink = visit.googleMapsLink ?? (/^https?:\/\//i.test(visit.location || '') ? visit.location : null);
                             return (
                               <Box key={visit.id || idx} sx={{ mb: 1, p: 1, borderRadius: '8px', bgcolor: insetBg, border: `1px solid ${BRAND.red}`, position: 'relative' }}>
@@ -2809,21 +2832,25 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                       {startDate && (
                                         <Chip
                                           size="small"
-                                          label={(!isDemoCandidate(candidate) && startDate < new Date()) ? 'Past Meeting' : 'Upcoming Meeting'}
+                                          label={visitStatus === 'live' ? 'Live' : visitStatus === 'past' ? 'Past Meeting' : 'Upcoming Meeting'}
                                           sx={{
                                             height: 16,
                                             fontSize: '0.55rem',
                                             fontWeight: 600,
                                             borderRadius: '6px',
                                             flexShrink: 0,
-                                            background: (!isDemoCandidate(candidate) && startDate < new Date())
-                                              ? 'rgba(251,146,60,0.15)'
-                                              : 'rgba(34,197,94,0.15)',
-                                            color: (!isDemoCandidate(candidate) && startDate < new Date()) ? '#fb923c' : '#22c55e',
+                                            background: visitStatus === 'live'
+                                              ? 'rgba(239,68,68,0.18)'
+                                              : visitStatus === 'past'
+                                                ? 'rgba(251,146,60,0.15)'
+                                                : 'rgba(34,197,94,0.15)',
+                                            color: visitStatus === 'live' ? '#ef4444' : visitStatus === 'past' ? '#fb923c' : '#22c55e',
                                             boxShadow: 'none',
-                                            border: (!isDemoCandidate(candidate) && startDate < new Date())
-                                              ? '1px solid rgba(251,146,60,0.35)'
-                                              : '1px solid rgba(34,197,94,0.35)',
+                                            border: visitStatus === 'live'
+                                              ? '1px solid rgba(239,68,68,0.45)'
+                                              : visitStatus === 'past'
+                                                ? '1px solid rgba(251,146,60,0.35)'
+                                                : '1px solid rgba(34,197,94,0.35)',
                                             '& .MuiChip-label': { px: 0.8 }
                                           }}
                                         />
