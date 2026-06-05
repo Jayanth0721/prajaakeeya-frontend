@@ -280,6 +280,45 @@ const UserLayout = () => {
             </Box>
           </Toolbar>
         </Container>
+
+        {/* Desktop primary nav — mirrors the mobile bottom nav, shown on sm+.
+            Same items / paths / active-state; replaces the bottom bar on desktop. */}
+        <Box sx={{ display: { xs: 'none', sm: 'block' }, borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: { sm: 0.5, md: 1 }, py: 0.5 }}>
+              {bottomNavItems.map((item, idx) => {
+                const active = idx === currentNavIndex;
+                return (
+                  <Button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    startIcon={item.icon}
+                    sx={{
+                      fontFamily: FF,
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      px: { sm: 1.2, md: 2 },
+                      py: 0.9,
+                      fontSize: { sm: '0.8rem', md: '0.9rem' },
+                      color: active
+                        ? (isDark ? BRAND.yellow : BRAND.saffron)
+                        : (isDark ? 'rgba(255,255,255,0.72)' : 'text.secondary'),
+                      bgcolor: active ? 'rgba(245,168,0,0.12)' : 'transparent',
+                      '& .MuiButton-startIcon': { mr: 0.6 },
+                      '&:hover': {
+                        bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'action.hover',
+                        color: isDark ? '#fff' : 'text.primary',
+                      },
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                );
+              })}
+            </Box>
+          </Container>
+        </Box>
       </AppBar>
 
       <Container maxWidth="lg" sx={{ pt: { xs: 3, sm: 4, md: 5 }, pb: { xs: 'calc(90px + env(safe-area-inset-bottom))', sm: 4, md: 5 } }}>

@@ -27,7 +27,7 @@
 //   - Auth store seeded with a plain voter (role !== aspirant) so the default
 //     (non-aspirant) action set renders.
 
-import { renderWithProviders, screen, fireEvent, waitFor } from './test-utils';
+import { renderWithProviders, screen } from './test-utils';
 import UserDashboardPage from '../pages/UserDashboardPage';
 import useAuthStore from '../store/useAuthStore';
 
@@ -95,13 +95,12 @@ describe('UserDashboardPage', () => {
     expect(screen.getByText('The Real Prajaakeeya')).toBeInTheDocument();
   });
 
-  it('renders the default action tiles', () => {
+  it('renders the embedded aspirants list (WardCandidateListPage)', () => {
     renderWithProviders(<UserDashboardPage />, { route: '/user/dashboard' });
-    // t() returns the key; these tile titles use `t(...) || fallback`, and the
-    // key is truthy so the fallback never fires — assert on the keys.
-    expect(screen.getByText('userDashboard.actions.registeredAspirants')).toBeInTheDocument();
-    expect(screen.getByText('userDashboard.actions.civicIssues')).toBeInTheDocument();
-    expect(screen.getByText('userDashboard.actions.registerAspirant')).toBeInTheDocument();
+    // The dashboard now renders the aspirants list for every screen size; the
+    // old desktop action-tile grid was removed and those nav items moved to the
+    // shared header (UserLayout). The list child is stubbed to a marker.
+    expect(screen.getByTestId('ward-candidate-list')).toBeInTheDocument();
   });
 
   it('shows the registered-voters count fetched from getVoters', async () => {
@@ -110,16 +109,7 @@ describe('UserDashboardPage', () => {
     expect(await screen.findByText('1,234')).toBeInTheDocument();
   });
 
-  it('navigates to the declaration page when "Register as Aspirant" is clicked', () => {
-    renderWithProviders(<UserDashboardPage />, { route: '/user/dashboard' });
-    fireEvent.click(screen.getByText('userDashboard.actions.registerAspirant'));
-    // Register-as-Aspirant tile redirects to the standalone Declaration page.
-    expect(navigate).toHaveBeenCalledWith('/user/aspirants/declaration');
-  });
-
-  it('navigates to Public Issues when that tile is clicked', async () => {
-    renderWithProviders(<UserDashboardPage />, { route: '/user/dashboard' });
-    fireEvent.click(screen.getByText('userDashboard.actions.civicIssues'));
-    await waitFor(() => expect(navigate).toHaveBeenCalledWith('/user/civic-issues'));
-  });
+  // NOTE: the action-tile navigation tests (Register-as-Aspirant, Public Issues,
+  // etc.) were removed — those tiles no longer live on the dashboard. The nav
+  // moved to the shared header (UserLayout), which owns that behavior now.
 });
