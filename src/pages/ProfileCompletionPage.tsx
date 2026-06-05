@@ -1486,7 +1486,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
             </Card>
 
             {/* Add Photo Frame */}
-            <Button
+            {/* <Button
                 variant="outlined"
                 fullWidth
                 startIcon={<AutoAwesomeIcon />}
@@ -1502,7 +1502,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                 }}
             >
                 {t('userDashboard.framePrompt.title', { defaultValue: 'Add Frame' })}
-            </Button>
+            </Button> */}
 
             {/* Mobile-only Logout button below card */}
             <Box sx={{ display: hideLogout ? 'none' : { xs: 'flex', sm: 'none' }, justifyContent: 'center', mt: 1 }}>
