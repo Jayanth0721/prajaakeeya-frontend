@@ -65,8 +65,8 @@ const AdminLayout = () => {
       { label: 'Create Municipality', to: '/admin/municipalities', icon: <LocationCityIcon /> },
       { label: 'Create Ward', to: '/admin/wards/create', icon: <AddLocationIcon /> },
       { label: 'Create Grama Panchayat', to: '/admin/grama-panchayat', icon: <GrassIcon /> },
-      { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
-      { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
+      // { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
+      // { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
     ],
     [t]
   );

@@ -188,6 +188,20 @@ const AspirantProfilePage: React.FC = () => {
                 </Button>
             </Box>
 
+            {/* Support contact line — bottom of the My Profile view */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, mb: 4, px: { xs: 2, md: 0 } }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', fontSize: '0.85rem' }}>
+                    {t('profile.supportLine', { defaultValue: 'Facing an issue? Reach us at ' })}
+                    <Box
+                        component="a"
+                        href="mailto:support@prajaakeeya.org"
+                        sx={{ color: '#F5A800', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                        support@prajaakeeya.org
+                    </Box>
+                </Typography>
+            </Box>
+
             <Snackbar
                 open={snack.open}
                 autoHideDuration={3500}
