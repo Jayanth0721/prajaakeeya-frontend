@@ -1,5 +1,5 @@
 import { Suspense, useEffect, lazy } from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Box } from "@mui/material";
 
@@ -12,7 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser } from "./services/pushNotifications";
+import { setupPushForUser, setPushNavigator } from "./services/pushNotifications";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -81,7 +81,6 @@ const VotingResultPage = lazy(() => import("./pages/VotingResultPage"));
 const WardDiscussionPage = lazy(() => import("./pages/WardDiscussionPage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const LoadingPage = lazy(() => import("./pages/LoadingPage"));
-const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const OathPage = lazy(() => import("./pages/OathPage"));
 
@@ -95,7 +94,9 @@ const AspirantRequestsPage = lazy(() => import("./pages/aspirant/AspirantRequest
 
 // Guest route pages
 const GuestDashboardPage = lazy(() => import("./pages/guest/GuestDashboardPage"));
-const GuestVotersPage = lazy(() => import("./pages/guest/GuestVotersPage"));
+// GuestVotersPage route removed (H4): voter-roll page de-linked from guests to
+// avoid exposing voter PII to anonymous users. Component kept at
+// pages/guest/GuestVotersPage.tsx for future re-enable behind auth.
 const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage"));
 const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
 const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
@@ -116,6 +117,14 @@ const App = () => {
   const { t } = useTranslation();
   const { isAdmin, isAuthenticated, token, fetchProfile } = useAuthStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Let push-notification deep links (iOS native bridge) navigate in-SPA
+    // instead of doing a full page reload.
+    setPushNavigator((path) => navigate(path));
+    return () => setPushNavigator(null);
+  }, [navigate]);
 
   useEffect(() => {
     // On page reload / first mount, if we have a persisted token, fetch fresh user data
@@ -132,6 +141,21 @@ const App = () => {
       return setupPushForUser();
     }
   }, [isAuthenticated, token]);
+
+  useEffect(() => {
+    // When a web-push notification is tapped while a tab is already open, the
+    // FCM service worker posts the target route here so we navigate in-app
+    // (client-side) instead of forcing a full page reload.
+    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+    const onSwMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; url?: string } | null;
+      if (data?.type === "NOTIFICATION_NAVIGATE" && typeof data.url === "string") {
+        navigate(data.url);
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onSwMessage);
+  }, [navigate]);
 
   useEffect(() => {
     // Dismiss the preloader after the animation completes (~5 s)
@@ -244,7 +268,6 @@ const App = () => {
           {/* Public routes accessible from landing page */}
           <Route element={<PublicLayout />}>
             {/* <Route path="/aspirantslist" element={<WardCandidateListPage />} /> */}
-            <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/elections" element={<VotingResultPage />} />
             <Route path="/aspirants" element={<AspirantApprovalPage />} />
           </Route>
@@ -405,7 +428,6 @@ const App = () => {
           {/* test comment */}
           <Route path="/guest" element={<GuestLayout />}>
             <Route path="dashboard" element={<GuestDashboardPage />} />
-            <Route path="voters" element={<GuestVotersPage />} />
             <Route path="aspirants" element={<GuestAspirantsPage />} />
             <Route path="civic-issues" element={<GuestCivicIssuesPage />} />
             <Route path="sop" element={<GuestSopPage />} />

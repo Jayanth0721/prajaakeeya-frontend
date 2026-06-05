@@ -32,8 +32,17 @@ jobs:
         with:
           node-version: 20
 
+      # The lockfile is generated with npm 11 (dev machines). node 20 ships
+      # npm 10, whose stricter reader rejects npm 11's nested-dependency
+      # lockfile format ("Missing esbuild@... from lock file"). Pin CI to
+      # npm 11 so `npm ci` reads the lockfile exactly as it was written.
+      # npm 11 also reads older lockfile formats, so this stays correct no
+      # matter which npm a teammate uses.
+      - name: Pin npm to match the lockfile
+        run: npm install -g npm@11
+
       - name: Install deps
-        run: npm install
+        run: npm ci
 
       - name: Lint
         run: npm run lint
@@ -51,8 +60,17 @@ jobs:
         with:
           node-version: 20
 
+      # The lockfile is generated with npm 11 (dev machines). node 20 ships
+      # npm 10, whose stricter reader rejects npm 11's nested-dependency
+      # lockfile format ("Missing esbuild@... from lock file"). Pin CI to
+      # npm 11 so `npm ci` reads the lockfile exactly as it was written.
+      # npm 11 also reads older lockfile formats, so this stays correct no
+      # matter which npm a teammate uses.
+      - name: Pin npm to match the lockfile
+        run: npm install -g npm@11
+
       - name: Install deps
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
@@ -98,6 +116,7 @@ jobs:
             --exclude "index.html" \
             --exclude "sw.js" \
             --exclude "registerSW.js" \
+            --exclude "firebase-messaging-sw.js" \
             --exclude "manifest.webmanifest" \
             --cache-control "public,max-age=31536000,immutable"
 
@@ -111,6 +130,8 @@ jobs:
             --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
           [ -f dist/registerSW.js ] && aws s3 cp dist/registerSW.js s3://$B/registerSW.js \
             --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
+          [ -f dist/firebase-messaging-sw.js ] && aws s3 cp dist/firebase-messaging-sw.js s3://$B/firebase-messaging-sw.js \
+            --cache-control "no-cache,no-store,must-revalidate" --content-type "application/javascript" || true
           [ -f dist/manifest.webmanifest ] && aws s3 cp dist/manifest.webmanifest s3://$B/manifest.webmanifest \
             --cache-control "no-cache" --content-type "application/manifest+json" || true
 
@@ -118,4 +139,4 @@ jobs:
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ steps.env.outputs.dist }} \
-            --paths "/" "/index.html" "/sw.js" "/registerSW.js" "/manifest.webmanifest"
+            --paths "/" "/index.html" "/sw.js" "/registerSW.js" "/firebase-messaging-sw.js" "/manifest.webmanifest"

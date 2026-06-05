@@ -46,9 +46,13 @@ const AdminEditMeetingPage: React.FC = () => {
                 }
                 setMeeting(meetingData);
 
-                // Convert scheduledAt from ISO string to datetime-local format
+                // Convert scheduledAt from ISO string to datetime-local format.
+                // Guard against an invalid/missing scheduledAt: new Date(bad).toISOString()
+                // throws "Invalid time value" (RangeError) and white-screens the page.
                 const scheduledDate = new Date(meetingData.scheduledAt);
-                const datetimeLocal = scheduledDate.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+                const datetimeLocal = isNaN(scheduledDate.getTime())
+                    ? ''
+                    : scheduledDate.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
 
                 setFormData({
                     title: meetingData.title,
