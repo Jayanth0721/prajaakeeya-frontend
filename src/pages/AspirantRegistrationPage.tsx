@@ -313,7 +313,7 @@ const AspirantRegistrationPage = () => {
       primaryRule: answers[8] || ''
     };
 
-    console.info('Submitting aspirant payload:', payload);
+    // console.info('Submitting aspirant payload:', payload);
 
     try {
       const resp = await registerAspirant(payload);

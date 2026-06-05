@@ -23,7 +23,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import GavelIcon from '@mui/icons-material/Gavel';
 import LocationCityIcon from '@mui/icons-material/LocationCity';
-import AgricultureIcon from '@mui/icons-material/Agriculture';
+import PlaceIcon from '@mui/icons-material/Place';
 import EditIcon from '@mui/icons-material/Edit';
 import { BRAND } from '../../theme';
 import { getMinAgeForElectionType } from '../../utils/validation';
@@ -804,7 +804,7 @@ const CandidateInformationStep = ({
           : hasGp
             ? (t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants')
             : (t('forms.aspirant.tabWardPanchayat') || 'Municipal / Gram Panchayat');
-        const wardTabIcon = hasGp && !hasMunicipal ? AgricultureIcon : LocationCityIcon;
+        const wardTabIcon = hasGp && !hasMunicipal ? PlaceIcon : LocationCityIcon;
         // MLA tab uses image assets (capitol1.png inactive, capitol.png active)
         // matching the Civic Issues page; the others stay on SvgIcons.
         const tabs: {
