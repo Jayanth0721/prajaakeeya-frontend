@@ -12,7 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser } from "./services/pushNotifications";
+import { setupPushForUser, setPushNavigator } from "./services/pushNotifications";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -118,6 +118,13 @@ const App = () => {
   const { isAdmin, isAuthenticated, token, fetchProfile } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Let push-notification deep links (iOS native bridge) navigate in-SPA
+    // instead of doing a full page reload.
+    setPushNavigator((path) => navigate(path));
+    return () => setPushNavigator(null);
+  }, [navigate]);
 
   useEffect(() => {
     // On page reload / first mount, if we have a persisted token, fetch fresh user data
