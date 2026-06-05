@@ -3188,7 +3188,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                           if (beforeWindow) {
                             return (
                               <Typography sx={helperSx}>
-                                {t('pages.wardCandidates.contactRatingWindowInfo', { defaultValue: 'Rating will open from 10 AM to 10 PM.' })}
+                                {t('pages.wardCandidates.contactRatingWindowInfo', { defaultValue: 'Rating will open from tomorrow 10 AM to 10 PM.' })}
                               </Typography>
                             );
                           }
