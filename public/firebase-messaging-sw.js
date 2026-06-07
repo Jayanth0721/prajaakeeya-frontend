@@ -30,19 +30,6 @@ const firebaseConfig = {
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
 
-// ─── TEMPORARY DEBUG — remove once push routing is confirmed ─────────────────
-// Logs the RAW push payload exactly as the backend sent it, so we can confirm
-// data.link / type / ids are present. DevTools → Application → Service Workers →
-// "inspect" on firebase-messaging-sw.js → Console.
-self.addEventListener("push", (event) => {
-  try {
-    console.log("[push DEBUG] raw payload:", event.data ? event.data.json() : null);
-  } catch (e) {
-    console.log("[push DEBUG] payload (text):", event.data && event.data.text());
-  }
-});
-// ─────────────────────────────────────────────────────────────────────────────
-
 // Resolve the in-app deep link from the push payload. The backend sends it as a
 // RELATIVE path in data.link; FCM may nest the original data under FCM_MSG when
 // it auto-displays the notification, so unwrap that. Falls back to the signed-in
@@ -106,8 +93,6 @@ self.addEventListener("notificationclick", (event) => {
     const u = new URL(targetUrl);
     return u.pathname + u.search + u.hash;
   })();
-  console.log("[push DEBUG] notificationclick →", targetUrl, "data:", data);
-
   event.waitUntil(
     (async () => {
       // Stash FIRST so the route is available the moment the page gains focus.
