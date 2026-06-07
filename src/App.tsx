@@ -143,21 +143,6 @@ const App = () => {
   }, [isAuthenticated, token]);
 
   useEffect(() => {
-    // When a web-push notification is tapped while a tab is already open, the
-    // FCM service worker posts the target route here so we navigate in-app
-    // (client-side) instead of forcing a full page reload.
-    if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
-    const onSwMessage = (event: MessageEvent) => {
-      const data = event.data as { type?: string; url?: string } | null;
-      if (data?.type === "NOTIFICATION_NAVIGATE" && typeof data.url === "string") {
-        navigate(data.url);
-      }
-    };
-    navigator.serviceWorker.addEventListener("message", onSwMessage);
-    return () => navigator.serviceWorker.removeEventListener("message", onSwMessage);
-  }, [navigate]);
-
-  useEffect(() => {
     // Dismiss the preloader after the animation completes (~5 s)
     // Only if on the root path where the preloader is shown.
     if (
