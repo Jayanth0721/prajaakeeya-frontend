@@ -12,7 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser, setPushNavigator, followDeepLink } from "./services/pushNotifications";
+import { setupPushForUser, setPushNavigator, consumePendingPushRoute } from "./services/pushNotifications";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -127,29 +127,41 @@ const App = () => {
   }, [navigate]);
 
   useEffect(() => {
-    // Web-push notification tapped while the app is already open: the FCM service
-    // worker posts the target route here so we navigate in-SPA. This keeps the
-    // tap INSIDE the Android TWA (openWindow on an already-open TWA can leak to an
-    // external Chrome tab). followDeepLink is the same in-app routing path used by
-    // the iOS native bridge.
-    if (!("serviceWorker" in navigator)) return;
-    const onSwMessage = (event: MessageEvent) => {
-      const msg = event.data as { type?: string; url?: string } | null;
-      if (msg && msg.type === "PUSH_NAVIGATE" && typeof msg.url === "string") {
-        followDeepLink(msg.url);
+    // Web-push notification tap → navigate. The FCM service worker stashes the
+    // target route in the Cache API; we PULL it whenever the app (re)gains focus.
+    // This is reliable even for a page launched via openWindow (which loads
+    // UNCONTROLLED, so the SW's postMessage isn't delivered — the real cause of
+    // "navigates only after a refresh"). Triggers: mount, visibilitychange,
+    // window focus, and the PUSH_NAVIGATE message as a fast-path nudge. The
+    // consumer deletes the stash, so multiple triggers never double-navigate.
+    void consumePendingPushRoute();
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void consumePendingPushRoute();
+    };
+    const onFocus = () => void consumePendingPushRoute();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onFocus);
+
+    let onSwMessage: ((event: MessageEvent) => void) | undefined;
+    if ("serviceWorker" in navigator) {
+      onSwMessage = (event: MessageEvent) => {
+        const msg = event.data as { type?: string } | null;
+        if (msg && msg.type === "PUSH_NAVIGATE") void consumePendingPushRoute();
+      };
+      navigator.serviceWorker.addEventListener("message", onSwMessage);
+      // addEventListener('message') does not start the client message queue;
+      // startMessages() does. Harmless even though the stash is the primary path.
+      navigator.serviceWorker.startMessages();
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onFocus);
+      if (onSwMessage && "serviceWorker" in navigator) {
+        navigator.serviceWorker.removeEventListener("message", onSwMessage);
       }
     };
-    navigator.serviceWorker.addEventListener("message", onSwMessage);
-    // A ServiceWorkerContainer's "client message queue" starts DISABLED (W3C
-    // Service Workers spec §3.4). addEventListener('message') does NOT enable it;
-    // only assigning onmessage or calling startMessages() does. Without this, a
-    // page launched via clients.openWindow() loads UNCONTROLLED (controller ===
-    // null), so the implicit "enable at DOMContentLoaded for the controlling
-    // worker" fallback never fires and the FCM SW's PUSH_NAVIGATE postMessage is
-    // silently queued (never dispatched) until the user reloads. startMessages()
-    // enables the queue unconditionally, independent of control state.
-    navigator.serviceWorker.startMessages();
-    return () => navigator.serviceWorker.removeEventListener("message", onSwMessage);
   }, []);
 
   useEffect(() => {

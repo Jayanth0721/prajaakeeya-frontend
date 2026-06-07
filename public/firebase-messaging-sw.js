@@ -55,6 +55,29 @@ function notificationLink(data) {
   return data.link || "/user/dashboard";
 }
 
+// Stash the pending deep-link route in the Cache API. The PAGE reads this when
+// it (re)gains focus — see consumePendingPushRoute() in pushNotifications.ts.
+// Why a stash instead of just postMessage: a page launched via clients.openWindow
+// loads UNCONTROLLED, and Client.postMessage() to it is NOT reliably delivered
+// (even with startMessages()). The Cache API is shared between SW and page, so a
+// pulled route survives regardless of controller / message-queue state.
+const PENDING_ROUTE_CACHE = "push-pending-route";
+const PENDING_ROUTE_KEY = "/__pending_push_route";
+
+async function stashPendingRoute(route) {
+  try {
+    const cache = await caches.open(PENDING_ROUTE_CACHE);
+    await cache.put(
+      PENDING_ROUTE_KEY,
+      new Response(JSON.stringify({ route: route, ts: Date.now() }), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+  } catch (e) {
+    /* best-effort */
+  }
+}
+
 // Own the notification tap.
 //
 // CRITICAL ORDERING: this listener is registered BEFORE firebase.messaging()
@@ -64,16 +87,13 @@ function notificationLink(data) {
 // Registering ours first AND calling stopImmediatePropagation() guarantees
 // exactly one handler — ours.
 //
-// Three cases — important for the Android TWA, where using openWindow() to
-// navigate an ALREADY-OPEN app is a documented Chromium bug that leaks the deep
-// link into an external Chrome tab / a second TWA instance (svgomg-twa#94,
-// firebase-js-sdk#2438, crbug 1052288/1076039):
-//   1. a tab is already on the target page → focus() it.
-//   2. a tab is open on a DIFFERENT page  → focus() + postMessage; the React app
-//      navigates in-SPA (in-page JS, so it can NEVER escape the TWA).
-//   3. no tab open (app/TWA closed)       → openWindow() the deep link.
-// WindowClient.navigate() is NOT usable here (this SW controls no pages, so it
-// rejects cross-scope), which is why case 2 routes through the app via postMessage.
+// Navigation is driven by a STASHED route (Cache API) that the page consumes on
+// focus — reliable for a TWA and for openWindow-launched (uncontrolled) pages,
+// where neither postMessage nor openWindow-to-an-already-open-app is dependable
+// (svgomg-twa#94, firebase-js-sdk#2438, crbug 1052288/1076039). postMessage is
+// kept ONLY as a fast-path trigger; the stash is the source of truth.
+//   - app already open → stash + focus (+ postMessage nudge); page pulls route.
+//   - app closed       → stash + openWindow(targetUrl) (URL also carries route).
 self.addEventListener("notificationclick", (event) => {
   event.stopImmediatePropagation();
   event.notification.close();
@@ -90,6 +110,9 @@ self.addEventListener("notificationclick", (event) => {
 
   event.waitUntil(
     (async () => {
+      // Stash FIRST so the route is available the moment the page gains focus.
+      await stashPendingRoute(targetRoute);
+
       let clientList = [];
       try {
         clientList = await self.clients.matchAll({
@@ -109,33 +132,34 @@ self.addEventListener("notificationclick", (event) => {
         }
       });
 
-      // 1) A tab is already on the target page → bring it forward.
-      for (const client of sameOrigin) {
-        let clientPath = "";
-        try {
-          clientPath = new URL(client.url).pathname;
-        } catch (e) {
-          clientPath = "";
-        }
-        if (clientPath === targetPath && "focus" in client) {
-          return client.focus();
-        }
-      }
-
-      // 2) A tab is open on a DIFFERENT page → focus it, then tell the app to
-      //    navigate in-SPA (React Router). Stays inside the TWA.
+      // App already open → bring it to the foreground. Prefer a tab already on
+      // the target page. The page then pulls the stashed route on focus and
+      // navigates in-SPA (stays inside the TWA — never an external Chrome tab).
       if (sameOrigin.length > 0) {
-        const client = sameOrigin[0];
+        const exact = sameOrigin.find((c) => {
+          try {
+            return new URL(c.url).pathname === targetPath;
+          } catch (e) {
+            return false;
+          }
+        });
+        const client = exact || sameOrigin[0];
         try {
           if ("focus" in client) await client.focus();
         } catch (e) {
           /* focus is best-effort */
         }
-        client.postMessage({ type: "PUSH_NAVIGATE", url: targetRoute });
+        // Fast-path nudge (when the page IS controlled and listening).
+        try {
+          client.postMessage({ type: "PUSH_NAVIGATE", url: targetRoute });
+        } catch (e) {
+          /* the stash + focus covers delivery either way */
+        }
         return undefined;
       }
 
-      // 3) No tab open (app/TWA closed) → cold-start at the deep link.
+      // App closed → cold-start at the deep link (URL carries the route; the
+      // stash is consumed on mount as a no-op safety net).
       if (self.clients.openWindow) {
         return self.clients.openWindow(targetUrl);
       }
