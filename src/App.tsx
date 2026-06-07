@@ -140,6 +140,15 @@ const App = () => {
       }
     };
     navigator.serviceWorker.addEventListener("message", onSwMessage);
+    // A ServiceWorkerContainer's "client message queue" starts DISABLED (W3C
+    // Service Workers spec §3.4). addEventListener('message') does NOT enable it;
+    // only assigning onmessage or calling startMessages() does. Without this, a
+    // page launched via clients.openWindow() loads UNCONTROLLED (controller ===
+    // null), so the implicit "enable at DOMContentLoaded for the controlling
+    // worker" fallback never fires and the FCM SW's PUSH_NAVIGATE postMessage is
+    // silently queued (never dispatched) until the user reloads. startMessages()
+    // enables the queue unconditionally, independent of control state.
+    navigator.serviceWorker.startMessages();
     return () => navigator.serviceWorker.removeEventListener("message", onSwMessage);
   }, []);
 
