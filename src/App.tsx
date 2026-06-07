@@ -12,7 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser, setPushNavigator } from "./services/pushNotifications";
+import { setupPushForUser, setPushNavigator, followDeepLink } from "./services/pushNotifications";
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -125,6 +125,23 @@ const App = () => {
     setPushNavigator((path) => navigate(path));
     return () => setPushNavigator(null);
   }, [navigate]);
+
+  useEffect(() => {
+    // Web-push notification tapped while the app is already open: the FCM service
+    // worker posts the target route here so we navigate in-SPA. This keeps the
+    // tap INSIDE the Android TWA (openWindow on an already-open TWA can leak to an
+    // external Chrome tab). followDeepLink is the same in-app routing path used by
+    // the iOS native bridge.
+    if (!("serviceWorker" in navigator)) return;
+    const onSwMessage = (event: MessageEvent) => {
+      const msg = event.data as { type?: string; url?: string } | null;
+      if (msg && msg.type === "PUSH_NAVIGATE" && typeof msg.url === "string") {
+        followDeepLink(msg.url);
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onSwMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onSwMessage);
+  }, []);
 
   useEffect(() => {
     // On page reload / first mount, if we have a persisted token, fetch fresh user data

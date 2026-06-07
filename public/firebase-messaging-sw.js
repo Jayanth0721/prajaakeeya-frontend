@@ -60,13 +60,20 @@ function notificationLink(data) {
 // CRITICAL ORDERING: this listener is registered BEFORE firebase.messaging()
 // (the init block is at the BOTTOM of this file). The FCM compat SDK installs
 // its OWN notificationclick handler when messaging() runs, which calls
-// stopImmediatePropagation() and can pre-empt a handler registered after it —
-// that is what made taps do nothing when no tab was open (FCM's default handler
-// no-ops with zero windows and no fcm_options.link). Registering ours first AND
-// calling stopImmediatePropagation() here guarantees exactly one handler — ours.
+// stopImmediatePropagation() and can pre-empt a handler registered after it.
+// Registering ours first AND calling stopImmediatePropagation() guarantees
+// exactly one handler — ours.
 //
-// We use focus() + openWindow() only. WindowClient.navigate() is NOT usable:
-// this SW controls no pages (separate scope), so navigate() rejects cross-scope.
+// Three cases — important for the Android TWA, where using openWindow() to
+// navigate an ALREADY-OPEN app is a documented Chromium bug that leaks the deep
+// link into an external Chrome tab / a second TWA instance (svgomg-twa#94,
+// firebase-js-sdk#2438, crbug 1052288/1076039):
+//   1. a tab is already on the target page → focus() it.
+//   2. a tab is open on a DIFFERENT page  → focus() + postMessage; the React app
+//      navigates in-SPA (in-page JS, so it can NEVER escape the TWA).
+//   3. no tab open (app/TWA closed)       → openWindow() the deep link.
+// WindowClient.navigate() is NOT usable here (this SW controls no pages, so it
+// rejects cross-scope), which is why case 2 routes through the app via postMessage.
 self.addEventListener("notificationclick", (event) => {
   event.stopImmediatePropagation();
   event.notification.close();
@@ -74,6 +81,11 @@ self.addEventListener("notificationclick", (event) => {
   const data = (event.notification && event.notification.data) || {};
   const targetUrl = new URL(notificationLink(data), self.location.origin).href;
   const targetPath = new URL(targetUrl).pathname;
+  // Relative route (path + query + hash) the in-app React Router understands.
+  const targetRoute = (() => {
+    const u = new URL(targetUrl);
+    return u.pathname + u.search + u.hash;
+  })();
   console.log("[push DEBUG] notificationclick →", targetUrl, "data:", data);
 
   event.waitUntil(
@@ -88,10 +100,17 @@ self.addEventListener("notificationclick", (event) => {
         clientList = [];
       }
 
-      // If a tab is already on the target page, focus it (avoids a duplicate).
-      // Compare normalized pathnames so a trailing slash / query / hash on
-      // client.url is not a false miss.
-      for (const client of clientList) {
+      // Same-origin window clients only (never focus/message a cross-origin one).
+      const sameOrigin = clientList.filter((c) => {
+        try {
+          return new URL(c.url).origin === self.location.origin;
+        } catch (e) {
+          return false;
+        }
+      });
+
+      // 1) A tab is already on the target page → bring it forward.
+      for (const client of sameOrigin) {
         let clientPath = "";
         try {
           clientPath = new URL(client.url).pathname;
@@ -103,8 +122,20 @@ self.addEventListener("notificationclick", (event) => {
         }
       }
 
-      // Otherwise open the deep link in a new window. Reliable with zero windows
-      // open (the primary real-world case) across Chrome / Firefox / Android TWA.
+      // 2) A tab is open on a DIFFERENT page → focus it, then tell the app to
+      //    navigate in-SPA (React Router). Stays inside the TWA.
+      if (sameOrigin.length > 0) {
+        const client = sameOrigin[0];
+        try {
+          if ("focus" in client) await client.focus();
+        } catch (e) {
+          /* focus is best-effort */
+        }
+        client.postMessage({ type: "PUSH_NAVIGATE", url: targetRoute });
+        return undefined;
+      }
+
+      // 3) No tab open (app/TWA closed) → cold-start at the deep link.
       if (self.clients.openWindow) {
         return self.clients.openWindow(targetUrl);
       }

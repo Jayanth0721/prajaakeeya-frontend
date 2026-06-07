@@ -166,8 +166,10 @@ function extractLink(detail: unknown): string | null {
 
 /** Follow a notification deep link. Same-origin targets go through React Router
  *  (no full reload, no WKWebView host-allowlist round-trip); external URLs fall
- *  back to the browser, which the shell opens in SFSafariViewController. */
-function followDeepLink(link: string): void {
+ *  back to the browser, which the shell opens in SFSafariViewController.
+ *  Shared by the iOS native bridge and the web-push service-worker PUSH_NAVIGATE
+ *  message (so notification taps route in-app on every platform). */
+export function followDeepLink(link: string): void {
   try {
     const url = new URL(link, window.location.origin);
     if (url.origin === window.location.origin) {
