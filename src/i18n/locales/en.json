@@ -1393,7 +1393,7 @@
       "votingWindowDates": "Voting starts on {{start}} and ends on {{end}}",
       "votingEligibility": "To become eligible to vote, you must interact with at least 2 aspirants through chat, video meeting, or phone call.",
       "joinInterview": "Chat To Evaluate My Eligibility",
-      "eligibilityHelper": "Contact via WhatsApp or Phone to Evaluate & Rate",
+      "eligibilityHelper": "Contact via WhatsApp, Phone or Chat to Evaluate & Rate",
       "contactRatingWindowInfo": "Rating will open from tomorrow 10 AM to 10 PM.",
       "contactRatingOpenInfo": "Rating is open now, from 10 AM to 10 PM.",
       "rateContact": "Rate this Contact",

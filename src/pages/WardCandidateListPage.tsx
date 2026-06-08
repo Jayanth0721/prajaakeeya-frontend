@@ -3155,7 +3155,20 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                 '&:hover': { background: `linear-gradient(135deg, ${BRAND.red2} 0%, ${BRAND.red} 100%)` },
                               }}
                               onClick={() => {
-                                void trackInteraction(candidate.id);
+                                const _contactTs = Date.now();
+                                // Reflect the new contact state synchronously, BEFORE we
+                                // navigate away — gating this on the async track result
+                                // would never apply, because navigate() unmounts the list
+                                // before the promise resolves. (WhatsApp/Phone don't
+                                // navigate, so they can wait for the result.) This makes
+                                // the rating-window message appear when the user returns.
+                                setCandidates((prev) => prev.map((c) => c.id === candidate.id ? { ...c, canRateContact: true, isContactRated: false, contactedAt: _contactTs } : c));
+                                // Track the chat interaction, AND reuse the phone-call
+                                // tracking endpoint so the backend persists the contact
+                                // (contactedAt / canRateContact) and the rating window
+                                // survives a refetch — same path WhatsApp/Phone already use.
+                                void trackInteraction(candidate.id, '/users/track/chat', _contactTs);
+                                void trackInteraction(candidate.id, '/users/track/phone-call', _contactTs);
                                 // Remember which card we left from so we can scroll back
                                 // to it when the user returns from the chat page.
                                 try { sessionStorage.setItem('wardlist_return_aspirant', String(candidate.id)); } catch { /* ignore */ }
@@ -3166,12 +3179,12 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             </Button>
                           </Box>
                         )}
-                        {/* Contact prompt / rating-window message — shown when phone
-                            or WhatsApp is enabled. Once the voter has contacted
+                        {/* Contact prompt / rating-window message — shown when phone,
+                            WhatsApp or Chat is enabled. Once the voter has contacted
                             (canRateContact), the eligibility prompt is replaced by the
                             rating-window info. Window = next day after contact, 10 AM–10 PM
                             (same calculation as meeting ratings). Hidden once rated. */}
-                        {(!!candidate.phone || !!candidate.whatsappNumber) && (() => {
+                        {(!!candidate.phone || !!candidate.whatsappNumber || (candidate.allowChat && user?.aspirantId !== candidate.id)) && (() => {
                           const helperSx = { mt: 0.6, fontFamily: '"Baloo 2", cursive', fontSize: '0.72rem', lineHeight: 1.4, color: isDark ? '#FFCB00' : '#412323', textAlign: 'center' as const };
                           const currentRating = contactRatings[candidate.id] ?? getStoredContactRating(candidate.id);
                           const rated = candidate.isContactRated || currentRating > 0;
@@ -3195,7 +3208,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                           if (!contacted) {
                             return (
                               <Typography sx={helperSx}>
-                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp, Phone or Chat to Evaluate & Rate' })}
                               </Typography>
                             );
                           }
@@ -3206,7 +3219,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                           if (afterWindow) {
                             return (
                               <Typography sx={helperSx}>
-                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp, Phone or Chat to Evaluate & Rate' })}
                               </Typography>
                             );
                           }
