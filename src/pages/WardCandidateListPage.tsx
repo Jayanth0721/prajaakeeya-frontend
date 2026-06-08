@@ -3367,59 +3367,65 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                               </Box>
                             )}
 
-                            {/* Polling / vote button — temporarily disabled:
-                            <Box
-                              sx={{ width: '100%' }}
-                              onClick={finalDisabled ? () => {
-                                (document.activeElement as HTMLElement | null)?.blur();
-                                if ((hasVoted || user?.hasVoted) && isVotingActiveForThisElection) {
-                                  setVoteThankOpen(true);
-                                } else {
-                                  setEligibilityDialogOpen(true);
-                                }
-                              } : undefined}
-                            >
-                              <Button
-                                variant="contained"
-                                size="small"
-                                fullWidth
-                                startIcon={<HowToVoteIcon />}
-                                disabled={finalDisabled}
-                                sx={{
-                                  height: 34, borderRadius: '8px', textTransform: 'none', fontWeight: 700,
-                                  color: '#fff', background: `linear-gradient(135deg, ${BRAND.green} 0%, #16a34a 100%)`,
-                                  boxShadow: '0 3px 10px rgba(37,58,154,0.4)',
-                                  fontSize: { xs: '0.72rem', sm: isKannada ? '0.68rem' : '0.8rem' },
-                                  '&:hover': { background: `linear-gradient(135deg, #16a34a 0%, ${BRAND.green} 100%)`, boxShadow: '0 5px 16px rgba(37,58,154,0.6)' },
-                                  '&.Mui-disabled': { background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.12)', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(17,24,39,0.38)', boxShadow: 'none' },
-                                }}
-                                onClick={!finalDisabled ? async (e) => {
-                                  // Release focus before the thank-you dialog opens, otherwise
-                                  // the dialog sets aria-hidden on #root while this button is
-                                  // still focused (accessibility warning).
-                                  (e.currentTarget as HTMLElement).blur();
-                                  try {
-                                    setPosting(true);
-                                    // Send only aspirantId as requested by API
-                                    await apiClient.post('/vote', { aspirantId: candidate.id });
-                                    setHasVoted(true);
-                                    const cId = isGramPanchayat && selectedGpVillage ? Number(selectedGpVillage.id) : selectedConstituency?.id;
-                                    if (selectedElectionId && cId) void loadAspirants(Number(selectedElectionId), cId);
-                                    setVotedForName(candidate.name || null);
+                            {/* Polling / vote button — only rendered while the voting window is
+                                open for this election. When the window is closed the button is
+                                hidden entirely. While open it shows in a disabled state for demo
+                                candidates, ineligible users (no chat/meeting/phone call), or after
+                                voting — clicking the disabled button surfaces the eligibility /
+                                thank-you dialog so the user knows why they can't vote. */}
+                            {isVotingActiveForThisElection && (
+                              <Box
+                                sx={{ width: '100%' }}
+                                onClick={finalDisabled ? () => {
+                                  (document.activeElement as HTMLElement | null)?.blur();
+                                  if ((hasVoted || user?.hasVoted)) {
                                     setVoteThankOpen(true);
-                                  } catch (err: any) {
-                                    const msg = err?.response?.data?.message || err?.message || 'Failed to submit vote';
-                                    setErrorMsg(msg);
-                                    setErrorOpen(true);
-                                  } finally {
-                                    setPosting(false);
+                                  } else {
+                                    setEligibilityDialogOpen(true);
                                   }
                                 } : undefined}
                               >
-                                {t('pages.wardCandidates.vote') || 'Polling'}
-                              </Button>
-                            </Box>
-                            */}
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  fullWidth
+                                  startIcon={<HowToVoteIcon />}
+                                  disabled={finalDisabled || posting}
+                                  sx={{
+                                    height: 34, borderRadius: '8px', textTransform: 'none', fontWeight: 700,
+                                    color: '#fff', background: `linear-gradient(135deg, ${BRAND.green} 0%, #16a34a 100%)`,
+                                    boxShadow: '0 3px 10px rgba(37,58,154,0.4)',
+                                    fontSize: { xs: '0.72rem', sm: isKannada ? '0.68rem' : '0.8rem' },
+                                    '&:hover': { background: `linear-gradient(135deg, #16a34a 0%, ${BRAND.green} 100%)`, boxShadow: '0 5px 16px rgba(37,58,154,0.6)' },
+                                    '&.Mui-disabled': { background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.12)', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(17,24,39,0.38)', boxShadow: 'none' },
+                                  }}
+                                  onClick={!finalDisabled ? async (e) => {
+                                    // Release focus before the thank-you dialog opens, otherwise
+                                    // the dialog sets aria-hidden on #root while this button is
+                                    // still focused (accessibility warning).
+                                    (e.currentTarget as HTMLElement).blur();
+                                    try {
+                                      setPosting(true);
+                                      // Send only aspirantId as requested by API
+                                      await apiClient.post('/vote', { aspirantId: candidate.id });
+                                      setHasVoted(true);
+                                      const cId = isGramPanchayat && selectedGpVillage ? Number(selectedGpVillage.id) : selectedConstituency?.id;
+                                      if (selectedElectionId && cId) void loadAspirants(Number(selectedElectionId), cId);
+                                      setVotedForName(candidate.name || null);
+                                      setVoteThankOpen(true);
+                                    } catch (err: any) {
+                                      const msg = err?.response?.data?.message || err?.message || 'Failed to submit vote';
+                                      setErrorMsg(msg);
+                                      setErrorOpen(true);
+                                    } finally {
+                                      setPosting(false);
+                                    }
+                                  } : undefined}
+                                >
+                                  {t('pages.wardCandidates.vote') || 'Polling'}
+                                </Button>
+                              </Box>
+                            )}
                           </Box>
                         );
                       })()}
