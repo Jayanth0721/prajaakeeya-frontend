@@ -3155,7 +3155,20 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                 '&:hover': { background: `linear-gradient(135deg, ${BRAND.red2} 0%, ${BRAND.red} 100%)` },
                               }}
                               onClick={() => {
-                                void trackInteraction(candidate.id);
+                                const _contactTs = Date.now();
+                                // Reflect the new contact state synchronously, BEFORE we
+                                // navigate away — gating this on the async track result
+                                // would never apply, because navigate() unmounts the list
+                                // before the promise resolves. (WhatsApp/Phone don't
+                                // navigate, so they can wait for the result.) This makes
+                                // the rating-window message appear when the user returns.
+                                setCandidates((prev) => prev.map((c) => c.id === candidate.id ? { ...c, canRateContact: true, isContactRated: false, contactedAt: _contactTs } : c));
+                                // Track the chat interaction, AND reuse the phone-call
+                                // tracking endpoint so the backend persists the contact
+                                // (contactedAt / canRateContact) and the rating window
+                                // survives a refetch — same path WhatsApp/Phone already use.
+                                void trackInteraction(candidate.id, '/users/track/chat', _contactTs);
+                                void trackInteraction(candidate.id, '/users/track/phone-call', _contactTs);
                                 // Remember which card we left from so we can scroll back
                                 // to it when the user returns from the chat page.
                                 try { sessionStorage.setItem('wardlist_return_aspirant', String(candidate.id)); } catch { /* ignore */ }
@@ -3166,12 +3179,12 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             </Button>
                           </Box>
                         )}
-                        {/* Contact prompt / rating-window message — shown when phone
-                            or WhatsApp is enabled. Once the voter has contacted
+                        {/* Contact prompt / rating-window message — shown when phone,
+                            WhatsApp or Chat is enabled. Once the voter has contacted
                             (canRateContact), the eligibility prompt is replaced by the
                             rating-window info. Window = next day after contact, 10 AM–10 PM
                             (same calculation as meeting ratings). Hidden once rated. */}
-                        {(!!candidate.phone || !!candidate.whatsappNumber) && (() => {
+                        {(!!candidate.phone || !!candidate.whatsappNumber || (candidate.allowChat && user?.aspirantId !== candidate.id)) && (() => {
                           const helperSx = { mt: 0.6, fontFamily: '"Baloo 2", cursive', fontSize: '0.72rem', lineHeight: 1.4, color: isDark ? '#FFCB00' : '#412323', textAlign: 'center' as const };
                           const currentRating = contactRatings[candidate.id] ?? getStoredContactRating(candidate.id);
                           const rated = candidate.isContactRated || currentRating > 0;
@@ -3195,7 +3208,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                           if (!contacted) {
                             return (
                               <Typography sx={helperSx}>
-                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp, Phone or Chat to Evaluate & Rate' })}
                               </Typography>
                             );
                           }
@@ -3206,7 +3219,7 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                           if (afterWindow) {
                             return (
                               <Typography sx={helperSx}>
-                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp or Phone to Evaluate & Rate' })}
+                                {t('pages.wardCandidates.eligibilityHelper', { defaultValue: 'Contact via WhatsApp, Phone or Chat to Evaluate & Rate' })}
                               </Typography>
                             );
                           }
@@ -3354,59 +3367,65 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                               </Box>
                             )}
 
-                            {/* Polling / vote button — temporarily disabled:
-                            <Box
-                              sx={{ width: '100%' }}
-                              onClick={finalDisabled ? () => {
-                                (document.activeElement as HTMLElement | null)?.blur();
-                                if ((hasVoted || user?.hasVoted) && isVotingActiveForThisElection) {
-                                  setVoteThankOpen(true);
-                                } else {
-                                  setEligibilityDialogOpen(true);
-                                }
-                              } : undefined}
-                            >
-                              <Button
-                                variant="contained"
-                                size="small"
-                                fullWidth
-                                startIcon={<HowToVoteIcon />}
-                                disabled={finalDisabled}
-                                sx={{
-                                  height: 34, borderRadius: '8px', textTransform: 'none', fontWeight: 700,
-                                  color: '#fff', background: `linear-gradient(135deg, ${BRAND.green} 0%, #16a34a 100%)`,
-                                  boxShadow: '0 3px 10px rgba(37,58,154,0.4)',
-                                  fontSize: { xs: '0.72rem', sm: isKannada ? '0.68rem' : '0.8rem' },
-                                  '&:hover': { background: `linear-gradient(135deg, #16a34a 0%, ${BRAND.green} 100%)`, boxShadow: '0 5px 16px rgba(37,58,154,0.6)' },
-                                  '&.Mui-disabled': { background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.12)', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(17,24,39,0.38)', boxShadow: 'none' },
-                                }}
-                                onClick={!finalDisabled ? async (e) => {
-                                  // Release focus before the thank-you dialog opens, otherwise
-                                  // the dialog sets aria-hidden on #root while this button is
-                                  // still focused (accessibility warning).
-                                  (e.currentTarget as HTMLElement).blur();
-                                  try {
-                                    setPosting(true);
-                                    // Send only aspirantId as requested by API
-                                    await apiClient.post('/vote', { aspirantId: candidate.id });
-                                    setHasVoted(true);
-                                    const cId = isGramPanchayat && selectedGpVillage ? Number(selectedGpVillage.id) : selectedConstituency?.id;
-                                    if (selectedElectionId && cId) void loadAspirants(Number(selectedElectionId), cId);
-                                    setVotedForName(candidate.name || null);
+                            {/* Polling / vote button — only rendered while the voting window is
+                                open for this election. When the window is closed the button is
+                                hidden entirely. While open it shows in a disabled state for demo
+                                candidates, ineligible users (no chat/meeting/phone call), or after
+                                voting — clicking the disabled button surfaces the eligibility /
+                                thank-you dialog so the user knows why they can't vote. */}
+                            {isVotingActiveForThisElection && (
+                              <Box
+                                sx={{ width: '100%' }}
+                                onClick={finalDisabled ? () => {
+                                  (document.activeElement as HTMLElement | null)?.blur();
+                                  if ((hasVoted || user?.hasVoted)) {
                                     setVoteThankOpen(true);
-                                  } catch (err: any) {
-                                    const msg = err?.response?.data?.message || err?.message || 'Failed to submit vote';
-                                    setErrorMsg(msg);
-                                    setErrorOpen(true);
-                                  } finally {
-                                    setPosting(false);
+                                  } else {
+                                    setEligibilityDialogOpen(true);
                                   }
                                 } : undefined}
                               >
-                                {t('pages.wardCandidates.vote') || 'Polling'}
-                              </Button>
-                            </Box>
-                            */}
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  fullWidth
+                                  startIcon={<HowToVoteIcon />}
+                                  disabled={finalDisabled || posting}
+                                  sx={{
+                                    height: 34, borderRadius: '8px', textTransform: 'none', fontWeight: 700,
+                                    color: '#fff', background: `linear-gradient(135deg, ${BRAND.green} 0%, #16a34a 100%)`,
+                                    boxShadow: '0 3px 10px rgba(37,58,154,0.4)',
+                                    fontSize: { xs: '0.72rem', sm: isKannada ? '0.68rem' : '0.8rem' },
+                                    '&:hover': { background: `linear-gradient(135deg, #16a34a 0%, ${BRAND.green} 100%)`, boxShadow: '0 5px 16px rgba(37,58,154,0.6)' },
+                                    '&.Mui-disabled': { background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.12)', color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(17,24,39,0.38)', boxShadow: 'none' },
+                                  }}
+                                  onClick={!finalDisabled ? async (e) => {
+                                    // Release focus before the thank-you dialog opens, otherwise
+                                    // the dialog sets aria-hidden on #root while this button is
+                                    // still focused (accessibility warning).
+                                    (e.currentTarget as HTMLElement).blur();
+                                    try {
+                                      setPosting(true);
+                                      // Send only aspirantId as requested by API
+                                      await apiClient.post('/vote', { aspirantId: candidate.id });
+                                      setHasVoted(true);
+                                      const cId = isGramPanchayat && selectedGpVillage ? Number(selectedGpVillage.id) : selectedConstituency?.id;
+                                      if (selectedElectionId && cId) void loadAspirants(Number(selectedElectionId), cId);
+                                      setVotedForName(candidate.name || null);
+                                      setVoteThankOpen(true);
+                                    } catch (err: any) {
+                                      const msg = err?.response?.data?.message || err?.message || 'Failed to submit vote';
+                                      setErrorMsg(msg);
+                                      setErrorOpen(true);
+                                    } finally {
+                                      setPosting(false);
+                                    }
+                                  } : undefined}
+                                >
+                                  {t('pages.wardCandidates.vote') || 'Polling'}
+                                </Button>
+                              </Box>
+                            )}
                           </Box>
                         );
                       })()}
