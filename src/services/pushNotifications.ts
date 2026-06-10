@@ -198,24 +198,50 @@ export async function consumePendingPushRoute(): Promise<void> {
   }
 }
 
+/** Home route seeded behind a cold-launch deep link so Back has somewhere to go. */
+const DEEP_LINK_HOME = '/user/dashboard';
+
+/** True on a cold app launch, where the browser/WKWebView history holds only the
+ *  current entry. Tapping a notification then opens the deep link with nothing
+ *  behind it, so the in-app/hardware Back button is a dead end. */
+function isColdLaunch(): boolean {
+  try {
+    return window.history.length <= 1;
+  } catch {
+    return false;
+  }
+}
+
+/** Navigate in-SPA when a navigator is registered, else fall back to a full load. */
+function goTo(path: string): void {
+  if (spaNavigate) spaNavigate(path);
+  else window.location.assign(path);
+}
+
 /** Follow a notification deep link. Same-origin targets go through React Router
  *  (no full reload, no WKWebView host-allowlist round-trip); external URLs fall
  *  back to the browser, which the shell opens in SFSafariViewController.
- *  Shared by the iOS native bridge and the web-push stash consumer above. */
+ *  Shared by the iOS native bridge and the web-push stash consumer above.
+ *
+ *  On a cold launch (empty history) we first seed the user dashboard as a base
+ *  entry, then push the deep link, so Back returns to the dashboard instead of
+ *  dead-ending on the launched page (e.g. opening straight into chat from a push). */
 export function followDeepLink(link: string): void {
   try {
     const url = new URL(link, window.location.origin);
     if (url.origin === window.location.origin) {
       const path = url.pathname + url.search + url.hash;
-      if (spaNavigate) spaNavigate(path);
-      else window.location.assign(path);
+      if (isColdLaunch() && url.pathname !== DEEP_LINK_HOME) {
+        goTo(DEEP_LINK_HOME);
+      }
+      goTo(path);
     } else {
       window.location.assign(link);
     }
   } catch {
     // Not a parseable URL — treat as an in-app relative path.
-    if (spaNavigate) spaNavigate(link);
-    else window.location.assign(link);
+    if (isColdLaunch() && link !== DEEP_LINK_HOME) goTo(DEEP_LINK_HOME);
+    goTo(link);
   }
 }
 
