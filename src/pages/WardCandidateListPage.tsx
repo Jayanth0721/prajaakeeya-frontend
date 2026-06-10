@@ -861,12 +861,40 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
     const aid = Number(raw);
     if (!Number.isFinite(aid) || !candidates.some((c) => c.id === aid)) return;
     if (!document.getElementById(`aspirant-card-${aid}`)) return;
-    try { sessionStorage.removeItem('wardlist_return_aspirant'); } catch { /* ignore */ }
-    const scrollToCard = () => document.getElementById(`aspirant-card-${aid}`)?.scrollIntoView({ block: 'center' });
-    // Several attempts so it survives late layout shifts (images loading, etc.).
-    requestAnimationFrame(scrollToCard);
-    window.setTimeout(scrollToCard, 150);
-    window.setTimeout(scrollToCard, 450);
+    // NOTE: no clearable cleanup and we DON'T clear the sessionStorage flag here.
+    // Under React StrictMode the effect runs twice; clearing the flag (or the
+    // timers) on the first pass would leave the second pass with nothing to do,
+    // so the scroll would never happen in dev. We instead fire uncancelled,
+    // self-stopping nudges and clear the flag only once the card has settled.
+    // Re-align repeatedly over ~2s so the scroll survives late layout shifts —
+    // avatars/manifesto images load after the cards mount and push the target
+    // card down, so a single early scrollIntoView lands short (near the top).
+    let lastTop = Number.NaN;
+    let settled = false;
+    const align = () => {
+      if (settled) return;
+      const el = document.getElementById(`aspirant-card-${aid}`);
+      if (!el) return;
+      el.scrollIntoView({ block: 'center' });
+      const top = Math.round(el.getBoundingClientRect().top);
+      // Once the card's viewport position holds steady between two passes,
+      // layout has settled — stop nudging and drop the flag so a later
+      // genuine remount won't re-trigger this scroll.
+      if (Math.abs(top - lastTop) <= 2) {
+        settled = true;
+        try { sessionStorage.removeItem('wardlist_return_aspirant'); } catch { /* ignore */ }
+      }
+      lastTop = top;
+    };
+    requestAnimationFrame(align);
+    [80, 180, 320, 500, 750, 1100, 1600, 2100].forEach((delay) => {
+      window.setTimeout(align, delay);
+    });
+    // Safety net: ensure the flag is cleared even if the position never fully
+    // stabilises, so it can't leak into an unrelated future visit.
+    window.setTimeout(() => {
+      try { sessionStorage.removeItem('wardlist_return_aspirant'); } catch { /* ignore */ }
+    }, 2500);
   }, [candidates, loading]);
 
   // Fetch elections on mount & restore saved election filter
@@ -1175,7 +1203,24 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
         const { data } = await fetchAspirantsByConstituency(electionId, constituencyId, useAuthStore.getState().user?.id);
         const list = Array.isArray(data) ? data : (data as any)?.data ?? [];
         const approved = list.filter((c: any) => c.status === 'approved' && c.documentStatus === 'completed');
-        setCandidates(approved);
+        // Sort order:
+        //  1. Aspirants who have scheduled a meeting go to the very top.
+        //  2. Within each group, highest overall rating first.
+        //  3. Ties keep the API's incoming order (newest first) via the index
+        //     fallback, which also makes the sort stable.
+        const sortedApproved = approved
+          .map((c: any, index: number) => ({ c, index }))
+          .sort((a: any, b: any) => {
+            const ma = Array.isArray(a.c.meetings) && a.c.meetings.length > 0 ? 1 : 0;
+            const mb = Array.isArray(b.c.meetings) && b.c.meetings.length > 0 ? 1 : 0;
+            if (mb !== ma) return mb - ma;
+            const ra = Number(a.c.overallRating?.averageRating) || 0;
+            const rb = Number(b.c.overallRating?.averageRating) || 0;
+            if (rb !== ra) return rb - ra;
+            return a.index - b.index;
+          })
+          .map((entry: any) => entry.c);
+        setCandidates(sortedApproved);
         // Extract vote counts and percentages from inline fields
         const counts: Record<number, number> = {};
         const percentages: Record<number, number> = {};
@@ -2419,7 +2464,13 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                               )}
                               <Button
                                 size="small"
-                                onClick={() => navigate(`/user/aspirants/${candidate.id}/view`, { state: { candidate } })}
+                                onClick={() => {
+                                  // Remember which card we left from so we scroll
+                                  // back to it when the user returns from the
+                                  // aspirant details page (same as the Chat button).
+                                  try { sessionStorage.setItem('wardlist_return_aspirant', String(candidate.id)); } catch { /* ignore */ }
+                                  navigate(`/user/aspirants/${candidate.id}/view`, { state: { candidate } });
+                                }}
                                 sx={{
                                   px: 0.68, py: 0.68, minWidth: 82, borderRadius: 1.5, minHeight: 25,
                                   textTransform: 'none', fontWeight: 700, fontSize: '0.55rem', lineHeight: 1,
