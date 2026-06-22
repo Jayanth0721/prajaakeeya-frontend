@@ -111,7 +111,7 @@ const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
 
 const App = () => {
   const { t } = useTranslation();
-  const { isAdmin, isAuthenticated, token, fetchProfile } = useAuthStore();
+  const { isAdmin, isAuthenticated, token, user, fetchProfile } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -166,6 +166,33 @@ const App = () => {
       void fetchProfile();
     }
   }, [token, fetchProfile]);
+
+  useEffect(() => {
+    // Constituency onboarding guard. The decision must be data-driven (are all
+    // four constituencies null?) rather than relying on the "celebrated" flag in
+    // AuthCallbackPage — otherwise a returning login (e.g. after the user deleted
+    // their account and signed in again) skips onboarding even though their
+    // constituencies are null. Once the fresh profile is loaded, send a
+    // non-admin user with no constituency set to the onboarding wizard. Only
+    // redirect from /user/* routes so we never hijack onboarding/login/admin/
+    // public pages. Mirrors the "hasAny" check on UserConstituencyOnboardingPage
+    // (gramPanchayat is matched as != null, the others by .id).
+    if (!isAuthenticated || isAdmin || !user) return;
+    // If the user already went through the wizard and chose to skip every
+    // constituency, don't trap them back here on each /user/* navigation.
+    // Keep this string in sync with ONBOARDING_DISMISSED_KEY in
+    // UserConstituencyOnboardingPage (kept local to preserve the page's lazy
+    // chunk instead of importing from it).
+    if (localStorage.getItem("__USER_LOCATION_ONBOARDED__") === "1") return;
+    const hasAnyConstituency =
+      user.lokSabhaConstituency?.id != null ||
+      user.stateAssemblyConstituency?.id != null ||
+      user.municipalCorporationConstituency?.id != null ||
+      user.gramPanchayatConstituency != null;
+    if (!hasAnyConstituency && location.pathname.startsWith("/user")) {
+      navigate("/onboarding/location", { replace: true });
+    }
+  }, [isAuthenticated, isAdmin, user, location.pathname, navigate]);
 
   useEffect(() => {
     // Wire web push (FCM) for the signed-in user: registers silently if the

@@ -64,6 +64,11 @@ interface OnboardingAnswers {
 }
 
 const STORAGE_KEY = "__USER_LOCATION_ANSWERS__";
+// Set once the user has been through the onboarding wizard — whether they
+// filled it in or skipped every step. The App.tsx onboarding guard reads this
+// so a user who deliberately skipped all constituencies is let into the app
+// instead of being bounced back to the wizard on every /user/* navigation.
+export const ONBOARDING_DISMISSED_KEY = "__USER_LOCATION_ONBOARDED__";
 
 const UserConstituencyOnboardingPage = () => {
   const { t } = useTranslation();
@@ -333,6 +338,10 @@ const UserConstituencyOnboardingPage = () => {
   const finish = async (final: OnboardingAnswers) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(final));
+      // Mark onboarding as done so the guard lets the user in even if they
+      // skipped every step (constituencies still null). Both "skip all" and a
+      // completed submit reach finish(), so this covers both exits.
+      localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1");
     } catch {
       // ignore
     }
