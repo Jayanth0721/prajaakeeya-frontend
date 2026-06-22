@@ -1,38 +1,8 @@
 import apiClient from './apiClient';
 import { AuthUser } from '../types/auth';
 
-export interface EpicLoginPayload {
-  epicId: string;
-}
-
-export interface RegisterOtpPayload {
-  email: string;
-}
-
-export interface VerifyRegisterOtpPayload {
-  email: string;
-  otp: string;
-  verificationId?: string;
-}
-
-export interface VerifyOtpPayload {
-  email: string;
-  otp: string;
-  verificationId?: string;
-}
-
 export interface AdminLoginPayload {
   phone: string;
-}
-
-export interface AspirantSendOtpPayload {
-  mobileNumber: string;
-}
-
-export interface AspirantVerifyOtpPayload {
-  mobileNumber: string;
-  verificationId: string;
-  code: string;
 }
 
 export interface AdminVerifyOtpPayload {
@@ -54,11 +24,6 @@ export interface RegisterVoterResponse {
   user: AuthUser;
   ward?: { id: number; name: string };
 }
-
-export const loginWithEpic = async (payload: EpicLoginPayload) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/login', payload);
-  return data;
-};
 
 export const GOOGLE_OAUTH_STATE_KEY = 'google_oauth_state';
 
@@ -91,32 +56,6 @@ export const getGoogleOAuthUrl = (): string => {
 };
 
 export const requestAdminOtp = (payload: AdminLoginPayload) => apiClient.post('/auth/admin/login', payload);
-
-export const requestRegisterOtp = (payload: RegisterOtpPayload) =>
-  apiClient.post<{ message: string; verificationId?: string }>('/auth/register/request-otp', payload);
-
-export const verifyRegisterOtp = (payload: VerifyRegisterOtpPayload) =>
-  apiClient.post('/auth/register/verify-otp', payload);
-
-export const verifyOtp = async (payload: VerifyOtpPayload) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/verify-otp', payload);
-  return data;
-};
-
-export const sendAspirantOtp = async (payload: AspirantSendOtpPayload) => {
-  const { data } = await apiClient.post<{ message: string; verificationId: string }>('/auth/aspirant/send-otp', payload);
-  return data;
-};
-
-export const verifyAspirantLoginOtp = async (payload: AspirantVerifyOtpPayload) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/aspirant/verify-otp', payload);
-  return data;
-};
-
-export const resendAspirantOtp = async (payload: AspirantSendOtpPayload) => {
-  const { data } = await apiClient.post<{ message: string; verificationId: string }>('/auth/aspirant/resend-otp', payload);
-  return data;
-};
 
 export const verifyAdminOtp = async (payload: AdminVerifyOtpPayload) => {
   const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/admin/verify-otp', payload);
