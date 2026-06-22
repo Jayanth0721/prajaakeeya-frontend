@@ -31,8 +31,6 @@ const COMING_SOON = false;
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 const CreateWardPage = lazy(() => import("./pages/CreateWardPage"));
-const UploadBoothPdfsPage = lazy(() => import("./pages/UploadBoothPdfsPage"));
-const VoterCountPage = lazy(() => import("./pages/VoterCountPage"));
 const ReportsListPage = lazy(() => import("./pages/admin/ReportsListPage"));
 const ReportDetailsPage = lazy(() => import("./pages/admin/ReportDetailsPage"));
 const AdminUsersListPage = lazy(() => import("./pages/admin/AdminUsersListPage"));
@@ -51,10 +49,8 @@ const AdminMunicipalityPage = lazy(() => import("./pages/admin/AdminMunicipality
 const AdminGramaPanchayatPage = lazy(() => import("./pages/admin/AdminGramaPanchayatPage"));
 const AdminUploadSopPage = lazy(() => import("./pages/admin/AdminUploadSopPage"));
 const AdminAspirantListPage = lazy(() => import("./pages/admin/AdminAspirantListPage"));
-const UserLoginPage = lazy(() => import("./pages/UserLoginPage"));
 const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
 const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
-const UserPledgePage = lazy(() => import("./pages/UserPledgePage"));
 const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
 const CivicIssuesPage = lazy(() => import("./pages/CivicIssuesPage"));
@@ -259,25 +255,7 @@ const App = () => {
               }
             />
           </Route>
-          <Route element={<AuthLayout title={t("userLogin.title")} />}>
-            <Route
-              path="/login"
-              element={
-                <RedirectIfAuth>
-                  <UserLoginPage />
-                </RedirectIfAuth>
-              }
-            />
-          </Route>
           <Route element={<AuthLayout title={t("userRegister.title")} />}>
-            <Route
-              path="/signup"
-              element={
-                <RedirectIfAuth>
-                  <UserPledgePage />
-                </RedirectIfAuth>
-              }
-            />
             <Route
               path="/register"
               element={
@@ -321,8 +299,6 @@ const App = () => {
           >
             <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="wards/create" element={<CreateWardPage />} />
-            <Route path="upload-pdfs" element={<UploadBoothPdfsPage />} />
-            <Route path="voter-count" element={<VoterCountPage />} />
             <Route
               path="aspirants/approval"
               element={<AspirantApprovalPage />}

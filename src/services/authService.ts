@@ -1,21 +1,11 @@
 import apiClient from './apiClient';
 import { AuthUser } from '../types/auth';
 
-export interface EpicLoginPayload {
-  epicId: string;
-}
-
 export interface RegisterOtpPayload {
   email: string;
 }
 
 export interface VerifyRegisterOtpPayload {
-  email: string;
-  otp: string;
-  verificationId?: string;
-}
-
-export interface VerifyOtpPayload {
   email: string;
   otp: string;
   verificationId?: string;
@@ -55,11 +45,6 @@ export interface RegisterVoterResponse {
   ward?: { id: number; name: string };
 }
 
-export const loginWithEpic = async (payload: EpicLoginPayload) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/login', payload);
-  return data;
-};
-
 export const GOOGLE_OAUTH_STATE_KEY = 'google_oauth_state';
 
 /**
@@ -97,11 +82,6 @@ export const requestRegisterOtp = (payload: RegisterOtpPayload) =>
 
 export const verifyRegisterOtp = (payload: VerifyRegisterOtpPayload) =>
   apiClient.post('/auth/register/verify-otp', payload);
-
-export const verifyOtp = async (payload: VerifyOtpPayload) => {
-  const { data } = await apiClient.post<{ token: string; user: AuthUser }>('/auth/verify-otp', payload);
-  return data;
-};
 
 export const sendAspirantOtp = async (payload: AspirantSendOtpPayload) => {
   const { data } = await apiClient.post<{ message: string; verificationId: string }>('/auth/aspirant/send-otp', payload);
