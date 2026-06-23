@@ -8,7 +8,6 @@ import employeesImg from '../../assets/images/employees.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BRAND } from '../../theme';
-import { getVoters } from '../../services/voterService';
 
 const FF = "'Baloo 2', sans-serif";
 
@@ -22,20 +21,6 @@ const GuestDashboardPage = () => {
   const textPrimary = theme.palette.text.primary;
   const GOLD = isDark ? BRAND.yellow : BRAND.yellowLight;
   const textHigh = isDark ? 'rgba(255,255,255,0.66)' : 'rgba(17,24,39,0.72)';
-  const BORDER = isDark ? 'rgba(245,168,0,0.20)' : 'rgba(245,168,0,0.35)';
-
-  const [totalVoters, setTotalVoters] = React.useState<number | null>(null);
-  React.useEffect(() => {
-    let cancelled = false;
-    getVoters(1, 1)
-      .then((resp) => {
-        if (cancelled) return;
-        const total = (resp?.data as any)?.totalUsers ?? (resp?.data as any)?.total ?? null;
-        if (typeof total === 'number') setTotalVoters(total);
-      })
-      .catch(() => { /* ignore — count stays hidden */ });
-    return () => { cancelled = true; };
-  }, []);
 
   const heroBg = isDark
     ? 'radial-gradient(130% 150% at 6% 0%, rgba(200,24,10,0.2) 0%, rgba(10,8,8,1) 55%), radial-gradient(120% 130% at 100% 0%, rgba(37,58,154,0.16) 0%, rgba(10,8,8,1) 55%)'
@@ -104,28 +89,6 @@ const GuestDashboardPage = () => {
                 {isKannada ? 'ಪ್ರಜಾಕೀಯ ಅನ್ವೇಷಿಸಿ — ಭಾಗವಹಿಸಲು ನೋಂದಾಯಿಸಿ' : 'Explore Prajaakeeya — Register to participate'}
               </Typography>
             </Box>
-            {totalVoters != null && (
-              <Box
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 1.2,
-                  px: 1,
-                  py: 0.25,
-                  borderRadius: 2,
-                  background: isDark ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.7)',
-                  border: `1px solid ${BORDER}`,
-                  alignSelf: 'flex-start',
-                }}
-              >
-                <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: textHigh, lineHeight: 1 }}>
-                  {t('userDashboard.totalVoters', { defaultValue: 'No. of Registered Citizens' })}
-                </Typography>
-                <Typography sx={{ fontFamily: FF, fontSize: { xs: '1.2rem', md: '1.4rem' }, fontWeight: 800, color: textPrimary, lineHeight: 1 }}>
-                  {totalVoters.toLocaleString()}
-                </Typography>
-              </Box>
-            )}
           </Box>
         </Box>
       </motion.div>

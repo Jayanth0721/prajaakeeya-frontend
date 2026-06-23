@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Box, Grid, Stack, Typography } from '@mui/material';
 import {
-  LocationOn as LocationOnIcon,
   People as PeopleIcon,
-  HowToVote as HowToVoteIcon,
-  BarChart as BarChartIcon
+  HowToVote as HowToVoteIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import StatsCard from '../components/StatsCard';
@@ -73,14 +71,6 @@ const AdminDashboardPage = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            label={t('adminDashboard.cards.wards')}
-            value={data.totals.wards}
-            icon={<LocationOnIcon />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
             label={t('adminDashboard.cards.voters')}
             value={data.totals.voters}
             icon={<PeopleIcon />}
@@ -93,14 +83,6 @@ const AdminDashboardPage = () => {
             value={data.totals.aspirants}
             icon={<HowToVoteIcon />}
             color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            label={t('adminDashboard.cards.votes')}
-            value={data.totals.votes}
-            icon={<BarChartIcon />}
-            color="success"
           />
         </Grid>
       </Grid>

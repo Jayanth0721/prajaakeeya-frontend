@@ -1,10 +1,8 @@
 // PAGE TEST for GuestDashboardPage — the public (not-logged-in) home grid of
-// action tiles (View Aspirants, Public Issues, SOP, Registered Aspirants) plus
-// a hero banner that shows the total registered-citizens count.
+// action tiles (View Aspirants, Public Issues, SOP, Registered Aspirants) under
+// a hero banner.
 //
 // What this page does (the parts we care about for tests):
-//   - On mount it fetches the total voters count (getVoters) and, if a numeric
-//     total comes back, shows it in the hero strip (toLocaleString).
 //   - Renders a hero heading. Because i18n.language is 'en' (not 'kn'), the page
 //     uses the HARDCODED English string "Guest Dashboard".
 //   - Renders a grid of clickable action tiles whose titles come from
@@ -13,7 +11,6 @@
 //
 // Setup notes:
 //   - react-i18next mocked with STABLE t/i18n refs.
-//   - voterService.getVoters fully mocked — no network.
 //   - useNavigate spied; the rest of react-router-dom stays real.
 //   - No auth store needed (guest page reads no store).
 
@@ -36,11 +33,6 @@ vi.mock('react-router-dom', async (orig) => ({
   useNavigate: () => navigate,
 }));
 
-// voterService.getVoters — page reads resp.data.totalUsers (falls back to .total).
-vi.mock('../services/voterService', () => ({
-  getVoters: vi.fn(() => Promise.resolve({ data: { totalUsers: 4567 } })),
-}));
-
 describe('GuestDashboardPage (/guest/dashboard)', () => {
   it('renders the hero heading (hardcoded English when language is not kn)', () => {
     renderWithProviders(<GuestDashboardPage />, { route: '/guest/dashboard' });
@@ -54,12 +46,6 @@ describe('GuestDashboardPage (/guest/dashboard)', () => {
     expect(screen.getByText('Public Issues')).toBeInTheDocument();
     expect(screen.getByText('SOP')).toBeInTheDocument();
     expect(screen.getByText('Registered Aspirants')).toBeInTheDocument();
-  });
-
-  it('shows the registered-citizens count fetched from getVoters', async () => {
-    renderWithProviders(<GuestDashboardPage />, { route: '/guest/dashboard' });
-    // 4567 -> "4,567" via toLocaleString once the on-mount fetch resolves.
-    expect(await screen.findByText('4,567')).toBeInTheDocument();
   });
 
   it('navigates to the aspirants page when the "View Aspirants" tile is clicked', async () => {
