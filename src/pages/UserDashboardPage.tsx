@@ -45,7 +45,12 @@ import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
 import { fetchAllWards } from '../services/wardService';
 import { getVoters } from '../services/voterService';
-import WardCandidateListPage from './WardCandidateListPage';
+// C-PERF-4: Lazy-load the candidate list instead of a static import. The
+// dashboard renders it inline (<WardCandidateListPage embedded /> below), so we
+// can't drop it — but a static import merges its ~98 KB chunk into the
+// dashboard chunk, defeating code-splitting. Lazy() keeps the same UX while
+// splitting it into its own chunk that streams in behind the dashboard shell.
+const WardCandidateListPage = React.lazy(() => import('./WardCandidateListPage'));
 
 const UserDashboardPage = () => {
   const { user, token } = useAuthStore();
@@ -887,7 +892,9 @@ const UserDashboardPage = () => {
         {mobileHero}
         {pendingAspirantAlert}
         {isAspirant && mobileAspirantTiles}
-        <WardCandidateListPage embedded />
+        <React.Suspense fallback={null}>
+          <WardCandidateListPage embedded />
+        </React.Suspense>
       </Stack>
 
       {/* Original desktop card-grid layout — COMMENTED OUT (unused; dashboard renders WardCandidateListPage above). Kept for easy revert.
