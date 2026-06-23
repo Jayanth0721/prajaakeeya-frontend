@@ -189,6 +189,13 @@ export default defineConfig(({ command, mode }) => {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
+  // L-SEC-1: strip all console.* and debugger statements from the production
+  // bundle. Several call sites log raw server error payloads (err.response.data),
+  // which can carry PII/internal details — this guarantees none of that reaches a
+  // user's devtools in prod, current or future, without touching the 73 call sites
+  // (they stay intact for local dev). Error reporting is unaffected: it goes
+  // through Sentry.captureException, not console.
+  esbuild: { drop: command === 'build' ? ['console', 'debugger'] : [] },
   build: {
     // 'hidden' emits source maps for Sentry to upload but omits the
     // //# sourceMappingURL comment, so the deleted maps aren't referenced.
