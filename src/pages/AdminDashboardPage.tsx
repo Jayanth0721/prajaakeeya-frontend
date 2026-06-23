@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Box, Grid, Stack, Typography } from '@mui/material';
 import {
-  LocationOn as LocationOnIcon,
   People as PeopleIcon,
-  HowToVote as HowToVoteIcon,
-  BarChart as BarChartIcon
+  HowToVote as HowToVoteIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import StatsCard from '../components/StatsCard';
@@ -14,9 +12,9 @@ import { isMockMode } from '../config/appMode';
 interface DashboardResponse {
   totals: {
     wards: number;
-    voters: number;
     aspirants: number;
     votes: number;
+    citizens: number;
   };
 }
 
@@ -28,9 +26,9 @@ const AdminDashboardPage = () => {
     () => ({
       totals: {
         wards: 28,
-        voters: 125000,
         aspirants: 45,
-        votes: 87500
+        votes: 87500,
+        citizens: 125000
       }
     }),
     []
@@ -73,16 +71,8 @@ const AdminDashboardPage = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            label={t('adminDashboard.cards.wards')}
-            value={data.totals.wards}
-            icon={<LocationOnIcon />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
             label={t('adminDashboard.cards.voters')}
-            value={data.totals.voters}
+            value={data.totals.citizens}
             icon={<PeopleIcon />}
             color="info"
           />
@@ -93,14 +83,6 @@ const AdminDashboardPage = () => {
             value={data.totals.aspirants}
             icon={<HowToVoteIcon />}
             color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            label={t('adminDashboard.cards.votes')}
-            value={data.totals.votes}
-            icon={<BarChartIcon />}
-            color="success"
           />
         </Grid>
       </Grid>

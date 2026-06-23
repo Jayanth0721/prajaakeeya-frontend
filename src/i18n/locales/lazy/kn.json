@@ -474,6 +474,10 @@
   "reportAttachments": "ರಿಪೋರ್ಟ್ ಅಟ್ಯಾಚ್ಮೆಂಟ್ಸ್",
   "attachmentRequired": "ಅಟ್ಯಾಚ್ಮೆಂಟ್ (ಅಗತ್ಯ)",
   "reportReason1": "ದಯವಿಟ್ಟು ಈ ವರದಿಗಾಗಿ ವಿವರವಾದ ಕಾರಣವನ್ನು ನೀಡಿ.",
+  "guestDashboard": {
+    "title": "ಅತಿಥಿ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "subtitle": "ಪ್ರಜಾಕೀಯದ ಬಗ್ಗೆ ತಿಳಿಯಿರಿ — ಭಾಗವಹಿಸಲು ನೋಂದಣಿ ಮಾಡಿ"
+  },
   "userDashboard": {
     "welcomeBack": "ಮರಳಿ ಸ್ವಾಗತ",
     "citizensRegistered": "ನಾಗರಿಕರು ನೋಂದಾಯಿಸಿದ್ದಾರೆ.",

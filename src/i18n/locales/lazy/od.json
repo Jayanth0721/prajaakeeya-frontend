@@ -502,6 +502,10 @@
     "ward": "ୱାର୍ଡ",
     "booth": "ବୁଥ୍ ନାମ"
   },
+  "guestDashboard": {
+    "title": "ଅତିଥି ଡ୍ୟାସବୋର୍ଡ",
+    "subtitle": "ପ୍ରଜାକୀୟ ଅନୁସନ୍ଧାନ କରନ୍ତୁ — ଅଂଶଗ୍ରହଣ କରିବାକୁ ପଞ୍ଜୀକରଣ କରନ୍ତୁ"
+  },
   "userDashboard": {
     "welcomeBack": "ପୁଣି ସ୍ୱାଗତ",
     "citizensRegistered": "ନାଗରିକ ପଞ୍ଜିକୃତ ହୋଇଛନ୍ତି।",

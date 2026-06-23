@@ -502,6 +502,10 @@
     "ward": "વૉર્ડ",
     "booth": "બૂથનું નામ"
   },
+  "guestDashboard": {
+    "title": "અતિથિ ડેશબોર્ડ",
+    "subtitle": "પ્રજાકીય શોધો — ભાગ લેવા માટે નોંધણી કરો"
+  },
   "userDashboard": {
     "welcomeBack": "ફરી સ્વાગત છે",
     "citizensRegistered": "નાગરિકો નોંધાયેલા છે.",

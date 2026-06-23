@@ -22,6 +22,7 @@ import {
 import {
   AddLocation as AddLocationIcon,
   Description as DescriptionIcon,
+  Dashboard as DashboardIcon,
   People as PeopleIcon,
   HowToVote as HowToVoteIcon,
   Logout as LogoutIcon,
@@ -56,6 +57,7 @@ const AdminLayout = () => {
 
   const navItems = useMemo(
     () => [
+      { label: 'Dashboard', to: '/admin/dashboard', icon: <DashboardIcon /> },
       { label: 'User List', to: '/admin/users', icon: <PeopleIcon /> },
       { label: 'Aspirant List', to: '/admin/registered-aspirants', icon: <PeopleIcon /> },
       { label: 'Elections', to: '/admin/elections', icon: <HowToVoteIcon /> },
