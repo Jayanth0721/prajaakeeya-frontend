@@ -503,6 +503,10 @@
     "ward": "Ward",
     "booth": "Booth Name"
   },
+  "guestDashboard": {
+    "title": "Guest Dashboard",
+    "subtitle": "Explore Prajaakeeya — Register to participate"
+  },
   "userDashboard": {
     "welcomeBack": "Welcome Back",
     "citizensRegistered": "Citizens are registered.",

@@ -502,6 +502,10 @@
     "ward": "वार्ड",
     "booth": "बूथ का नाम"
   },
+  "guestDashboard": {
+    "title": "अतिथि डैशबोर्ड",
+    "subtitle": "प्रजाकीय को जानें — भाग लेने के लिए पंजीकरण करें"
+  },
   "userDashboard": {
     "welcomeBack": "वापसी पर स्वागत है",
     "citizensRegistered": "नागरिक पंजीकृत हैं।",

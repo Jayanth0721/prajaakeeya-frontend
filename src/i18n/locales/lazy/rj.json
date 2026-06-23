@@ -502,6 +502,10 @@
     "ward": "वार्ड",
     "booth": "बूथ रो नाम"
   },
+  "guestDashboard": {
+    "title": "पावणा डैशबोर्ड",
+    "subtitle": "प्रजाकीय नै जाणो — भाग लेण खातर रजिस्टर करो"
+  },
   "userDashboard": {
     "welcomeBack": "फेर सूं स्वागत है",
     "citizensRegistered": "नागरिक पंजीकृत है।",

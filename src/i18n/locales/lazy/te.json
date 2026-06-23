@@ -502,6 +502,10 @@
     "ward": "వార్డు",
     "booth": "బూత్ పేరు"
   },
+  "guestDashboard": {
+    "title": "అతిథి డాష్‌బోర్డ్",
+    "subtitle": "ప్రజాకీయను అన్వేషించండి — పాల్గొనడానికి నమోదు చేసుకోండి"
+  },
   "userDashboard": {
     "welcomeBack": "తిరిగి స్వాగతం",
     "citizensRegistered": "పౌరులు నమోదు అయ్యారు.",

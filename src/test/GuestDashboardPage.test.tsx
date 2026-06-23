@@ -3,6 +3,9 @@
 // a hero banner.
 //
 // What this page does (the parts we care about for tests):
+//   - On mount it fetches the total registered-citizens count (getCitizensCount)
+//     and, if a numeric total comes back, shows it in the hero strip
+//     (toLocaleString).
 //   - Renders a hero heading. Because i18n.language is 'en' (not 'kn'), the page
 //     uses the HARDCODED English string "Guest Dashboard".
 //   - Renders a grid of clickable action tiles whose titles come from
@@ -11,6 +14,7 @@
 //
 // Setup notes:
 //   - react-i18next mocked with STABLE t/i18n refs.
+//   - statsService.getCitizensCount fully mocked — no network.
 //   - useNavigate spied; the rest of react-router-dom stays real.
 //   - No auth store needed (guest page reads no store).
 
@@ -33,6 +37,11 @@ vi.mock('react-router-dom', async (orig) => ({
   useNavigate: () => navigate,
 }));
 
+// statsService.getCitizensCount — page reads resp.data.citizens.
+vi.mock('../services/statsService', () => ({
+  getCitizensCount: vi.fn(() => Promise.resolve({ data: { citizens: 67832 } })),
+}));
+
 describe('GuestDashboardPage (/guest/dashboard)', () => {
   it('renders the hero heading (hardcoded English when language is not kn)', () => {
     renderWithProviders(<GuestDashboardPage />, { route: '/guest/dashboard' });
@@ -46,6 +55,12 @@ describe('GuestDashboardPage (/guest/dashboard)', () => {
     expect(screen.getByText('Public Issues')).toBeInTheDocument();
     expect(screen.getByText('SOP')).toBeInTheDocument();
     expect(screen.getByText('Registered Aspirants')).toBeInTheDocument();
+  });
+
+  it('shows the registered-citizens count fetched from getCitizensCount', async () => {
+    renderWithProviders(<GuestDashboardPage />, { route: '/guest/dashboard' });
+    // 67832 -> "67,832" via toLocaleString once the on-mount fetch resolves.
+    expect(await screen.findByText('67,832')).toBeInTheDocument();
   });
 
   it('navigates to the aspirants page when the "View Aspirants" tile is clicked', async () => {
