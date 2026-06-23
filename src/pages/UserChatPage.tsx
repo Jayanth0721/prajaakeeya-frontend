@@ -9,7 +9,6 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import useAuthStore from '../store/useAuthStore';
 import { useTranslation } from 'react-i18next';
 import { getAspirantMessages, postUserChatMessage, subscribeToAspirantChat, AspirantChatMessageDto } from '../services/aspirantChatService';
-import { fetchWardAspirants, fetchWardAspirantsByNumber } from '../services/aspirantService';
 
 const UserChatPage: React.FC = () => {
     const { aspirantId } = useParams<{ aspirantId: string }>();
@@ -20,8 +19,6 @@ const UserChatPage: React.FC = () => {
     const candidate = (location.state as any)?.candidate;
 
     const [messages, setMessages] = React.useState<AspirantChatMessageDto[]>([]);
-    const [aspirantUserIds, setAspirantUserIds] = React.useState<Set<number>>(new Set());
-    const [aspirantNames, setAspirantNames] = React.useState<Set<string>>(new Set());
     const [loading, setLoading] = React.useState(false);
     const [posting, setPosting] = React.useState(false);
     const [text, setText] = React.useState('');
@@ -87,38 +84,6 @@ const UserChatPage: React.FC = () => {
         const pollId = setInterval(() => fetchMessages(), 30000);
         return () => { es?.close(); clearInterval(pollId); };
     }, [aspirantId, fetchMessages]);
-
-    React.useEffect(() => {
-        let mounted = true;
-        const loadAspirants = async () => {
-            if (!user) return;
-            try {
-                let resp;
-                if (user.wardId) {
-                    resp = await fetchWardAspirants(user.wardId);
-                } else if (user.wardNumber) {
-                    resp = await fetchWardAspirantsByNumber(String(user.wardNumber));
-                }
-                const list = (resp?.data?.data ?? resp?.data) || [];
-                const ids = new Set<number>();
-                const names = new Set<string>();
-                (list as any[]).forEach((a) => {
-                    if (!a) return;
-                    if (typeof a.userId === 'number') ids.add(a.userId);
-                    if (a.user && typeof a.user.id === 'number') ids.add(a.user.id);
-                    if (typeof a.id === 'number') ids.add(a.id);
-                    if (a.name) names.add(String(a.name).toLowerCase().trim());
-                });
-                if (!mounted) return;
-                setAspirantUserIds(ids);
-                setAspirantNames(names);
-            } catch (err) {
-                // ignore aspirant fetch errors
-            }
-        };
-        loadAspirants();
-        return () => { mounted = false; };
-    }, [user]);
 
     const handleSend = async () => {
         if (!text.trim() || !aspirantId) return;
