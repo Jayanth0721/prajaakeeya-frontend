@@ -97,10 +97,43 @@ export default defineConfig(({ command, mode }) => {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,woff2}'],
+        // C-PERF-1: Precache only the critical app shell — NOT every asset.
+        // The old '**/*.{js,...}' precached ~5 MB on first install: all 11
+        // language chunks (~2.6 MB), every Admin page, and images, even for an
+        // English-only voter who never opens /admin. We now precache just the
+        // shell and let everything else cache on first actual use via the
+        // runtime rule below (offline support preserved — languages are loaded
+        // through dynamic import() in src/i18n, so they fetch on demand).
+        globPatterns: [
+          'index.html',
+          'manifest.webmanifest',
+          'favicon.ico',
+          'assets/index-*.js',
+          'assets/vendor-*.js',
+          'assets/i18n-vendor-*.js',
+          'assets/*.css',
+        ],
+        globIgnores: [
+          'assets/[a-z][a-z]-*.js', // language chunks (bn-, hi-, kn-, ta-, ma-, …)
+          'assets/Admin*.js',       // admin page chunks
+          '**/images/**',           // images load on the pages that use them
+          '**/*.map',
+        ],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
+          {
+            // Route / language / page chunks that aren't precached: cache them
+            // on first visit so subsequent loads (and offline) work, without
+            // paying for all of them up front. Matches Vite's hashed assets.
+            urlPattern: /\/assets\/.*-[A-Za-z0-9_-]{8}\.js$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'app-chunks',
+              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
