@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, CircularProgress, Alert, Stack, Typography } from '@mui/material';
 import useAuthStore from '../store/useAuthStore';
+import { GOOGLE_OAUTH_STATE_KEY } from '../services/authService';
 
 /**
  * Handles the redirect back from the backend Google OAuth flow.
@@ -13,6 +14,7 @@ const AuthCallbackPage = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuthStore();
   const handled = useRef(false);
+  const [stateError, setStateError] = useState<string | null>(null);
 
   const error = params.get('error');
   const token = params.get('token');
@@ -23,6 +25,27 @@ const AuthCallbackPage = () => {
     handled.current = true;
 
     if (error || !token) return;
+
+    // C-SEC-1: Validate the OAuth CSRF `state` token before trusting the
+    // token in the URL. getGoogleOAuthUrl() mints this value into
+    // sessionStorage immediately before redirecting to the backend, so any
+    // legitimate OAuth return carries a matching state. A forged callback
+    // link (login-fixation / CSRF) will not — fail closed in that case.
+    const expectedState = sessionStorage.getItem(GOOGLE_OAUTH_STATE_KEY);
+    const receivedState = params.get('state');
+    sessionStorage.removeItem(GOOGLE_OAUTH_STATE_KEY);
+    if (!expectedState || !receivedState || expectedState !== receivedState) {
+      setStateError('Sign-in failed (state mismatch). Please try again.');
+      return;
+    }
+
+    // H-SEC-2: Scrub the token + user PII out of the URL immediately, before
+    // any further navigation or error reporting records it. The values were
+    // already captured from useSearchParams above, so the login flow below is
+    // unaffected — this only cleans the address bar / history / Referer / logs.
+    if (typeof window !== 'undefined' && window.history?.replaceState) {
+      window.history.replaceState({}, '', '/auth/callback');
+    }
 
     try {
       const user = userParam ? JSON.parse(decodeURIComponent(userParam)) : null;
@@ -92,12 +115,12 @@ const AuthCallbackPage = () => {
     }
   }, [token, userParam, error, setAuth, navigate]);
 
-  if (error || !token) {
+  if (error || !token || stateError) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
         <Stack spacing={2} alignItems="center" maxWidth={420}>
           <Alert severity="error" sx={{ width: '100%' }}>
-            {error || 'Missing authentication token'}
+            {error || stateError || 'Missing authentication token'}
           </Alert>
           <Typography
             onClick={() => navigate('/register', { replace: true })}
