@@ -100,7 +100,7 @@ const AuthCallbackPage = () => {
             {error || 'Missing authentication token'}
           </Alert>
           <Typography
-            onClick={() => navigate('/login', { replace: true })}
+            onClick={() => navigate('/register', { replace: true })}
             sx={{ color: '#F5A800', cursor: 'pointer', fontWeight: 600 }}
           >
             Back to login
