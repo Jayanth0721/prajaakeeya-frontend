@@ -85,6 +85,18 @@ const useAuthStore = create<AuthState>()(
         } catch {
           /* best-effort — backend also self-prunes stale tokens */
         }
+        // H-SEC-3: Drop the service-worker cache of /api/* responses
+        // ('api-cache', configured in vite.config.js). It can hold the current
+        // user's profile / voter list / chat; without this, on a shared device
+        // the next user could be served the previous user's data from the SW
+        // cache during an offline blip. Best-effort — never block logout.
+        if (typeof window !== 'undefined' && 'caches' in window) {
+          try {
+            await caches.delete('api-cache');
+          } catch {
+            /* ignore — cache may not exist (no SW in dev / first load) */
+          }
+        }
         set({ token: null, user: null, isAdmin: false, isAuthenticated: false });
         setSentryUser(null);
         delete apiClient.defaults.headers.common.Authorization;
