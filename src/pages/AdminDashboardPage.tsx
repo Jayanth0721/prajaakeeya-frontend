@@ -12,9 +12,9 @@ import { isMockMode } from '../config/appMode';
 interface DashboardResponse {
   totals: {
     wards: number;
-    voters: number;
     aspirants: number;
     votes: number;
+    citizens: number;
   };
 }
 
@@ -26,9 +26,9 @@ const AdminDashboardPage = () => {
     () => ({
       totals: {
         wards: 28,
-        voters: 125000,
         aspirants: 45,
-        votes: 87500
+        votes: 87500,
+        citizens: 125000
       }
     }),
     []
@@ -72,7 +72,7 @@ const AdminDashboardPage = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
             label={t('adminDashboard.cards.voters')}
-            value={data.totals.voters}
+            value={data.totals.citizens}
             icon={<PeopleIcon />}
             color="info"
           />
