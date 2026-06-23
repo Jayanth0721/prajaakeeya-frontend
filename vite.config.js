@@ -198,16 +198,21 @@ export default defineConfig(({ command, mode }) => {
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
-          // Keep React + MUI + emotion + framer-motion in ONE chunk.
-          // Splitting React away from MUI creates a circular chunk reference
-          // that can break module init order at runtime — keep them together.
+          // C-PERF-3: framer-motion gets its own chunk. It's a leaf dependency
+          // (imports React, but nothing in the `vendor` triad imports it back),
+          // so unlike React/MUI/emotion it carries NO circular-reference risk.
+          // It's only used by a handful of (mostly lazy) routes, so isolating it
+          // keeps ~100 KB out of the entry vendor chunk that loads on every page.
+          if (id.includes('framer-motion')) return 'framer';
+          // Keep React + MUI + emotion in ONE chunk. Splitting React away from
+          // MUI creates a circular chunk reference that can break module init
+          // order at runtime — keep this triad together.
           if (
             id.includes('/react/') ||
             id.includes('/react-dom/') ||
             id.includes('react-router') ||
             id.includes('@mui') ||
-            id.includes('@emotion') ||
-            id.includes('framer-motion')
+            id.includes('@emotion')
           ) {
             return 'vendor';
           }
