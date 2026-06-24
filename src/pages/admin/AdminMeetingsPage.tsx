@@ -31,6 +31,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import meetingsService, { Meeting } from '../../services/meetingsService';
 import { getWards } from '../../services/wardService';
 import { Autocomplete } from '@mui/material';
+import { safeUrl } from '../../utils/safeUrl';
 
 const AdminMeetingsPage: React.FC = () => {
     const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -112,7 +113,10 @@ const AdminMeetingsPage: React.FC = () => {
     };
 
     const openMeetingLink = (url: string) => {
-        window.open(url, '_blank');
+        // C-SEC-4: meetingLink is user-supplied — block script-capable schemes.
+        const safe = safeUrl(url);
+        if (!safe) return;
+        window.open(safe, '_blank');
     };
 
     return (
