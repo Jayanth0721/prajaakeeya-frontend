@@ -125,7 +125,13 @@ const AspirantProfilePage: React.FC = () => {
     if (loading) {
         return (
             <Box sx={{ py: 4, px: { xs: 0, md: 3 } }}>
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "400px"
+                    }}>
                     <CircularProgress />
                 </Box>
             </Box>

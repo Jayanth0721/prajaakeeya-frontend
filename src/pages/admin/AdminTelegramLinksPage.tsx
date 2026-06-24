@@ -33,7 +33,7 @@ import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
     Link as LinkIcon,
-    AddCircleOutline as AddCircleIcon,
+    AddCircleOutlined as AddCircleIcon,
 } from '@mui/icons-material';
 import { fetchAllWards, updateWardTelegramLink, deleteWardTelegramLink, Ward } from '../../services/wardService';
 
@@ -137,40 +137,72 @@ const AdminTelegramLinksPage: React.FC = () => {
     return (
         <Box sx={{ p: { xs: 2, md: 3 } }}>
             {/* Header */}
-            <Stack direction="row" alignItems="center" spacing={1.5} mb={3}>
+            <Stack
+                direction="row"
+                spacing={1.5}
+                sx={{
+                    alignItems: "center",
+                    mb: 3
+                }}>
                 <TelegramIcon sx={{ color: '#229ED9', fontSize: 32 }} />
                 <Box>
-                    <Typography variant="h5" fontWeight={700}>
+                    <Typography variant="h5" sx={{
+                        fontWeight: 700
+                    }}>
                         Telegram Links
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{
+                        color: "text.secondary"
+                    }}>
                         Manage Telegram group links for each ward
                     </Typography>
                 </Box>
             </Stack>
-
             {/* Stats */}
-            <Stack direction="row" spacing={2} mb={3} flexWrap="wrap">
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                    mb: 3,
+                    flexWrap: "wrap"
+                }}>
                 <Card sx={{ flex: '1 1 140px', minWidth: 140 }}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                        <Typography variant="caption" color="text.secondary">Total Wards</Typography>
-                        <Typography variant="h5" fontWeight={700}>{wards.length}</Typography>
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>Total Wards</Typography>
+                        <Typography variant="h5" sx={{
+                            fontWeight: 700
+                        }}>{wards.length}</Typography>
                     </CardContent>
                 </Card>
                 <Card sx={{ flex: '1 1 140px', minWidth: 140 }}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                        <Typography variant="caption" color="text.secondary">Links Added</Typography>
-                        <Typography variant="h5" fontWeight={700} color="success.main">{linkedCount}</Typography>
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>Links Added</Typography>
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: 700,
+                                color: "success.main"
+                            }}>{linkedCount}</Typography>
                     </CardContent>
                 </Card>
                 <Card sx={{ flex: '1 1 140px', minWidth: 140 }}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                        <Typography variant="caption" color="text.secondary">Pending</Typography>
-                        <Typography variant="h5" fontWeight={700} color="warning.main">{wards.length - linkedCount}</Typography>
+                        <Typography variant="caption" sx={{
+                            color: "text.secondary"
+                        }}>Pending</Typography>
+                        <Typography
+                            variant="h5"
+                            sx={{
+                                fontWeight: 700,
+                                color: "warning.main"
+                            }}>{wards.length - linkedCount}</Typography>
                     </CardContent>
                 </Card>
             </Stack>
-
             {/* Search */}
             <TextField
                 placeholder="Search by ward number, name, zone or state..."
@@ -179,18 +211,16 @@ const AdminTelegramLinksPage: React.FC = () => {
                 fullWidth
                 size="small"
                 sx={{ mb: 2 }}
-                InputProps={{
+                slotProps={{ input: {
                     startAdornment: (
                         <InputAdornment position="start">
                             <SearchIcon fontSize="small" />
                         </InputAdornment>
                     ),
-                }}
+                } }}
             />
-
             {/* Error */}
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
             {/* Table */}
             {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -222,7 +252,12 @@ const AdminTelegramLinksPage: React.FC = () => {
                                     <TableRow key={ward.id} hover>
                                         <TableCell sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>{idx + 1}</TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" fontWeight={600} fontFamily="monospace">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontWeight: 600,
+                                                    fontFamily: "monospace"
+                                                }}>
                                                 {ward.number}
                                             </Typography>
                                         </TableCell>
@@ -230,7 +265,9 @@ const AdminTelegramLinksPage: React.FC = () => {
                                             <Typography variant="body2">{ward.name}</Typography>
                                         </TableCell>
                                         <TableCell>
-                                            <Typography variant="body2" color="text.secondary">{ward.category ?? '-'}</Typography>
+                                            <Typography variant="body2" sx={{
+                                                color: "text.secondary"
+                                            }}>{ward.category ?? '-'}</Typography>
                                         </TableCell>
                                         <TableCell>
                                             <Chip
@@ -246,7 +283,9 @@ const AdminTelegramLinksPage: React.FC = () => {
                                         </TableCell>
                                         <TableCell>
                                             {ward.telegramGroupLink ? (
-                                                <Stack direction="row" alignItems="center" spacing={0.5}>
+                                                <Stack direction="row" spacing={0.5} sx={{
+                                                    alignItems: "center"
+                                                }}>
                                                     <CheckCircleIcon sx={{ color: 'success.main', fontSize: 16 }} />
                                                     <Tooltip title={ward.telegramGroupLink} placement="top">
                                                         <Typography
@@ -271,9 +310,13 @@ const AdminTelegramLinksPage: React.FC = () => {
                                                     </Tooltip>
                                                 </Stack>
                                             ) : (
-                                                <Stack direction="row" alignItems="center" spacing={0.5}>
+                                                <Stack direction="row" spacing={0.5} sx={{
+                                                    alignItems: "center"
+                                                }}>
                                                     <CancelIcon sx={{ color: 'warning.main', fontSize: 16 }} />
-                                                    <Typography variant="body2" color="text.disabled">Not added</Typography>
+                                                    <Typography variant="body2" sx={{
+                                                        color: "text.disabled"
+                                                    }}>Not added</Typography>
                                                 </Stack>
                                             )}
                                         </TableCell>
@@ -315,7 +358,6 @@ const AdminTelegramLinksPage: React.FC = () => {
                     </Table>
                 </TableContainer>
             )}
-
             {/* Add / Edit Dialog */}
             <Dialog open={!!editWard} onClose={closeEdit} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -325,9 +367,20 @@ const AdminTelegramLinksPage: React.FC = () => {
                 <DialogContent>
                     {editWard && (
                         <Box>
-                            <Stack direction="row" spacing={1} mb={2} mt={0.5}>
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{
+                                    mb: 2,
+                                    mt: 0.5
+                                }}>
                                 <Chip label={editWard.number} size="small" sx={{ fontFamily: 'monospace', fontWeight: 700 }} />
-                                <Typography variant="body2" color="text.secondary" alignSelf="center">
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        color: "text.secondary",
+                                        alignSelf: "center"
+                                    }}>
                                     {editWard.name} — {editWard.zone}
                                 </Typography>
                             </Stack>
@@ -339,13 +392,15 @@ const AdminTelegramLinksPage: React.FC = () => {
                                 onChange={(e) => setEditLink(e.target.value)}
                                 error={!!saveError}
                                 helperText={saveError || 'Paste the full Telegram group invite link'}
-                                InputProps={{
+                                slotProps={{ input: {
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <LinkIcon fontSize="small" />
+                                            <LinkIcon sx={{
+                                                fontSize: "small"
+                                            }} />
                                         </InputAdornment>
                                     ),
-                                }}
+                                } }}
                             />
                         </Box>
                     )}

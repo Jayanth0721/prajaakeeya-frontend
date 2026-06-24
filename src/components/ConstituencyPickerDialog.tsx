@@ -320,13 +320,13 @@ const ConstituencyPickerDialog: React.FC<Props> = ({ open, onClose, onSaved }) =
       onClose={submitting ? undefined : onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{
+      slotProps={{ paper: {
         sx: {
           bgcolor: isDark ? '#0d0b0b' : '#fffdfa',
           border: `1px solid ${isDark ? 'rgba(245,168,0,0.18)' : 'rgba(245,168,0,0.28)'}`,
           borderRadius: 3,
         },
-      }}
+      } }}
     >
       <DialogTitle sx={{
         display: 'flex',
@@ -383,7 +383,7 @@ const ConstituencyPickerDialog: React.FC<Props> = ({ open, onClose, onSaved }) =
             <TextField
               select
               fullWidth
-              SelectProps={{ native: true }}
+              slotProps={{ select: { native: true } }}
               value={localBody ?? ''}
               onChange={(e) => {
                 const v = e.target.value as LocalBody | '';

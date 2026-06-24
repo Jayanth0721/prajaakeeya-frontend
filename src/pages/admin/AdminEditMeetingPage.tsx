@@ -172,9 +172,9 @@ const AdminEditMeetingPage: React.FC = () => {
                                     required
                                     fullWidth
                                     type="datetime-local"
-                                    InputLabelProps={{
+                                    slotProps={{ inputLabel: {
                                         shrink: true,
-                                    }}
+                                    } }}
                                 />
 
                                 <FormControlLabel

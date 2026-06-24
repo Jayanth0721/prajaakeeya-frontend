@@ -556,7 +556,9 @@ const UserConstituencyOnboardingPage = () => {
           <IconComp sx={{ fontSize: 20, color: iconColor }} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack direction="row" spacing={1} sx={{
+            alignItems: "center"
+          }}>
             <Typography
               sx={{
                 fontSize: { xs: "1rem", sm: "1.1rem" },
@@ -631,7 +633,7 @@ const UserConstituencyOnboardingPage = () => {
               setAnswers((p) => ({ ...p, lokSabha: v ?? undefined }))
             }
             loading={loadingLokSabha}
-            ListboxProps={{ sx: listboxSx }}
+            slotProps={{ listbox: { sx: listboxSx } }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -654,7 +656,7 @@ const UserConstituencyOnboardingPage = () => {
               setAnswers((p) => ({ ...p, stateAssembly: v ?? undefined }))
             }
             loading={loadingStateAssembly}
-            ListboxProps={{ sx: listboxSx }}
+            slotProps={{ listbox: { sx: listboxSx } }}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -689,16 +691,16 @@ const UserConstituencyOnboardingPage = () => {
               isDark ? "rgba(74,222,128,0.18)" : "rgba(34,197,94,0.14)",
               "#22c55e",
             )}
-
             {/* "Neither applies" divider + skip — for users who belong to
                 neither a municipality nor a gram panchayat, or want to skip
                 the local body section entirely. */}
             <Stack
               direction="row"
-              alignItems="center"
               spacing={1.5}
-              sx={{ pt: 1 }}
-            >
+              sx={{
+                alignItems: "center",
+                pt: 1
+              }}>
               <Box
                 sx={{
                   flex: 1,
@@ -782,7 +784,7 @@ const UserConstituencyOnboardingPage = () => {
                 }))
               }
               loading={loadingMunicipalities}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -803,7 +805,7 @@ const UserConstituencyOnboardingPage = () => {
               }
               loading={loadingCityWards}
               disabled={!answers.municipality}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -831,7 +833,7 @@ const UserConstituencyOnboardingPage = () => {
                 }))
               }
               loading={loadingGpStates}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -854,7 +856,7 @@ const UserConstituencyOnboardingPage = () => {
               }
               loading={loadingGpDistricts}
               disabled={!answers.gpState}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -876,7 +878,7 @@ const UserConstituencyOnboardingPage = () => {
               }
               loading={loadingGpTaluks}
               disabled={!answers.gpDistrict}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -897,7 +899,7 @@ const UserConstituencyOnboardingPage = () => {
               }
               loading={loadingGpGrams}
               disabled={!answers.gpTaluk}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -916,7 +918,7 @@ const UserConstituencyOnboardingPage = () => {
               }
               loading={loadingGpVillages}
               disabled={!answers.gpGram}
-              ListboxProps={{ sx: listboxSx }}
+              slotProps={{ listbox: { sx: listboxSx } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -981,11 +983,16 @@ const UserConstituencyOnboardingPage = () => {
       {/* Header strip — logo + brand on the left, language selector on the right */}
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ width: "100%", maxWidth: 720, mb: { xs: 3, sm: 4 } }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1.2}>
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          maxWidth: 720,
+          mb: { xs: 3, sm: 4 }
+        }}>
+        <Stack direction="row" spacing={1.2} sx={{
+          alignItems: "center"
+        }}>
           <Box
             component="img"
             src={prajakeeyaLogo}
@@ -1021,7 +1028,6 @@ const UserConstituencyOnboardingPage = () => {
           }}
         />
       </Stack>
-
       {/* Card */}
       <Box
         sx={{
@@ -1044,10 +1050,11 @@ const UserConstituencyOnboardingPage = () => {
         {/* Step header */}
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 1.2 }}
-        >
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1.2
+          }}>
           <Typography
             sx={{
               fontSize: "0.75rem",
@@ -1101,10 +1108,11 @@ const UserConstituencyOnboardingPage = () => {
           >
             <Stack
               direction="row"
-              alignItems="center"
               spacing={1.4}
-              sx={{ mb: 1 }}
-            >
+              sx={{
+                alignItems: "center",
+                mb: 1
+              }}>
               <Box
                 sx={{
                   width: 44,
@@ -1157,10 +1165,11 @@ const UserConstituencyOnboardingPage = () => {
             {anyLoading && (
               <Stack
                 direction="row"
-                alignItems="center"
                 spacing={1}
-                sx={{ mb: 1 }}
-              >
+                sx={{
+                  alignItems: "center",
+                  mb: 1
+                }}>
                 <CircularProgress size={14} sx={{ color: BRAND.yellow }} />
                 <Typography
                   sx={{

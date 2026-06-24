@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import apiClient from '../services/apiClient';
 
 const useExtractionPolling = (onUpdate: (data: unknown) => void) => {
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
     intervalRef.current = setInterval(async () => {

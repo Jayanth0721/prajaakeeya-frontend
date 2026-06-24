@@ -29,7 +29,9 @@ const ErrorFallback = () => (
     }}
   >
     <Typography variant="h5">Something went wrong</Typography>
-    <Typography color="text.secondary">
+    <Typography sx={{
+      color: "text.secondary"
+    }}>
       The error has been reported to our team. Please try reloading the page.
     </Typography>
     <Button variant="contained" onClick={() => window.location.reload()}>
@@ -77,7 +79,9 @@ const ThemedApp = () => {
       <CssBaseline />
       <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <App />
+          <React.Suspense fallback={null}>
+            <App />
+          </React.Suspense>
         </BrowserRouter>
       </Sentry.ErrorBoundary>
     </ThemeProvider>

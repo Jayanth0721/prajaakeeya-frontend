@@ -122,9 +122,9 @@ const AdminCreateMeetingPage: React.FC = () => {
                                     required
                                     fullWidth
                                     type="datetime-local"
-                                    InputLabelProps={{
+                                    slotProps={{ inputLabel: {
                                         shrink: true,
-                                    }}
+                                    } }}
                                 />
                             </Stack>
                         </Box>

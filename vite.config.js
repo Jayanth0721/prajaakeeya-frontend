@@ -30,6 +30,11 @@ export default defineConfig(({ command, mode }) => {
         'src/vite-env.d.ts', '**/types/**', 'src/test/**', 'e2e/**',
       ],
     },
+    server: {
+      deps: {
+        inline: true,
+      },
+    },
   },
   plugins: [
     react(),
@@ -154,6 +159,9 @@ export default defineConfig(({ command, mode }) => {
       : []),
   ],
   resolve: {
+    alias: {
+      'react-transition-group/TransitionGroupContext': 'react-transition-group/cjs/TransitionGroupContext.js',
+    },
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   build: {

@@ -119,11 +119,9 @@ const AspirantDiscussionPage: React.FC = () => {
     return (
         <Box sx={{ p: { xs: 2, md: 4 } }}>
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>{t('discussion.title') || 'Aspirant Chat Room'}</Typography>
-
             {!isAspirantUser && (
                 <Alert severity="info" sx={{ mb: 2 }}>{t('discussion.onlyAspirant') || 'Only the aspirant may post messages here. You can view the conversation.'}</Alert>
             )}
-
             <Card sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.02)' : undefined, border: isDark ? '1px solid rgba(255,255,255,0.04)' : undefined }}>
                 <CardContent>
                     <Stack spacing={2} sx={{ maxHeight: '60vh', overflowY: 'auto', pr: 1, bgcolor: isDark ? 'transparent' : undefined }}>
@@ -133,7 +131,14 @@ const AspirantDiscussionPage: React.FC = () => {
                             const isAspirant = !!(m.user && 'role' in m.user && (m.user as any).role === 'aspirant');
                             const canDelete = true; // show delete for every message (server will enforce auth)
                             return (
-                                <Stack key={m.id} direction="row" spacing={2} alignItems="flex-start" justifyContent={isMe ? 'flex-end' : 'flex-start'}>
+                                <Stack
+                                    key={m.id}
+                                    direction="row"
+                                    spacing={2}
+                                    sx={{
+                                        alignItems: "flex-start",
+                                        justifyContent: isMe ? 'flex-end' : 'flex-start'
+                                    }}>
                                     {!isMe && (
                                         <Avatar sx={{ width: 44, height: 44, bgcolor: isDark ? 'rgba(245,168,0,0.12)' : 'primary.main', color: isDark ? '#F5A800' : undefined }}>{(m.user?.name || 'U').charAt(0)}</Avatar>
                                     )}
@@ -145,7 +150,9 @@ const AspirantDiscussionPage: React.FC = () => {
                                     )}
                                     <Box sx={{ bgcolor: isMe ? (isDark ? 'rgba(34,197,94,0.18)' : 'primary.main') : (isDark ? 'rgba(255,255,255,0.03)' : 'grey.100'), color: isMe ? (isDark ? '#DFFFE6' : '#fff') : (isDark ? 'rgba(255,255,255,0.9)' : 'text.primary'), px: 2.5, py: 1.75, borderRadius: 2, maxWidth: '75%' }}>
                                         {!isMe && (
-                                            <Stack direction="row" spacing={1} alignItems="center">
+                                            <Stack direction="row" spacing={1} sx={{
+                                                alignItems: "center"
+                                            }}>
                                                 <Typography variant="caption" sx={{ display: 'block', fontWeight: 600, mb: 0.5 }}>{m.user?.name}</Typography>
                                                 {isAspirant && <Typography variant="caption" sx={{ bgcolor: '#FFF7ED', color: '#F97316', px: 0.5, borderRadius: 1 }}>{t('discussion.labels.aspirant') || 'Aspirant'}</Typography>}
                                             </Stack>
@@ -166,7 +173,6 @@ const AspirantDiscussionPage: React.FC = () => {
                     </Stack>
                 </CardContent>
             </Card>
-
             <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center' }}>
                 <TextField
                     fullWidth
@@ -188,7 +194,6 @@ const AspirantDiscussionPage: React.FC = () => {
                 />
                 <Button variant="contained" endIcon={<SendIcon />} onClick={handleSend} disabled={posting || !isAspirantUser} sx={{ color: '#ffffff' }}>{t('discussion.send') || 'Send'}</Button>
             </Box>
-
             <Snackbar open={successOpen} autoHideDuration={2500} onClose={() => setSuccessOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                 <Alert severity="success" onClose={() => setSuccessOpen(false)}>{t('discussion.sent') || 'Message posted'}</Alert>
             </Snackbar>

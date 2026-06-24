@@ -39,11 +39,12 @@ const VoterCountPage = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           {t('pages.voterCount.title') || 'Voter Count by Ward'}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           {t('pages.voterCount.subtitle') || 'Total number of registered voters in each ward'}
         </Typography>
       </Box>
-
       <Card>
         <CardContent>
           {loading ? (

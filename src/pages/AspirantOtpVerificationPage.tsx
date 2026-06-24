@@ -143,7 +143,8 @@ const AspirantOtpVerificationPage = () => {
         }
     };
 
-    const FF = "'Baloo 2', sans-serif";
+    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
+    const FF_BODY = "'Absans', 'Lora', serif";
 
     return (
         <Container maxWidth="sm" sx={{ py: { xs: 3, md: 6 } }}>
@@ -153,7 +154,7 @@ const AspirantOtpVerificationPage = () => {
                 <Box>
                     <Typography
                         variant="h4"
-                        sx={{ fontFamily: FF, fontWeight: 800, mb: 1, color: theme.palette.text.primary }}
+                        sx={{ fontFamily: FF_HEADING, fontWeight: 800, mb: 1, color: theme.palette.text.primary }}
                     >
                         {t('pages.register.otpLabel') || 'Verify OTP'}
                     </Typography>
@@ -171,7 +172,9 @@ const AspirantOtpVerificationPage = () => {
                                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#4caf50' }}>
                                     Verified!
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{
+                                    color: "text.secondary"
+                                }}>
                                     Your registration has been verified. Proceeding...
                                 </Typography>
                             </Box>
@@ -198,10 +201,6 @@ const AspirantOtpVerificationPage = () => {
                                     value={otp}
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
                                     disabled={loading}
-                                    inputProps={{
-                                        maxLength: 4,
-                                        style: { textAlign: 'center', letterSpacing: '0.5em', fontSize: '1.5rem', fontWeight: 'bold' }
-                                    }}
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
                                             borderRadius: 2,
@@ -212,6 +211,12 @@ const AspirantOtpVerificationPage = () => {
                                         },
                                         '& .MuiInputLabel-root': { color: isDark ? 'rgba(255,255,255,0.55)' : theme.palette.text.secondary },
                                         '& .MuiInputLabel-root.Mui-focused': { color: '#F5A800' }
+                                    }}
+                                    slotProps={{
+                                        htmlInput: {
+                                            maxLength: 4,
+                                            style: { textAlign: 'center', letterSpacing: '0.5em', fontSize: '1.5rem', fontWeight: 'bold' }
+                                        }
                                     }}
                                 />
 
@@ -226,7 +231,7 @@ const AspirantOtpVerificationPage = () => {
                                     sx={{
                                         py: 1.4,
                                         borderRadius: 2,
-                                        fontFamily: FF,
+                                        fontFamily: FF_HEADING,
                                         fontWeight: 700,
                                         fontSize: '1rem',
                                         textTransform: 'none',

@@ -32,7 +32,9 @@ const ReportsTable: React.FC<Props> = ({ reports, onView }) => {
     if (!reports || reports.length === 0) {
         return (
             <Box sx={{ py: 6, textAlign: 'center' }}>
-                <Typography color="text.secondary">No reports found</Typography>
+                <Typography sx={{
+                    color: "text.secondary"
+                }}>No reports found</Typography>
             </Box>
         );
     }

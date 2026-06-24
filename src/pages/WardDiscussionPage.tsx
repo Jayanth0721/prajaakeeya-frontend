@@ -158,14 +158,21 @@ const WardDiscussionPage = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           {t('discussion.title')}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           {t('discussion.subtitle')}
         </Typography>
       </Box>
-
       <Card sx={{ bgcolor: cardBg, border: `1px solid ${theme.palette.divider}`, borderRadius: 2 }}>
         <CardContent>
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              alignItems: "center",
+              mb: 2
+            }}>
             <Box
               sx={{
                 width: 48,
@@ -184,7 +191,9 @@ const WardDiscussionPage = () => {
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {wardName}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 {t('discussion.roomLabel')}
               </Typography>
             </Box>
@@ -199,9 +208,10 @@ const WardDiscussionPage = () => {
                 key={msg.id}
                 direction="row"
                 spacing={2}
-                alignItems="flex-start"
-                justifyContent={msg.isMe ? 'flex-end' : 'flex-start'}
-              >
+                sx={{
+                  alignItems: "flex-start",
+                  justifyContent: msg.isMe ? 'flex-end' : 'flex-start'
+                }}>
                 {!msg.isMe && (
                   <Avatar sx={{ width: 36, height: 36, bgcolor: msg.isAspirant ? 'secondary.main' : 'primary.main' }}>
                     {msg.name.charAt(0)}
@@ -220,7 +230,13 @@ const WardDiscussionPage = () => {
                   }}
                 >
                   {!msg.isMe && (
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{
+                        alignItems: "center",
+                        mb: 0.5
+                      }}>
                       <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, color: msg.isAspirant ? 'primary.main' : 'text.primary' }}>
                         {msg.name}
                       </Typography>
@@ -262,16 +278,18 @@ const WardDiscussionPage = () => {
                   color: theme.palette.text.primary
                 }
               }}
-              inputProps={{
-                autoCorrect: 'off',
-                autoCapitalize: 'off',
-                spellCheck: false,
-                autoComplete: 'off'
-              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault();
                   handleSend();
+                }
+              }}
+              slotProps={{
+                htmlInput: {
+                  autoCorrect: 'off',
+                  autoCapitalize: 'off',
+                  spellCheck: false,
+                  autoComplete: 'off'
                 }
               }}
             />

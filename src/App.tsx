@@ -79,10 +79,13 @@ const AspirantOtpVerificationPage = lazy(() => import("./pages/AspirantOtpVerifi
 const VotingPage = lazy(() => import("./pages/VotingPage"));
 const VotingResultPage = lazy(() => import("./pages/VotingResultPage"));
 const WardDiscussionPage = lazy(() => import("./pages/WardDiscussionPage"));
+const KattePage = lazy(() => import("./pages/KattePage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const LoadingPage = lazy(() => import("./pages/LoadingPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const OathPage = lazy(() => import("./pages/OathPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const PreferencesPage = lazy(() => import("./pages/PreferencesPage"));
 
 // Aspirant mobile route pages
 const AspirantProfilePage = lazy(() => import("./pages/aspirant/AspirantProfilePage"));
@@ -101,6 +104,7 @@ const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage")
 const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
 const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
 const GuestSopPage = lazy(() => import("./pages/guest/GuestSopPage"));
+const GuestPlaceholderPage = lazy(() => import("./pages/guest/GuestPlaceholderPage"));
 
 const UserChatPage = lazy(() => import("./pages/UserChatPage"));
 
@@ -223,11 +227,12 @@ const App = () => {
       <Suspense
         fallback={
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            minHeight="100vh"
-          >
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "100vh"
+            }}>
             <CircularProgress />
           </Box>
         }
@@ -293,6 +298,7 @@ const App = () => {
             {/* <Route path="/aspirantslist" element={<WardCandidateListPage />} /> */}
             <Route path="/elections" element={<VotingResultPage />} />
             <Route path="/aspirants" element={<AspirantApprovalPage />} />
+            <Route path="/about" element={<AboutPage />} />
           </Route>
 
           {/* Signed SOP should use the same header as UserLayout */}
@@ -442,9 +448,13 @@ const App = () => {
             />
             <Route path="chat/:aspirantId" element={<UserChatPage />} />
             <Route path="vote" element={<VotingPage />} />
-            <Route path="discussions" element={<WardDiscussionPage />} />
+            <Route path="discussions" element={<KattePage />} />
             <Route path="sop" element={<SopPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="karyakartas" element={<GuestPlaceholderPage title="Karyakartas" />} />
+            <Route path="stats" element={<GuestPlaceholderPage title="Stats" />} />
+            <Route path="contact-us" element={<GuestPlaceholderPage title="Contact Us" />} />
+            <Route path="about" element={<AboutPage />} />
           </Route>
 
           {/* Guest routes — no auth required */}
@@ -466,11 +476,18 @@ const App = () => {
               path="aspirants/demo/view"
               element={<DemoAspirantViewPage />}
             />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="elections" element={<VotingResultPage />} />
+            <Route path="stats" element={<GuestPlaceholderPage title="Stats" />} />
+            <Route path="contact-us" element={<GuestPlaceholderPage title="Contact Us" />} />
+            <Route path="karyakartas" element={<GuestPlaceholderPage title="Karyakartas" />} />
+            <Route path="discussions" element={<KattePage />} />
           </Route>
 
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/oauth/success" element={<AuthCallbackPage />} />
           <Route path="/loading" element={<LoadingPage />} />
+          <Route path="/preferences" element={<PreferencesPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route
             path="/terms-and-conditions"

@@ -38,7 +38,9 @@ const FileUploadInput = ({
       />
     </Button>
     {selectedNames.length > 0 && (
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>
         {selectedNames.join(', ')}
       </Typography>
     )}

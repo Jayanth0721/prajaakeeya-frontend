@@ -64,11 +64,12 @@ const EpicVerificationPage = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           {t('pages.epic.title') || 'EPIC Verification'}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           {t('pages.epic.subtitle') || 'Verify your EPIC number and find your assigned ward'}
         </Typography>
       </Box>
-
       <Card>
         <CardContent>
           <Stack spacing={3}>
@@ -94,7 +95,9 @@ const EpicVerificationPage = () => {
                 <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
                   {t('pages.epic.verified') || 'EPIC Verified Successfully!'}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>
                   <strong>Name:</strong> {result.name}
                 </Typography>
                 <Box sx={{ mt: 1 }}>

@@ -190,7 +190,9 @@ const VotingPage = () => {
     setConfirmOpen(false);
   };
 
-  const FF = "'Baloo 2', sans-serif";
+  const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
+  const FF_BODY = "'Absans', 'Lora', serif";
+  const FF = FF_BODY;
   const panelBg = isDark
     ? 'linear-gradient(155deg, rgba(20,24,34,0.95) 0%, rgba(13,17,28,0.96) 100%)'
     : 'linear-gradient(155deg, #FFFFFF 0%, #F8FAFC 100%)';
@@ -202,10 +204,10 @@ const VotingPage = () => {
   return (
     <Stack spacing={3} sx={{ pb: { xs: 2, md: 4 }, px: { xs: 1, sm: 0 } }}>
       <Box>
-        <Typography variant="h4" sx={{ fontFamily: FF, fontWeight: 800, mb: 0.8, color: textPrimary }}>
+        <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 800, mb: 0.8, color: textPrimary }}>
           {t('pages.voting.title') || 'Cast Your Vote'}
         </Typography>
-        <Typography variant="body1" sx={{ fontFamily: FF, color: muted }}>
+        <Typography variant="body1" sx={{ fontFamily: FF_BODY, color: muted }}>
           {t('pages.voting.subtitle') || 'Select your preferred candidate for your ward'}
         </Typography>
 
@@ -214,38 +216,36 @@ const VotingPage = () => {
             <Box sx={{ width: 34, height: 34, minWidth: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${BRAND.yellow}`, color: GOLD, bgcolor: isDark ? 'rgba(245,168,0,0.06)' : 'transparent' }}>
               <HowToVoteIcon sx={{ fontSize: 18 }} />
             </Box>
-            <Typography variant="subtitle1" sx={{ fontFamily: FF, fontWeight: 800, color: isDark ? '#FFD27A' : '#B45309', fontSize: { xs: '1.05rem', sm: '1.1rem' } }}>
+            <Typography variant="subtitle1" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: isDark ? '#FFD27A' : '#B45309', fontSize: { xs: '1.05rem', sm: '1.1rem' } }}>
               {t('pages.voting.restrictionsTitle', { defaultValue: 'Voting Rights' })}
             </Typography>
           </Box>
           <Box>
-            <Typography variant="body2" sx={{ fontFamily: FF, color: isDark ? '#F8D8A2' : '#92400E', lineHeight: 1.45, fontSize: { xs: '0.96rem', sm: '1rem' } }}>
+            <Typography variant="body2" sx={{ fontFamily: FF_BODY, color: isDark ? '#F8D8A2' : '#92400E', lineHeight: 1.45, fontSize: { xs: '0.96rem', sm: '1rem' } }}>
               {t('pages.voting.restrictionsIntro', { defaultValue: 'You will receive voting rights once you complete the activity below.' })}
             </Typography>
 
             <Box component="ul" sx={{ mt: 0.55, pl: 2.4, color: isDark ? '#F8D8A2' : '#92400E', mb: 0 }}>
-              <Typography component="li" variant="body2" sx={{ fontFamily: FF, lineHeight: 1.4, fontSize: { xs: '0.96rem', sm: '1rem' } }}>{t('pages.voting.restrictions.item2', { defaultValue: 'Interviewing (chat with aspirant), directly meeting, or having a phone call with a minimum of two aspirants.' })}</Typography>
+              <Typography component="li" variant="body2" sx={{ fontFamily: FF_BODY, lineHeight: 1.4, fontSize: { xs: '0.96rem', sm: '1rem' } }}>{t('pages.voting.restrictions.item2', { defaultValue: 'Interviewing (chat with aspirant), directly meeting, or having a phone call with a minimum of two aspirants.' })}</Typography>
             </Box>
           </Box>
         </Box>
       </Box>
-
       {hasVoted && votedAspirant && (
         <Card variant="outlined" sx={{ borderLeft: '4px solid', borderColor: 'success.main', bgcolor: isDark ? 'rgba(34,197,94,0.12)' : 'rgba(34,197,94,0.08)', borderRadius: 2 }}>
           <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <CheckCircleIcon sx={{ color: 'success.main', fontSize: 28 }} />
             <Box>
-              <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: FF, color: textSecondary }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: FF_BODY, color: textSecondary }}>
                 {t('pages.voting.youHaveVotedFor')}
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF, color: textPrimary }}>
+              <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF_HEADING, color: textPrimary }}>
                 {votedAspirant.name}
               </Typography>
             </Box>
           </CardContent>
         </Card>
       )}
-
       <Card sx={{ px: { xs: 0, sm: 2 }, bgcolor: panelBg, border: `1px solid ${border}`, borderRadius: 3, boxShadow: isDark ? '0 16px 38px rgba(0,0,0,0.35)' : '0 8px 20px rgba(17,24,39,0.06)' }}>
         <Box sx={{ display: 'flex', height: 3 }}>
           {[BRAND.red, BRAND.blue, BRAND.brown].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
@@ -268,29 +268,31 @@ const VotingPage = () => {
               <HowToVoteIcon />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 800, color: textPrimary }}>
+              <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: textPrimary }}>
                 {t('pages.voting.formTitle') || 'Voting Form'}
               </Typography>
-              <Typography variant="body2" sx={{ fontFamily: FF, color: textSecondary }}>
+              <Typography variant="body2" sx={{ fontFamily: FF_BODY, color: textSecondary }}>
                 {t('pages.voting.formSubtitle') || 'Choose your candidate carefully'}
               </Typography>
             </Box>
           </Box>
           <Box sx={{ mb: 3 }}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} flexWrap="wrap">
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} sx={{
+              flexWrap: "wrap"
+            }}>
               <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 220 }, p: 1.35, borderRadius: 2, bgcolor: isDark ? 'linear-gradient(135deg, rgba(37,58,154,0.16), rgba(245,168,0,0.08))' : 'linear-gradient(135deg, rgba(37,58,154,0.07), rgba(245,168,0,0.05))', border: `1px solid ${border}` }}>
-                <Typography variant="body2" sx={{ fontFamily: FF, color: textSecondary, fontWeight: 700, letterSpacing: '.03em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+                <Typography variant="body2" sx={{ fontFamily: FF_HEADING, color: textSecondary, fontWeight: 700, letterSpacing: '.03em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
                   {t('pages.voting.wardLabel') || 'Ward Number'}:
                 </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF, color: textPrimary, fontSize: '1.55rem', lineHeight: 1.1, mt: 0.45 }}>
+                <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF_HEADING, color: textPrimary, fontSize: '1.55rem', lineHeight: 1.1, mt: 0.45 }}>
                   {user?.wardNumber || wardInfo.number}
                 </Typography>
               </Box>
               <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 220 }, p: 1.35, borderRadius: 2, bgcolor: isDark ? 'linear-gradient(135deg, rgba(37,58,154,0.12), rgba(245,168,0,0.06))' : 'linear-gradient(135deg, rgba(37,58,154,0.06), rgba(245,168,0,0.04))', border: `1px solid ${border}` }}>
-                <Typography variant="body2" sx={{ fontFamily: FF, color: textSecondary, fontWeight: 700, letterSpacing: '.03em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+                <Typography variant="body2" sx={{ fontFamily: FF_HEADING, color: textSecondary, fontWeight: 700, letterSpacing: '.03em', textTransform: 'uppercase', fontSize: '0.72rem' }}>
                   {t('userRegister.wardName') || 'Ward Name'}:
                 </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF, color: textPrimary, fontSize: '1.25rem', lineHeight: 1.15, mt: 0.45 }}>
+                <Typography variant="body1" sx={{ fontWeight: 800, fontFamily: FF_HEADING, color: textPrimary, fontSize: '1.25rem', lineHeight: 1.15, mt: 0.45 }}>
                   {user?.wardName || wardInfo.name || 'N/A'}
                 </Typography>
               </Box>
@@ -306,13 +308,20 @@ const VotingPage = () => {
             {loadingAspirants ? (
               <Box sx={{ textAlign: 'center', py: 3 }}>
                 <CircularProgress size={24} />
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mt: 1
+                  }}>
                   {t('common.loading') || 'Loading...'}
                 </Typography>
               </Box>
             ) : aspirants.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 3 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>
                   {t('common.empty') || 'No candidates available'}
                 </Typography>
               </Box>
@@ -322,7 +331,9 @@ const VotingPage = () => {
                   <CardContent sx={{ p: { xs: 1.3, sm: 1.5 }, '&:last-child': { pb: { xs: 1.3, sm: 1.5 } } }}>
                     {isMobile ? (
                       <Stack spacing={1.05}>
-                        <Stack direction="row" spacing={1.2} alignItems="center">
+                        <Stack direction="row" spacing={1.2} sx={{
+                          alignItems: "center"
+                        }}>
                           <Avatar
                             sx={{
                               width: 66,
@@ -340,17 +351,17 @@ const VotingPage = () => {
                           </Avatar>
 
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 800, color: textPrimary, lineHeight: 1.08, mb: 0.1, fontSize: '1.06rem' }}>
+                            <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: textPrimary, lineHeight: 1.08, mb: 0.1, fontSize: '1.06rem' }}>
                               {aspirant.name}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: textSecondary, fontFamily: FF, lineHeight: 1.2 }}>
+                            <Typography variant="body2" sx={{ color: textSecondary, fontFamily: FF_BODY, lineHeight: 1.2 }}>
                               {aspirant.party || aspirant.bio || t('forms.aspirant.defaults.party')}
                             </Typography>
                             <Box sx={{ mt: 0.55, display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 0.85, py: 0.28, borderRadius: 1.2, bgcolor: isDark ? 'rgba(245,168,0,0.1)' : 'rgba(245,168,0,0.12)', border: `1px solid ${isDark ? 'rgba(245,168,0,0.26)' : 'rgba(245,168,0,0.34)'}` }}>
-                              <Typography variant="caption" sx={{ color: muted, fontFamily: FF, fontWeight: 700 }}>
+                              <Typography variant="caption" sx={{ color: muted, fontFamily: FF_HEADING, fontWeight: 700 }}>
                                 {t('pages.voting.votesLabel') || 'Votes'}:
                               </Typography>
-                              <Typography variant="caption" sx={{ color: textPrimary, fontFamily: FF, fontWeight: 800 }}>
+                              <Typography variant="caption" sx={{ color: textPrimary, fontFamily: FF_HEADING, fontWeight: 800 }}>
                                 {voteCounts[aspirant.id] ?? 0}
                               </Typography>
                             </Box>
@@ -361,7 +372,7 @@ const VotingPage = () => {
                           <Button
                             variant="outlined"
                             size="small"
-                            sx={{ minHeight: 36, py: 0.45, px: 1, fontSize: '0.72rem', fontFamily: FF, fontWeight: 700, borderRadius: 1.6, borderColor: `${BRAND.yellow}`, color: isDark ? '#FFCB6A' : '#8A4A00', whiteSpace: 'normal', textAlign: 'center', '&:hover': { borderColor: BRAND.yellow, bgcolor: isDark ? 'rgba(245,168,0,0.07)' : 'rgba(245,168,0,0.08)' } }}
+                            sx={{ minHeight: 36, py: 0.45, px: 1, fontSize: '0.72rem', fontFamily: FF_HEADING, fontWeight: 700, borderRadius: 1.6, borderColor: `${BRAND.yellow}`, color: isDark ? '#FFCB6A' : '#8A4A00', whiteSpace: 'normal', textAlign: 'center', '&:hover': { borderColor: BRAND.yellow, bgcolor: isDark ? 'rgba(245,168,0,0.07)' : 'rgba(245,168,0,0.08)' } }}
                             onClick={() => navigate(`/aspirants/${aspirant.id}`)}
                             fullWidth
                           >
@@ -415,7 +426,7 @@ const VotingPage = () => {
                                   )
                                 }
                                 fullWidth
-                                sx={{ minHeight: 36, py: 0.45, px: 1, fontSize: i18n.language && i18n.language.startsWith('kn') ? '0.66rem' : '0.74rem', color: '#fff', borderRadius: 1.6, fontFamily: FF, fontWeight: 700, whiteSpace: 'normal', textAlign: 'center', lineHeight: 1.2 }}
+                                sx={{ minHeight: 36, py: 0.45, px: 1, fontSize: i18n.language && i18n.language.startsWith('kn') ? '0.66rem' : '0.74rem', color: '#fff', borderRadius: 1.6, fontFamily: FF_HEADING, fontWeight: 700, whiteSpace: 'normal', textAlign: 'center', lineHeight: 1.2 }}
                               >
                                 {t('pages.voting.submit') || 'Vote'}
                               </Button>
@@ -425,7 +436,9 @@ const VotingPage = () => {
                       </Stack>
                     ) : (
                       <Stack spacing={1.1}>
-                        <Stack direction="row" spacing={1.4} alignItems="center">
+                        <Stack direction="row" spacing={1.4} sx={{
+                          alignItems: "center"
+                        }}>
                           <Avatar
                             sx={{
                               width: 66,
@@ -443,17 +456,17 @@ const VotingPage = () => {
                           </Avatar>
 
                           <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="h6" sx={{ fontFamily: FF, fontWeight: 800, color: textPrimary, lineHeight: 1.08, mb: 0.1, fontSize: '1.2rem' }}>
+                            <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: textPrimary, lineHeight: 1.08, mb: 0.1, fontSize: '1.2rem' }}>
                               {aspirant.name}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: textSecondary, fontFamily: FF, lineHeight: 1.2 }}>
+                            <Typography variant="body2" sx={{ color: textSecondary, fontFamily: FF_BODY, lineHeight: 1.2 }}>
                               {aspirant.party || aspirant.bio || t('forms.aspirant.defaults.party')}
                             </Typography>
                             <Box sx={{ mt: 0.55, display: 'inline-flex', alignItems: 'center', gap: 0.5, px: 0.85, py: 0.28, borderRadius: 1.2, bgcolor: isDark ? 'rgba(245,168,0,0.1)' : 'rgba(245,168,0,0.12)', border: `1px solid ${isDark ? 'rgba(245,168,0,0.26)' : 'rgba(245,168,0,0.34)'}` }}>
-                              <Typography variant="caption" sx={{ color: muted, fontFamily: FF, fontWeight: 700 }}>
+                              <Typography variant="caption" sx={{ color: muted, fontFamily: FF_HEADING, fontWeight: 700 }}>
                                 {t('pages.voting.votesLabel') || 'Votes'}:
                               </Typography>
-                              <Typography variant="caption" sx={{ color: textPrimary, fontFamily: FF, fontWeight: 800 }}>
+                              <Typography variant="caption" sx={{ color: textPrimary, fontFamily: FF_HEADING, fontWeight: 800 }}>
                                 {voteCounts[aspirant.id] ?? 0}
                               </Typography>
                             </Box>
@@ -464,7 +477,7 @@ const VotingPage = () => {
                           <Button
                             variant="outlined"
                             size="small"
-                            sx={{ flex: 1, minHeight: 38, py: 0.55, px: 1.3, fontSize: '0.82rem', fontFamily: FF, fontWeight: 700, borderRadius: 1.8, borderColor: `${BRAND.yellow}`, color: isDark ? '#FFCB6A' : '#8A4A00', '&:hover': { borderColor: BRAND.yellow, bgcolor: isDark ? 'rgba(245,168,0,0.07)' : 'rgba(245,168,0,0.08)' } }}
+                            sx={{ flex: 1, minHeight: 38, py: 0.55, px: 1.3, fontSize: '0.82rem', fontFamily: FF_HEADING, fontWeight: 700, borderRadius: 1.8, borderColor: `${BRAND.yellow}`, color: isDark ? '#FFCB6A' : '#8A4A00', '&:hover': { borderColor: BRAND.yellow, bgcolor: isDark ? 'rgba(245,168,0,0.07)' : 'rgba(245,168,0,0.08)' } }}
                             onClick={() => navigate(`/aspirants/${aspirant.id}`)}
                           >
                             {t('pages.voting.viewDetails') || 'View Details'}
@@ -517,7 +530,7 @@ const VotingPage = () => {
                                     <HowToVoteIcon sx={{ fontSize: 18 }} />
                                   )
                                 }
-                                sx={{ flex: 1, minHeight: 38, py: 0.55, px: 1.3, fontSize: '0.92rem', color: '#fff', borderRadius: 1.8, fontFamily: FF, fontWeight: 700 }}
+                                sx={{ flex: 1, minHeight: 38, py: 0.55, px: 1.3, fontSize: '0.92rem', color: '#fff', borderRadius: 1.8, fontFamily: FF_HEADING, fontWeight: 700 }}
                               >
                                 {t('pages.voting.submit') || 'Vote'}
                               </Button>
@@ -533,7 +546,6 @@ const VotingPage = () => {
           </Stack>
         </CardContent>
       </Card>
-
       {/* SOP Dialog */}
       <Dialog open={sopDialogOpen} onClose={() => setSopDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }}>
@@ -548,35 +560,60 @@ const VotingPage = () => {
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
               {t('pages.voting.sop.1.title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {t('pages.voting.sop.1.body')}
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
               {t('pages.voting.sop.2.title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {t('pages.voting.sop.2.body')}
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
               {t('pages.voting.sop.3.title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {t('pages.voting.sop.3.body')}
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
               {t('pages.voting.sop.4.title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {t('pages.voting.sop.4.body')}
             </Typography>
 
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
               {t('pages.voting.sop.5.title')}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                mb: 2
+              }}>
               {t('pages.voting.sop.5.body')}
             </Typography>
           </Box>
@@ -602,7 +639,6 @@ const VotingPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       {/* Confirmation Dialog */}
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>{t('pages.voting.confirmTitle') || 'Confirm Vote'}</DialogTitle>
@@ -611,14 +647,21 @@ const VotingPage = () => {
             {t('pages.voting.confirmDescription')}
           </DialogContentText>
           <Box sx={{ bgcolor: 'grey.50', p: 2, borderRadius: 1, mb: 2 }}>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
+            <Typography variant="body2" gutterBottom sx={{
+              color: "text.secondary"
+            }}>
               {t('pages.voting.selectedCandidate')}:
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {selectedAspirant?.name}
             </Typography>
             {selectedAspirant && (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  mt: 0.5
+                }}>
                 {selectedAspirant.party || t('forms.aspirant.defaults.party')}
               </Typography>
             )}
@@ -631,7 +674,6 @@ const VotingPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       <Dialog
         open={successDialogOpen}
         onClose={() => setSuccessDialogOpen(false)}
@@ -658,14 +700,27 @@ const VotingPage = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
             {t('pages.voting.successTitle') || 'Vote Cast Successfully!'}
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+              mb: 1
+            }}>
             {t('pages.voting.successLine1') || 'Your vote has been recorded securely.'}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {t('pages.voting.successLine2') || 'Thank you for participating in the democratic process.'}
           </Typography>
           <Box sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.04)' : 'grey.50', p: 2, borderRadius: 1, mt: 3, textAlign: 'left' }}>
-            <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+            <Typography
+              variant="caption"
+              gutterBottom
+              sx={{
+                color: "text.secondary",
+                display: "block"
+              }}>
               {t('pages.voting.votedForLabel') || 'Voted For:'}
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: 600, color: textPrimary }}>
@@ -679,7 +734,6 @@ const VotingPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
       <Snackbar
         open={open}
         autoHideDuration={3000}

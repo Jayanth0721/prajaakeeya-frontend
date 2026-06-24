@@ -145,15 +145,18 @@ const UserChatPage: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar sx={{ bgcolor: 'primary.main' }}>{(candidate?.wardName || user?.wardName || 'W').charAt(0)}</Avatar>
                     <Box>
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <Stack direction="row" spacing={1} sx={{
+                            alignItems: "center"
+                        }}>
                             <Chip size="small" label={t('discussion.labels.aspirant') || 'Aspirant'} sx={{ bgcolor: '#FFF7ED', color: '#F97316', fontWeight: 600, fontSize: '0.65rem', height: 22, borderRadius: 6 }} />
                         </Stack>
-                        <Typography variant="body2" color="text.secondary">{t('discussion.roomLabel') || 'Interview room'}</Typography>
+                        <Typography variant="body2" sx={{
+                            color: "text.secondary"
+                        }}>{t('discussion.roomLabel') || 'Interview room'}</Typography>
                     </Box>
                 </Box>
                 <IconButton onClick={() => navigate(-1)}><CloseIcon /></IconButton>
             </Box>
-
             <Card sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <CardContent sx={{ display: 'flex', flexDirection: 'column', p: { xs: 2, sm: 3 }, height: '100%', flex: 1 }}>
                     <Stack spacing={2} sx={{ flex: 1, overflowY: 'auto', pr: 1 }}>
@@ -162,7 +165,14 @@ const UserChatPage: React.FC = () => {
                             const isMe = m.userId === user?.id;
                             const isAspirant = !!(m.user && 'role' in m.user && (m.user as any).role === 'aspirant');
                             return (
-                                <Stack key={m.id} direction="row" spacing={2} alignItems="flex-start" justifyContent={isMe ? 'flex-end' : 'flex-start'}>
+                                <Stack
+                                    key={m.id}
+                                    direction="row"
+                                    spacing={2}
+                                    sx={{
+                                        alignItems: "flex-start",
+                                        justifyContent: isMe ? 'flex-end' : 'flex-start'
+                                    }}>
                                     {!isMe && (
                                         <Avatar sx={{ width: 44, height: 44, bgcolor: 'primary.main' }}>{(m.user?.name || 'U').charAt(0)}</Avatar>
                                     )}
@@ -178,7 +188,9 @@ const UserChatPage: React.FC = () => {
                                         wordBreak: 'break-word'
                                     }}>
                                         {!isMe && (
-                                            <Stack direction="row" spacing={1} alignItems="center">
+                                            <Stack direction="row" spacing={1} sx={{
+                                                alignItems: "center"
+                                            }}>
                                                 <Typography variant="caption" sx={{ display: 'block', fontWeight: 600, mb: 0.5 }}>{m.user?.name}</Typography>
                                                 {isAspirant && <Chip size="small" label={t('discussion.labels.aspirant') || 'Aspirant'} sx={{ bgcolor: '#FFF7ED', color: '#F97316', fontWeight: 600, fontSize: '0.6rem', height: 20, borderRadius: 6 }} />}
                                             </Stack>
@@ -193,7 +205,6 @@ const UserChatPage: React.FC = () => {
                     </Stack>
                 </CardContent>
             </Card>
-
             <Box sx={{ display: 'flex', gap: 2, flexShrink: 0, alignItems: 'center', flexDirection: { xs: 'column', sm: 'row' } }}>
                 <TextField
                     fullWidth
@@ -209,7 +220,6 @@ const UserChatPage: React.FC = () => {
                 />
                 <Button variant="contained" endIcon={<SendIcon />} onClick={handleSend} disabled={posting} sx={{ whiteSpace: 'nowrap', width: { xs: '100%', sm: 'auto' } }}>{t('discussion.send') || 'Send'}</Button>
             </Box>
-
             <Snackbar open={successOpen} autoHideDuration={2500} onClose={() => setSuccessOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
                 <Alert severity="success" onClose={() => setSuccessOpen(false)}>{t('discussion.sent') || 'Message posted'}</Alert>
             </Snackbar>

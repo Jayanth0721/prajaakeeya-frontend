@@ -170,11 +170,12 @@ const UploadBoothPdfsPage = () => {
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
           {t('adminDashboard.nav.upload')}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           {t('forms.upload.description') || 'Upload ward-wise voter Excel sheet for a ward'}
         </Typography>
       </Box>
-
       <Card>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
@@ -196,7 +197,9 @@ const UploadBoothPdfsPage = () => {
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {t('forms.upload.title') || 'Excel Upload'}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 {t('forms.upload.subtitle') || 'Select ward and upload Excel file'}
               </Typography>
             </Box>
@@ -299,12 +302,16 @@ const UploadBoothPdfsPage = () => {
             />
             {files.length > 0 && (
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
+                <Typography variant="body2" gutterBottom sx={{
+                  color: "text.secondary"
+                }}>
                   {t('forms.upload.selectedFiles') || 'Selected files'} ({files.length}):
                 </Typography>
                 <Stack spacing={0.5}>
                   {files.map((file, index) => (
-                    <Typography key={index} variant="caption" color="text.secondary">
+                    <Typography key={index} variant="caption" sx={{
+                      color: "text.secondary"
+                    }}>
                       • {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                     </Typography>
                   ))}
@@ -324,7 +331,6 @@ const UploadBoothPdfsPage = () => {
           </Stack>
         </CardContent>
       </Card>
-
       <Snackbar
         open={success}
         autoHideDuration={3000}

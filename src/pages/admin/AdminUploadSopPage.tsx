@@ -125,7 +125,6 @@ const AdminUploadSopPage: React.FC = () => {
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
                 {t('adminDashboard.nav.uploadSop', { defaultValue: 'Upload SOP Document' })}
             </Typography>
-
             <Card sx={{
                 borderRadius: 3,
                 boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.08)',
@@ -135,7 +134,12 @@ const AdminUploadSopPage: React.FC = () => {
                 mb: 3,
             }}>
                 <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 3
+                        }}>
                         Upload the SOP document (English & Kannada combined PDF). Max file size: 10MB.
                     </Typography>
 
@@ -171,7 +175,9 @@ const AdminUploadSopPage: React.FC = () => {
                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                                     <DescriptionIcon sx={{ color: 'primary.main' }} />
                                     <Typography sx={{ fontWeight: 600 }}>{file.name}</Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         ({(file.size / 1024 / 1024).toFixed(2)} MB)
                                     </Typography>
                                 </Box>
@@ -179,7 +185,9 @@ const AdminUploadSopPage: React.FC = () => {
                                 <Box>
                                     <CloudUploadIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
                                     <Typography sx={{ fontWeight: 600 }}>Click to select PDF file</Typography>
-                                    <Typography variant="caption" color="text.secondary">
+                                    <Typography variant="caption" sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         SOP-English-Kannada.pdf (max 10MB)
                                     </Typography>
                                 </Box>
@@ -224,7 +232,6 @@ const AdminUploadSopPage: React.FC = () => {
                     </Stack>
                 </CardContent>
             </Card>
-
             {/* Uploaded Documents List */}
             <Card sx={{
                 borderRadius: 3,
@@ -248,7 +255,9 @@ const AdminUploadSopPage: React.FC = () => {
                             <CircularProgress size={28} />
                         </Box>
                     ) : documents.length === 0 ? (
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" sx={{
+                            color: "text.secondary"
+                        }}>
                             No SOP documents uploaded yet.
                         </Typography>
                     ) : (
@@ -269,11 +278,18 @@ const AdminUploadSopPage: React.FC = () => {
                                             )}
                                         </Box>
                                         {doc.description && (
-                                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                            <Typography
+                                                variant="caption"
+                                                sx={{
+                                                    color: "text.secondary",
+                                                    display: 'block'
+                                                }}>
                                                 {doc.description}
                                             </Typography>
                                         )}
-                                        <Typography variant="caption" color="text.secondary">
+                                        <Typography variant="caption" sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             Uploaded: {new Date(doc.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </Typography>
                                     </Box>

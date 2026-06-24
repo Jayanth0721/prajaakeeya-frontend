@@ -229,13 +229,14 @@ const AspirantApprovalPage = () => {
             ? tr('pages.aspirants.title', 'Aspirants')
             : tr('pages.aspirantApproval.title', 'Aspirant Approval')}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" sx={{
+          color: "text.secondary"
+        }}>
           {isPublicPage
             ? tr('pages.aspirants.subtitle', 'View aspirants registered for wards')
             : tr('pages.aspirantApproval.subtitle', 'Review and approve aspirants for wards')}
         </Typography>
       </Box>
-
       <Card>
         <CardContent>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3, flexWrap: 'wrap' }}>
@@ -292,7 +293,9 @@ const AspirantApprovalPage = () => {
                       onClick={() => handleRowClick(aspirant)}
                     >
                       <TableCell>
-                        <Stack direction="row" spacing={2} alignItems="center">
+                        <Stack direction="row" spacing={2} sx={{
+                          alignItems: "center"
+                        }}>
                           <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main' }} src={aspirant.recentPhotoUrl || undefined}>
                             {!aspirant.recentPhotoUrl && aspirant.name.charAt(0)}
                           </Avatar>
@@ -301,7 +304,9 @@ const AspirantApprovalPage = () => {
                               {aspirant.name}
                             </Typography>
                             {!isPublicPage && aspirant.manifesto && (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                              }}>
                                 {aspirant.manifesto}
                               </Typography>
                             )}
@@ -338,7 +343,9 @@ const AspirantApprovalPage = () => {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={isPublicPage ? 2 : 5} align="center" sx={{ py: 4 }}>
-                      <Typography color="text.secondary">
+                      <Typography sx={{
+                        color: "text.secondary"
+                      }}>
                         {selectedWardNumber
                           ? tr('pages.aspirantApproval.noAspirants', 'No aspirants found for this ward')
                           : tr('pages.aspirantApproval.selectWard', 'Select a ward to view aspirants')}

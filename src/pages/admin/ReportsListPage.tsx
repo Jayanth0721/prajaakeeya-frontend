@@ -30,12 +30,19 @@ const ReportsListPage: React.FC = () => {
         <Stack spacing={3}>
             <Box>
                 <Typography variant="h4" sx={{ fontWeight: 700 }}>Admin Reports</Typography>
-                <Typography color="text.secondary">View and manage user-submitted reports</Typography>
+                <Typography sx={{
+                    color: "text.secondary"
+                }}>View and manage user-submitted reports</Typography>
             </Box>
-
             <Card>
                 <CardContent>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }} alignItems="center">
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={2}
+                        sx={{
+                            alignItems: "center",
+                            mb: 2
+                        }}>
                         <FormControl sx={{ minWidth: 200 }}>
                             <InputLabel id="status-filter-label">Status</InputLabel>
                             <Select labelId="status-filter-label" value={statusFilter} label="Status" onChange={(e) => setStatusFilter(e.target.value)}>

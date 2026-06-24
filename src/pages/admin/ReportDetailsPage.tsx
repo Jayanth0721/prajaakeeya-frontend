@@ -68,13 +68,18 @@ const ReportDetailsPage: React.FC = () => {
                 {/* Header Section */}
                 <Card>
                     <CardContent>
-                        <Grid container justifyContent="space-between" alignItems="center">
-                            <Grid item>
+                        <Grid
+                            container
+                            sx={{
+                                justifyContent: "space-between",
+                                alignItems: "center"
+                            }}>
+                            <Grid>
                                 <Typography variant="h5">Report Details</Typography>
                                 <Typography variant="subtitle1">Report #{report.id}</Typography>
                                 <Typography>Reason: {report.reason}</Typography>
                             </Grid>
-                            <Grid item>
+                            <Grid>
                                 <Chip label={report.status} color={report.status === 'resolved' ? 'success' : 'warning'} />
                                 <Typography variant="body2" color="textSecondary">
                                     {new Date(report.createdAt).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}
@@ -86,7 +91,11 @@ const ReportDetailsPage: React.FC = () => {
 
                 {/* Reported User and Reported By Sections */}
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 6
+                        }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -102,8 +111,12 @@ const ReportDetailsPage: React.FC = () => {
                                         {(report.reportedUser?.nameEn || report.reportedUser?.name)?.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Box>
-                                        <Typography fontWeight={500}>{report.reportedUser?.nameEn || report.reportedUser?.name}</Typography>
-                                        <Typography variant="body2" color="text.secondary">{report.reportedUser?.role}</Typography>
+                                        <Typography sx={{
+                                            fontWeight: 500
+                                        }}>{report.reportedUser?.nameEn || report.reportedUser?.name}</Typography>
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>{report.reportedUser?.role}</Typography>
                                     </Box>
                                 </Box>
                                 {report.reportedUser?.epicId && <Typography>VOTER ID: {report.reportedUser.epicId}</Typography>}
@@ -112,7 +125,11 @@ const ReportDetailsPage: React.FC = () => {
                         </Card>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 6
+                        }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -128,8 +145,12 @@ const ReportDetailsPage: React.FC = () => {
                                         {(report.reportedBy?.nameEn || report.reportedBy?.name)?.charAt(0).toUpperCase()}
                                     </Avatar>
                                     <Box>
-                                        <Typography fontWeight={500}>{report.reportedBy?.nameEn || report.reportedBy?.name}</Typography>
-                                        <Typography variant="body2" color="text.secondary">{report.reportedBy?.role}</Typography>
+                                        <Typography sx={{
+                                            fontWeight: 500
+                                        }}>{report.reportedBy?.nameEn || report.reportedBy?.name}</Typography>
+                                        <Typography variant="body2" sx={{
+                                            color: "text.secondary"
+                                        }}>{report.reportedBy?.role}</Typography>
                                     </Box>
                                 </Box>
                                 {report.reportedBy?.epicId && <Typography>VOTER ID: {report.reportedBy.epicId}</Typography>}

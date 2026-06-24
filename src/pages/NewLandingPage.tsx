@@ -106,7 +106,6 @@ const BeatterCreatePage: React.FC = () => {
             </Box>
             {/* Spacer for fixed header */}
             <Box sx={{ height: 68 }} />
-
             <Container maxWidth="lg" sx={{ py: 0, pb: isMobile ? 6 : 0, height: isMobile ? 'auto' : 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Box sx={{ textAlign: 'center', mb: isMobile ? 3 : 4, mt: { xs: 2, md: 3 } }}>
                     <Typography variant="h2" component="div" sx={{ fontWeight: 800, fontFamily: 'serif', fontSize: { xs: '1.6rem', md: '2.6rem' }, color: '#0f172a', mt: 3 }}>
@@ -134,11 +133,24 @@ const BeatterCreatePage: React.FC = () => {
                     </Typography>
                 </Box>
 
-                <Grid container spacing={4} justifyContent="center" sx={{ flexGrow: 1, alignItems: 'center' }}>
-                    <Grid item xs={12} sm={6}>
+                <Grid
+                    container
+                    spacing={4}
+                    sx={{
+                        justifyContent: "center",
+                        flexGrow: 1,
+                        alignItems: 'center'
+                    }}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <Card sx={{ textAlign: 'center', borderRadius: 3, p: { xs: 1.5, sm: 2 }, boxShadow: '0 10px 30px rgba(2,6,23,0.12)', maxWidth: { xs: '100%', sm: 640 }, mx: 'auto', bgcolor: 'rgba(255,255,255,0.96)' }}>
                             <CardContent>
-                                <Stack spacing={2} alignItems="center">
+                                <Stack spacing={2} sx={{
+                                    alignItems: "center"
+                                }}>
                                     <Box sx={{ width: { xs: 88, sm: 120 }, height: { xs: 88, sm: 120 }, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'transparent' }}>
                                         <Box component="img" src={voterLoginImg} alt="voter" sx={{ width: { xs: 72, sm: 96 }, height: { xs: 72, sm: 96 }, objectFit: 'contain' }} />
                                     </Box>
@@ -168,10 +180,16 @@ const BeatterCreatePage: React.FC = () => {
                             </CardContent>
                         </Card>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6
+                        }}>
                         <Card sx={{ textAlign: 'center', borderRadius: 3, p: { xs: 1.5, sm: 2 }, boxShadow: '0 10px 30px rgba(2,6,23,0.12)', maxWidth: { xs: '100%', sm: 640 }, mx: 'auto', bgcolor: 'rgba(255,255,255,0.96)' }}>
                             <CardContent>
-                                <Stack spacing={2} alignItems="center">
+                                <Stack spacing={2} sx={{
+                                    alignItems: "center"
+                                }}>
                                     <Box sx={{ width: { xs: 88, sm: 120 }, height: { xs: 88, sm: 120 }, borderRadius: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'transparent' }}>
                                         <Box component="img" src={aspirantLoginImg} alt="aspirant" sx={{ width: { xs: 72, sm: 96 }, height: { xs: 72, sm: 96 }, objectFit: 'contain' }} />
                                     </Box>

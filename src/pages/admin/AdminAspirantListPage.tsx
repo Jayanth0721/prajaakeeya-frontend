@@ -87,7 +87,9 @@ const AdminAspirantListPage: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 700 }}>Aspirant List</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {total} aspirant{total !== 1 ? 's' : ''} total
             </Typography>
           </Box>
@@ -97,13 +99,13 @@ const AdminAspirantListPage: React.FC = () => {
               placeholder="Search by name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
+              slotProps={{ input: {
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon fontSize="small" />
                   </InputAdornment>
                 ),
-              }}
+              } }}
               sx={{ width: 260 }}
             />
           </Box>
@@ -132,7 +134,9 @@ const AdminAspirantListPage: React.FC = () => {
                     {aspirants.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 6 }}>
-                          <Typography color="text.secondary">No aspirants found</Typography>
+                          <Typography sx={{
+                            color: "text.secondary"
+                          }}>No aspirants found</Typography>
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -221,7 +225,6 @@ const AdminAspirantListPage: React.FC = () => {
           </Box>
         )}
       </Stack>
-
       {/* Block / Unblock Confirmation Dialog */}
       <Dialog open={confirmDialog.open} onClose={() => !actionLoading && setConfirmDialog({ open: false })} maxWidth="xs" fullWidth>
         <DialogTitle>

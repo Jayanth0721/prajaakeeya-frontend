@@ -20,7 +20,9 @@ import useAuthStore from '../store/useAuthStore';
 import { getIssue, CivicIssue } from '../services/civicIssuesService';
 import { BRAND } from '../theme';
 
-const FF = "'Baloo 2', sans-serif";
+const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
+const FF_BODY = "'Absans', 'Lora', serif";
+const FF = FF_BODY;
 
 const formatDate = (ts: number | string) => {
   try {
@@ -97,17 +99,17 @@ const CivicIssueDetailPage: React.FC = () => {
             py: 7, textAlign: 'center',
           }}>
             <ReportProblemIcon sx={{ fontSize: 44, color: '#C8180A', mb: 1.5 }} />
-            <Typography sx={{ fontFamily: FF, fontWeight: 700, color: '#C8180A', mb: 0.8 }}>
+            <Typography sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#C8180A', mb: 0.8 }}>
               Could not load issue
             </Typography>
-            <Typography sx={{ fontFamily: FF, fontSize: '0.88rem', color: textMid, mb: 3 }}>
+            <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.88rem', color: textMid, mb: 3 }}>
               {error}
             </Typography>
             <Button
               variant="outlined"
               onClick={() => navigate('/user/civic-issues')}
               sx={{
-                fontFamily: FF, fontWeight: 700, borderRadius: 2, textTransform: 'none',
+                fontFamily: FF_HEADING, fontWeight: 700, borderRadius: 2, textTransform: 'none',
                 borderColor: GOLDD, color: GOLD,
                 '&:hover': { bgcolor: 'rgba(245,168,0,0.06)', borderColor: GOLD },
               }}
@@ -145,7 +147,7 @@ const CivicIssueDetailPage: React.FC = () => {
                 </Box>
                 <Box sx={{ flex: 1 }}>
                   <Typography sx={{
-                    fontFamily: FF, fontWeight: 800,
+                    fontFamily: FF_HEADING, fontWeight: 800,
                     fontSize: { xs: '1.2rem', sm: '1.45rem' },
                     color: textPrimary, lineHeight: 1.25,
                   }}>
@@ -156,13 +158,13 @@ const CivicIssueDetailPage: React.FC = () => {
                   <Stack direction="row" spacing={2} sx={{ mt: 1.2, flexWrap: 'wrap', gap: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
                       <CalendarIcon sx={{ fontSize: 13, color: textDim }} />
-                      <Typography sx={{ fontFamily: FF, fontSize: '0.8rem', color: textDim }}>
+                      <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.8rem', color: textDim }}>
                         {formatDate(issue.createdAt)}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
                       <TimeIcon sx={{ fontSize: 13, color: textDim }} />
-                      <Typography sx={{ fontFamily: FF, fontSize: '0.8rem', color: textDim }}>
+                      <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.8rem', color: textDim }}>
                         {formatTime(issue.createdAt)}
                       </Typography>
                     </Box>
@@ -171,7 +173,7 @@ const CivicIssueDetailPage: React.FC = () => {
                       bgcolor: 'rgba(37,58,154,0.12)',
                       border: '1px solid rgba(37,58,154,0.25)',
                     }}>
-                      <Typography sx={{ fontFamily: FF, fontSize: '0.72rem', fontWeight: 700, color: '#253A9A' }}>
+                      <Typography sx={{ fontFamily: FF_HEADING, fontSize: '0.72rem', fontWeight: 700, color: '#253A9A' }}>
                         Ward {wardNumber}
                       </Typography>
                     </Box>
@@ -181,7 +183,7 @@ const CivicIssueDetailPage: React.FC = () => {
                       border: `1px solid ${issue.isActive ? 'rgba(22,163,74,0.25)' : 'rgba(100,100,100,0.25)'}`,
                     }}>
                       <Typography sx={{
-                        fontFamily: FF, fontSize: '0.72rem', fontWeight: 700,
+                        fontFamily: FF_HEADING, fontSize: '0.72rem', fontWeight: 700,
                         color: issue.isActive ? '#15803d' : '#666',
                       }}>
                         {issue.isActive ? 'Active' : 'Closed'}
@@ -197,13 +199,13 @@ const CivicIssueDetailPage: React.FC = () => {
             {/* ── Description ────────────────────────────────────────────── */}
             <Box sx={{ px: { xs: 2.5, sm: 4 }, py: 3 }}>
               <Typography sx={{
-                fontFamily: FF, fontWeight: 700, fontSize: '0.78rem',
+                fontFamily: FF_HEADING, fontWeight: 700, fontSize: '0.78rem',
                 color: textDim, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1.5,
               }}>
                 Description
               </Typography>
               <Typography sx={{
-                fontFamily: FF, color: textMid,
+                fontFamily: FF_BODY, color: textMid,
                 lineHeight: 1.85, fontSize: { xs: '0.92rem', sm: '1rem' },
                 whiteSpace: 'pre-wrap',
               }}>
@@ -224,7 +226,7 @@ const CivicIssueDetailPage: React.FC = () => {
                 startIcon={<AddIcon />}
                 onClick={() => navigate('/user/civic-issues/report')}
                 sx={{
-                  fontFamily: FF, fontWeight: 700, borderRadius: 2, textTransform: 'none',
+                  fontFamily: FF_HEADING, fontWeight: 700, borderRadius: 2, textTransform: 'none',
                   px: 2.5,
                   background: `linear-gradient(135deg,${BRAND.red} 0%,${BRAND.yellow} 100%)`,
                   color: '#fff',

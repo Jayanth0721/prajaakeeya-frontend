@@ -95,7 +95,12 @@ const AuthCallbackPage = () => {
   if (error || !token) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 3 }}>
-        <Stack spacing={2} alignItems="center" maxWidth={420}>
+        <Stack
+          spacing={2}
+          sx={{
+            alignItems: "center",
+            maxWidth: 420
+          }}>
           <Alert severity="error" sx={{ width: '100%' }}>
             {error || 'Missing authentication token'}
           </Alert>

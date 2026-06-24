@@ -188,7 +188,7 @@ const UserLoginPage = () => {
     '& .MuiInputAdornment-root svg': { color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(17,24,39,0.55)' },
     '& .MuiFormHelperText-root': { color: '#f87171' },
     '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active': {
-      WebkitBoxShadow: `0 0 0 100px ${isDark ? '#150E0E' : '#FFFFFF'} inset`,
+      WebkitBoxShadow: `0 0 0 100px ${isDark ? '#13161A' : '#FFFFFF'} inset`,
       WebkitTextFillColor: isDark ? '#fff' : theme.palette.text.primary,
       caretColor: isDark ? '#fff' : theme.palette.text.primary,
     },

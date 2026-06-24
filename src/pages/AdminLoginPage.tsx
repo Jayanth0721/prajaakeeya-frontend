@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import ContrastIcon from '@mui/icons-material/Contrast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/useAuthStore';
@@ -111,7 +112,13 @@ const AdminLoginPage = () => {
       }}
     >
       {/* Theme toggle */}
-      <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+      <Tooltip title={
+        mode === 'dark'
+          ? 'Switch to light mode'
+          : mode === 'light'
+          ? 'Switch to grey mode'
+          : 'Switch to dark mode'
+      }>
         <IconButton
           onClick={toggleTheme}
           size="small"
@@ -122,7 +129,13 @@ const AdminLoginPage = () => {
             color: 'text.secondary',
           }}
         >
-          {mode === 'dark' ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+          {mode === 'dark' ? (
+            <DarkModeIcon fontSize="small" />
+          ) : mode === 'light' ? (
+            <LightModeIcon fontSize="small" />
+          ) : (
+            <ContrastIcon fontSize="small" />
+          )}
         </IconButton>
       </Tooltip>
 

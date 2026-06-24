@@ -103,14 +103,18 @@ const DocumentCard: React.FC<{ doc: DocumentType; onView?: (d: DocumentType) => 
     };
     return (
         <Paper variant="outlined" sx={{ p: 1.2, borderRadius: 2, bgcolor: 'background.paper', borderColor: 'rgba(245,168,0,0.2)' }}>
-            <Stack direction="row" alignItems="center" spacing={2}>
+            <Stack direction="row" spacing={2} sx={{
+                alignItems: "center"
+            }}>
                 <Box sx={{ width: 34, height: 34, borderRadius: 1.4, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(245,168,0,0.14)', color: '#f5a800' }}>
                     <DescriptionIcon />
                 </Box>
                 <Box sx={{ flex: 1 }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{doc.name}</Typography>
                     {doc.verified && (
-                        <Typography variant="caption" color="success.main">
+                        <Typography variant="caption" sx={{
+                            color: "success.main"
+                        }}>
                             {localTr('pages.candidateDetails.labels.verified', 'Verified')}
                         </Typography>
                     )}
@@ -212,7 +216,9 @@ const CandidateDetailsPage: React.FC = () => {
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-    const FF = "'Baloo 2', sans-serif";
+    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
+    const FF_BODY = "'Absans', 'Lora', serif";
+    const FF = FF_BODY;
     const sectionCardSx = {
         borderRadius: 3,
         border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(17,24,39,0.12)'}`,
@@ -224,7 +230,7 @@ const CandidateDetailsPage: React.FC = () => {
     } as const;
     const sectionTitleSx = {
         fontWeight: 800,
-        fontFamily: FF,
+        fontFamily: FF_BODY,
         letterSpacing: '-0.01em',
         color: isDark ? '#FFD27A' : '#B45309'
     } as const;
@@ -239,13 +245,13 @@ const CandidateDetailsPage: React.FC = () => {
     } as const;
     const profileLabelSx = {
         fontWeight: 700,
-        fontFamily: FF,
+        fontFamily: FF_BODY,
         color: isDark ? 'rgba(255,255,255,0.68)' : 'rgba(17,24,39,0.62)',
         fontSize: '0.78rem',
         letterSpacing: '.02em'
     } as const;
     const profileValueSx = {
-        fontFamily: FF,
+        fontFamily: FF_BODY,
         color: isDark ? '#FFFFFF' : '#0f172a',
         fontWeight: 700,
         fontSize: '1rem'
@@ -603,7 +609,9 @@ const CandidateDetailsPage: React.FC = () => {
         return (
             <Container maxWidth="lg" sx={{ py: { xs: 1, sm: 2.5, md: 4 }, px: { xs: 0 } }}>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
-                    <Typography variant="h6" color="text.secondary">{t('common.loading')}</Typography>
+                    <Typography variant="h6" sx={{
+                        color: "text.secondary"
+                    }}>{t('common.loading')}</Typography>
                 </Box>
             </Container>
         );
@@ -614,7 +622,11 @@ const CandidateDetailsPage: React.FC = () => {
             <Box sx={{ px: { xs: 0, md: 2 }, py: { xs: 0, md: 0 } }}>
                 <Grid container spacing={3}>
                     {/* Left - main */}
-                    <Grid item xs={12} md={8}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            md: 8
+                        }}>
                         <Stack spacing={3}>
                             {/* Header */}
                             <Card sx={sectionCardSx}>
@@ -622,27 +634,48 @@ const CandidateDetailsPage: React.FC = () => {
                                     {['#C8180A', '#253A9A', '#6B3A00'].map(c => <Box key={c} sx={{ flex: 1, bgcolor: c }} />)}
                                 </Box>
                                 <CardContent sx={{ p: { xs: 1.6, sm: 2.4 } }}>
-                                    <Stack direction="row" spacing={{ xs: 1.6, sm: 3 }} alignItems="center">
+                                    <Stack direction="row" spacing={{ xs: 1.6, sm: 3 }} sx={{
+                                        alignItems: "center"
+                                    }}>
                                         <Box sx={{ p: '3px', borderRadius: '50%', background: 'conic-gradient(#C8180A 0deg 120deg, #F5A800 120deg 240deg, #253A9A 240deg 360deg)' }}>
                                             <Avatar src={candidate.selfieUrl} sx={{ width: { xs: 96, sm: 120 }, height: { xs: 96, sm: 120 }, bgcolor: 'primary.main', fontSize: 28, border: `3px solid ${isDark ? '#140f0f' : '#fff'}` }}>
                                                 {!candidate.selfieUrl && candidate.name.charAt(0)}
                                             </Avatar>
                                         </Box>
                                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                                            <Stack direction={{ xs: 'column', sm: 'row' }} alignItems="center" justifyContent="space-between" spacing={1}>
+                                            <Stack
+                                                direction={{ xs: 'column', sm: 'row' }}
+                                                spacing={1}
+                                                sx={{
+                                                    alignItems: "center",
+                                                    justifyContent: "space-between"
+                                                }}>
                                                 <Box>
                                                     <Typography variant="h5" sx={{ ...sectionTitleSx, fontSize: { xs: '1.2rem', sm: '1.9rem' }, lineHeight: 1.08 }}>{candidate.name}</Typography>
-                                                    <Typography variant="body2" color="text.secondary" sx={{ fontFamily: FF, fontSize: { xs: '0.92rem', sm: '1.05rem' } }}>
+                                                    <Typography
+                                                        variant="body2"
+                                                        sx={{
+                                                            color: "text.secondary",
+                                                            fontFamily: FF_BODY,
+                                                            fontSize: { xs: '0.92rem', sm: '1.05rem' }
+                                                        }}>
                                                         {candidate.electionName?.toLowerCase().includes('gram panchayat')
                                                             ? `${candidate.electionName}${candidate.constituencyName ? ` · ${candidate.constituencyName}` : ''}`
                                                             : `${candidate.wardName ?? ''} (${t('pages.candidateDetails.labels.ward')} ${candidate.wardNo ?? ''})`}
                                                     </Typography>
                                                 </Box>
                                                 <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
-                                                    <Stack direction="row" alignItems="center" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                                                        <Chip label={displayParty} color="primary" variant="outlined" sx={{ fontFamily: FF, fontWeight: 700, fontSize: { xs: '0.8rem', sm: '0.92rem' }, height: { xs: 32, sm: 36 } }} />
+                                                    <Stack
+                                                        direction="row"
+                                                        sx={{
+                                                            alignItems: "center",
+                                                            justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                                                            flexWrap: 'wrap',
+                                                            gap: 1
+                                                        }}>
+                                                        <Chip label={displayParty} color="primary" variant="outlined" sx={{ fontFamily: FF_HEADING, fontWeight: 700, fontSize: { xs: '0.8rem', sm: '0.92rem' }, height: { xs: 32, sm: 36 } }} />
                                                         {Array.isArray(candidate.status) ? candidate.status.map((s) => (
-                                                            <Chip key={s} label={s} size="small" icon={<VerifiedIcon />} color="success" sx={{ fontFamily: FF, fontWeight: 700, fontSize: { xs: '0.76rem', sm: '0.88rem' }, height: { xs: 30, sm: 34 } }} />
+                                                            <Chip key={s} label={s} size="small" icon={<VerifiedIcon />} color="success" sx={{ fontFamily: FF_HEADING, fontWeight: 700, fontSize: { xs: '0.76rem', sm: '0.88rem' }, height: { xs: 30, sm: 34 } }} />
                                                         )) : (candidate.status ? <Chip label={String(candidate.status)} size="small" icon={<VerifiedIcon />} color="success" /> : null)}
                                                     </Stack>
                                                 </Box>
@@ -657,25 +690,53 @@ const CandidateDetailsPage: React.FC = () => {
                                 <CardContent>
                                     <Typography variant="h6" sx={{ ...sectionTitleSx, mb: 2 }}>{t('pages.candidateDetails.tabs.profile')}</Typography>
                                     <Grid container spacing={2}>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.fullName')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.name}</Typography></Box>
                                         </Grid>
-                                        <Grid item xs={6} sm={3}>
+                                        <Grid
+                                            size={{
+                                                xs: 6,
+                                                sm: 3
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.age')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.age ?? '—'}</Typography></Box>
                                         </Grid>
-                                        <Grid item xs={6} sm={3}>
+                                        <Grid
+                                            size={{
+                                                xs: 6,
+                                                sm: 3
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.gender')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.gender ?? '—'}</Typography></Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.education')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.education ?? '—'}</Typography></Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.occupation')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.occupation ?? '—'}</Typography></Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.phone')}</Typography><Box sx={{ mt: 0.5 }}><PhoneRevealCard phone={candidate.phone} aspirantId={candidate?.id} inline /></Box></Box>
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             {candidate.electionName?.toLowerCase().includes('gram panchayat') ? (
                                                 <Box sx={infoTileSx}>
                                                     <Typography variant="subtitle2" sx={profileLabelSx}>{candidate.electionName}</Typography>
@@ -685,11 +746,19 @@ const CandidateDetailsPage: React.FC = () => {
                                                 <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.wardName')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.wardName ?? '—'}</Typography></Box>
                                             )}
                                         </Grid>
-                                        <Grid item xs={12} sm={12}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 12
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.address')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.address ?? '—'}</Typography></Box>
                                         </Grid>
                                         {candidate.state && (
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid
+                                            size={{
+                                                xs: 12,
+                                                sm: 6
+                                            }}>
                                             <Box sx={infoTileSx}><Typography variant="subtitle2" sx={profileLabelSx}>{t('pages.candidateDetails.labels.state')}</Typography><Typography variant="body2" sx={profileValueSx}>{candidate.state}</Typography></Box>
                                         </Grid>
                                         )}
@@ -701,7 +770,7 @@ const CandidateDetailsPage: React.FC = () => {
                             <Card sx={sectionCardSx}>
                                 <CardContent sx={{ p: { xs: 1.4, sm: 2.2 }, '&:last-child': { pb: { xs: 1.4, sm: 2.2 } } }}>
                                     <Typography variant="h6" sx={sectionTitleSx}>{t('pages.candidateDetails.labels.about')}</Typography>
-                                    <Typography variant="body2" sx={{ mt: 0.8, fontFamily: FF, lineHeight: 1.65, color: 'text.secondary', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                    <Typography variant="body2" sx={{ mt: 0.8, fontFamily: FF_BODY, lineHeight: 1.65, color: 'text.secondary', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                                         {candidate.about || '—'}
                                     </Typography>
                                 </CardContent>
@@ -735,7 +804,7 @@ const CandidateDetailsPage: React.FC = () => {
                                                         <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="2" fill="none" />
                                                         <circle cx="17.5" cy="6.5" r="1.2" fill="white" />
                                                     </svg>
-                                                    <Typography variant="body2" sx={{ fontFamily: FF, color: '#E1306C', fontWeight: 600 }}>Instagram</Typography>
+                                                    <Typography variant="body2" sx={{ fontFamily: FF_BODY, color: '#E1306C', fontWeight: 600 }}>Instagram</Typography>
                                                 </Box>
                                             )}
                                             {candidate.facebookLink && (
@@ -750,7 +819,7 @@ const CandidateDetailsPage: React.FC = () => {
                                                         <circle cx="12" cy="12" r="12" fill="#1877F2" />
                                                         <path d="M15.5 8H13.5C13.2 8 13 8.2 13 8.5V10H15.5L15.2 12.5H13V19H10.5V12.5H9V10H10.5V8.5C10.5 6.6 11.6 5.5 13.5 5.5H15.5V8Z" fill="white" />
                                                     </svg>
-                                                    <Typography variant="body2" sx={{ fontFamily: FF, color: '#1877F2', fontWeight: 600 }}>Facebook</Typography>
+                                                    <Typography variant="body2" sx={{ fontFamily: FF_BODY, color: '#1877F2', fontWeight: 600 }}>Facebook</Typography>
                                                 </Box>
                                             )}
                                             {candidate.linkedinLink && (
@@ -765,7 +834,7 @@ const CandidateDetailsPage: React.FC = () => {
                                                         <circle cx="12" cy="12" r="12" fill="#0A66C2" />
                                                         <path d="M8.5 10H6.5V17.5H8.5V10ZM7.5 9C8.05 9 8.5 8.55 8.5 8C8.5 7.45 8.05 7 7.5 7C6.95 7 6.5 7.45 6.5 8C6.5 8.55 6.95 9 7.5 9ZM17.5 17.5H15.5V13.75C15.5 12.9 14.85 12.25 14 12.25C13.15 12.25 12.5 12.9 12.5 13.75V17.5H10.5V10H12.5V11.05C12.97 10.4 13.78 10 14.5 10C16.16 10 17.5 11.34 17.5 13V17.5Z" fill="white" />
                                                     </svg>
-                                                    <Typography variant="body2" sx={{ fontFamily: FF, color: '#0A66C2', fontWeight: 600 }}>LinkedIn</Typography>
+                                                    <Typography variant="body2" sx={{ fontFamily: FF_BODY, color: '#0A66C2', fontWeight: 600 }}>LinkedIn</Typography>
                                                 </Box>
                                             )}
                                         </Stack>
@@ -823,7 +892,14 @@ const CandidateDetailsPage: React.FC = () => {
                     </DialogTitle>
                     <DialogContent dividers sx={{ p: 0 }}>
                         {docViewUrl ? (
-                            <Box component="iframe" src={docViewUrl} width="100%" height={600} sx={{ border: 0 }} />
+                            <Box
+                                component="iframe"
+                                src={docViewUrl}
+                                sx={{
+                                    width: "100%",
+                                    height: 600,
+                                    border: 0
+                                }} />
                         ) : (
                             <Box sx={{ p: 2 }}>
                                 <Typography>{t('pages.candidateDetails.dialog.noDocument')}</Typography>
