@@ -12,7 +12,12 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser, setPushNavigator, consumePendingPushRoute } from "./services/pushNotifications";
+// C-PERF-4 follow-up: load the push-notification service lazily. A static import
+// pulls the whole Firebase SDK (firebase/app + firebase/messaging) into the main
+// entry chunk, so every visitor downloads it on first paint even though push only
+// matters for authenticated users who grant permission. Importing it on demand
+// inside the effects below moves Firebase into its own chunk, off the critical path.
+const loadPush = () => import("./services/pushNotifications");
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -107,8 +112,10 @@ const App = () => {
   useEffect(() => {
     // Let push-notification deep links (iOS native bridge) navigate in-SPA
     // instead of doing a full page reload.
-    setPushNavigator((path) => navigate(path));
-    return () => setPushNavigator(null);
+    void loadPush().then((m) => m.setPushNavigator((path) => navigate(path)));
+    return () => {
+      void loadPush().then((m) => m.setPushNavigator(null));
+    };
   }, [navigate]);
 
   useEffect(() => {
@@ -119,12 +126,13 @@ const App = () => {
     // "navigates only after a refresh"). Triggers: mount, visibilitychange,
     // window focus, and the PUSH_NAVIGATE message as a fast-path nudge. The
     // consumer deletes the stash, so multiple triggers never double-navigate.
-    void consumePendingPushRoute();
+    const consumeRoute = () => void loadPush().then((m) => m.consumePendingPushRoute());
+    consumeRoute();
 
     const onVisible = () => {
-      if (document.visibilityState === "visible") void consumePendingPushRoute();
+      if (document.visibilityState === "visible") consumeRoute();
     };
-    const onFocus = () => void consumePendingPushRoute();
+    const onFocus = () => consumeRoute();
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onFocus);
 
@@ -132,7 +140,7 @@ const App = () => {
     if ("serviceWorker" in navigator) {
       onSwMessage = (event: MessageEvent) => {
         const msg = event.data as { type?: string } | null;
-        if (msg && msg.type === "PUSH_NAVIGATE") void consumePendingPushRoute();
+        if (msg && msg.type === "PUSH_NAVIGATE") consumeRoute();
       };
       navigator.serviceWorker.addEventListener("message", onSwMessage);
       // addEventListener('message') does not start the client message queue;
@@ -188,7 +196,19 @@ const App = () => {
     // user already granted notifications, otherwise prompts on their next
     // gesture. No-op unless Firebase env is configured + push is supported.
     if (isAuthenticated && token) {
-      return setupPushForUser();
+      // The service's setupPushForUser() returns a cleanup fn, but the dynamic
+      // import resolves async — capture it and run it when the effect tears down
+      // (even if teardown happens before the import settles).
+      let cleanup: (() => void) | undefined;
+      let cancelled = false;
+      void loadPush().then((m) => {
+        if (cancelled) return;
+        cleanup = m.setupPushForUser();
+      });
+      return () => {
+        cancelled = true;
+        cleanup?.();
+      };
     }
   }, [isAuthenticated, token]);
 
