@@ -36,8 +36,6 @@ const COMING_SOON = false;
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 const CreateWardPage = lazy(() => import("./pages/CreateWardPage"));
-const ReportsListPage = lazy(() => import("./pages/admin/ReportsListPage"));
-const ReportDetailsPage = lazy(() => import("./pages/admin/ReportDetailsPage"));
 const AdminUsersListPage = lazy(() => import("./pages/admin/AdminUsersListPage"));
 const AdminUserDetailsPage = lazy(() => import("./pages/admin/AdminUserDetailsPage"));
 const AdminCreateUserPage = lazy(() => import("./pages/admin/AdminCreateUserPage"));
@@ -334,8 +332,6 @@ const App = () => {
             <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="wards/create" element={<CreateWardPage />} />
             <Route path="voting-results" element={<VotingResultPage />} />
-            <Route path="reports" element={<ReportsListPage />} />
-            <Route path="reports/:id" element={<ReportDetailsPage />} />
             <Route path="users" element={<AdminUsersListPage />} />
             <Route path="users/create" element={<AdminCreateUserPage />} />
             <Route path="users/:id/edit" element={<AdminEditUserPage />} />
