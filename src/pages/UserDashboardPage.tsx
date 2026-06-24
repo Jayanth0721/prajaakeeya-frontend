@@ -32,6 +32,7 @@ import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
+import { COOKIE_AUTH } from '../config/authMode';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
 import { fetchAllWards } from '../services/wardService';
@@ -289,7 +290,11 @@ const UserDashboardPage = () => {
       } catch (apiErr) {
         const resp = await fetch(src, {
           method: 'GET',
+          // Cookie mode: no token to send as a header; authenticate via the
+          // httpOnly session cookie instead (raw fetch omits cookies unless
+          // credentials:'include' is set). Legacy mode keeps the Bearer header.
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          credentials: COOKIE_AUTH ? 'include' : 'same-origin',
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         blob = await resp.blob();
