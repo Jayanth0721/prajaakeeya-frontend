@@ -198,7 +198,9 @@ const App = () => {
     // Wire web push (FCM) for the signed-in user: registers silently if the
     // user already granted notifications, otherwise prompts on their next
     // gesture. No-op unless Firebase env is configured + push is supported.
-    if (isAuthenticated && token) {
+    // Cookie mode has no client-side token, so gate on isAuthenticated alone —
+    // requiring `token` here would silently disable push for cookie-auth users.
+    if (isAuthenticated && (COOKIE_AUTH || token)) {
       // The service's setupPushForUser() returns a cleanup fn, but the dynamic
       // import resolves async — capture it and run it when the effect tears down
       // (even if teardown happens before the import settles).
