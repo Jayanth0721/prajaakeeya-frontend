@@ -351,7 +351,7 @@ const App = () => {
             />
             <Route path="registered-aspirants" element={<AdminAspirantListPage />} />
             <Route path="registered-aspirants/:id" element={<AdminUserDetailsPage />} />
-            <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
+            <Route path="users/:id" element={<AdminUserDetailsPage />} />
           </Route>
 
           {/* Standalone onboarding route — auth required, no UserLayout chrome */}
