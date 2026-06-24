@@ -12,6 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
+import { COOKIE_AUTH } from "./config/authMode";
 // C-PERF-4 follow-up: load the push-notification service lazily. A static import
 // pulls the whole Firebase SDK (firebase/app + firebase/messaging) into the main
 // entry chunk, so every visitor downloads it on first paint even though push only
@@ -156,8 +157,12 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // On page reload / first mount, if we have a persisted token, fetch fresh user data
-    if (token) {
+    // On page reload / first mount, restore the session by fetching fresh user
+    // data. Legacy mode only bothers when a token was persisted. Cookie mode has
+    // no client-side token — the httpOnly session cookie is the only signal —
+    // so we always ask /auth/me, which returns the user if the cookie is valid
+    // or 401s (→ interceptor handles refresh/logout) if not.
+    if (COOKIE_AUTH || token) {
       void fetchProfile();
     }
   }, [token, fetchProfile]);
