@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+﻿import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar, Box, Toolbar, Typography, Button, Container, IconButton, useTheme, Avatar, Paper, BottomNavigation, BottomNavigationAction,
 } from '@mui/material';
@@ -20,8 +20,8 @@ import LanguageSelector from '../components/LanguageSelector';
 import RainEffect from '../components/RainEffect';
 import AppFooter from '../components/AppFooter';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 const GuestLayout = () => {
   const { t } = useTranslation();

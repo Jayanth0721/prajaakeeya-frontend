@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box, Typography, CircularProgress, Avatar, Card, CardContent,
@@ -32,8 +32,8 @@ import { getAspirantById } from '../services/aspirantService';
 import { BRAND } from '../theme';
 import SopAgreementCard from '../components/aspirant/SopAgreementCard';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 // blocking handoff to native apps (Instagram, Facebook, etc.). Navigate the current
 // window instead — iOS then hands the URL off to the right app.
 const openExternal = (url: string, e?: React.MouseEvent) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box, Container, Typography, Button, useTheme } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useThemeStore from '../../store/useThemeStore';
@@ -18,8 +18,8 @@ const GuestPlaceholderPage: React.FC<GuestPlaceholderPageProps> = ({ title }) =>
   const isUser = location.pathname.startsWith('/user');
   const dashboardPath = isUser ? '/user/dashboard' : '/guest/dashboard';
 
-  const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-  const FF_BODY = "'Absans', 'Lora', serif";
+  const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+  const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
   const FF = FF_BODY;
 
   return (

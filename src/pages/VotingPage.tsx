@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
@@ -190,8 +190,8 @@ const VotingPage = () => {
     setConfirmOpen(false);
   };
 
-  const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-  const FF_BODY = "'Absans', 'Lora', serif";
+  const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+  const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
   const FF = FF_BODY;
   const panelBg = isDark
     ? 'linear-gradient(155deg, rgba(20,24,34,0.95) 0%, rgba(13,17,28,0.96) 100%)'

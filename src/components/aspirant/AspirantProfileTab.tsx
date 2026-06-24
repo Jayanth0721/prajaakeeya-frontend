@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -40,8 +40,8 @@ const AspirantProfileTab: React.FC<AspirantProfileTabProps> = ({ aspirantProfile
     const [continuing, setContinuing] = useState(false);
     const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
 
-    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-    const FF_BODY = "'Absans', 'Lora', serif";
+    const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+    const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
     const FF = FF_BODY;
     const isDark = theme.palette.mode === 'dark';
     const cardBg = theme.palette.background.paper;

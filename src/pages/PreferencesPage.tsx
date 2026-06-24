@@ -14,8 +14,8 @@ import usePreferenceStore, { type LayoutVariant } from '../store/usePreferenceSt
 import useThemeStore from '../store/useThemeStore';
 import { BRAND } from '../theme';
 
-const FF_HEAD = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEAD = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 /* ─── SVG Previews ───────────────────────────────────────────────────── */
 interface PreviewProps { active: boolean; isDark: boolean; locked: boolean }
@@ -94,7 +94,6 @@ interface OptionCardProps {
   title: string;
   description: string;
   active: boolean;
-  locked: boolean;   // another option is already selected
   onSelect: () => void;
   isDark: boolean;
   accentColor: string;
@@ -104,47 +103,40 @@ interface OptionCardProps {
 }
 
 const OptionCard: React.FC<OptionCardProps> = ({
-  title, description, active, locked, onSelect, isDark, accentColor, badgeLabel, preview, index,
+  title, description, active, onSelect, isDark, accentColor, badgeLabel, preview, index,
 }) => {
   const border = active
     ? `2px solid ${accentColor}`
-    : locked
-      ? isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.05)'
-      : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)';
+    : isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)';
 
   const cardBg = active
     ? isDark ? `linear-gradient(145deg, #1A1D22, #161920)` : `linear-gradient(145deg, #FFFFFF, #F8FAFC)`
-    : locked
-      ? isDark ? 'rgba(14,16,18,0.55)' : 'rgba(240,242,245,0.6)'
-      : isDark ? '#161920' : '#FFFFFF';
+    : isDark ? '#161920' : '#FFFFFF';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: locked ? 0.45 : 1, y: 0 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: index * 0.07, ease: 'easeOut' }}
-      whileHover={locked ? {} : { scale: 1.012, transition: { duration: 0.15 } }}
+      whileHover={{ scale: 1.012, transition: { duration: 0.15 } }}
       style={{ height: '100%' }}
     >
       <Box
-        onClick={locked ? undefined : onSelect}
+        onClick={onSelect}
         sx={{
           height: '100%',
-          cursor: locked ? 'not-allowed' : 'pointer',
+          cursor: 'pointer',
           background: cardBg,
           borderRadius: '16px',
           border,
           boxShadow: active
             ? `0 8px 32px ${accentColor}28, 0 2px 8px ${accentColor}18`
-            : locked
-              ? 'none'
-              : isDark ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 16px rgba(0,0,0,0.06)',
+            : isDark ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 16px rgba(0,0,0,0.06)',
           transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          filter: locked ? 'grayscale(0.35)' : 'none',
         }}
       >
         {/* Active top glow bar */}
@@ -164,52 +156,6 @@ const OptionCard: React.FC<OptionCardProps> = ({
                 zIndex: 2,
               }}
             />
-          )}
-        </AnimatePresence>
-
-        {/* Lock overlay when blocked */}
-        <AnimatePresence>
-          {locked && (
-            <motion.div
-              key="lock-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: 10,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: isDark
-                  ? 'rgba(10,12,14,0.55)'
-                  : 'rgba(240,242,245,0.6)',
-                backdropFilter: 'blur(2px)',
-                borderRadius: '16px',
-                flexDirection: 'column',
-                gap: 6,
-              }}
-            >
-              <Box sx={{
-                width: 40, height: 40, borderRadius: '12px',
-                background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)',
-                border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <LockIcon sx={{ fontSize: 20, color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.3)' }} />
-              </Box>
-              <Typography sx={{
-                fontFamily: FF_HEAD, fontWeight: 700, fontSize: '0.72rem',
-                color: isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                textAlign: 'center',
-                px: 2,
-              }}>
-                Deselect active style to unlock
-              </Typography>
-            </motion.div>
           )}
         </AnimatePresence>
 
@@ -420,7 +366,7 @@ const PreferencesPage: React.FC = () => {
               </Box>
             </Box>
             <Typography sx={{ fontFamily: FF_BODY, color: isDark ? 'rgba(226,226,227,0.55)' : '#6B7280', fontSize: '0.95rem', maxWidth: 580, lineHeight: 1.7, mt: 1 }}>
-              Choose one layout style for your home page. Selecting a style locks the others — click the active card again to deselect it.
+              Choose one layout style for your home page. Selecting a style instantly updates the appearance — click the active card again to deselect it.
             </Typography>
 
             {/* Status banner */}
@@ -435,7 +381,7 @@ const PreferencesPage: React.FC = () => {
                   }}>
                     <Box sx={{ width: 8, height: 8, borderRadius: '50%', background: BRAND.red, boxShadow: `0 0 8px ${BRAND.red}` }} />
                     <Typography sx={{ fontFamily: FF_HEAD, fontWeight: 700, fontSize: '0.82rem', color: BRAND.red }}>
-                      &quot;{options.find(o => o.id === activeLayout)?.title}&quot; is active — 3 options locked
+                      &quot;{options.find(o => o.id === activeLayout)?.title}&quot; is active — click again to deselect
                     </Typography>
                   </Box>
                 </motion.div>
@@ -464,7 +410,6 @@ const PreferencesPage: React.FC = () => {
         <Grid container spacing={3}>
           {options.map((opt, i) => {
             const isActive = activeLayout === opt.id;
-            const isLocked = hasActive && !isActive;
             return (
               <Grid key={opt.id} size={{ xs: 12, sm: 6, lg: 3 }}>
                 <OptionCard
@@ -472,12 +417,11 @@ const PreferencesPage: React.FC = () => {
                   title={opt.title}
                   description={opt.description}
                   active={isActive}
-                  locked={isLocked}
                   onSelect={() => toggleLayout(opt.id)}
                   isDark={isDark}
                   accentColor={opt.accentColor}
                   badgeLabel={opt.badgeLabel}
-                  preview={<opt.Preview active={isActive} isDark={isDark} locked={isLocked} />}
+                  preview={<opt.Preview active={isActive} isDark={isDark} locked={false} />}
                   index={i}
                 />
               </Grid>
@@ -508,7 +452,7 @@ const PreferencesPage: React.FC = () => {
                 One style at a time — click to toggle
               </Typography>
               <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.82rem', color: isDark ? 'rgba(226,226,227,0.55)' : '#6B7280', lineHeight: 1.65 }}>
-                Selecting a layout immediately updates the home page and locks the other three styles. Click the active card a second time to deselect it and return to the default layout. Your choice is saved in local storage and persists across page refreshes.
+                Selecting a layout immediately updates the home page. Click any other card to instantly switch layouts, or click the active card a second time to deselect it and return to the default layout. Your choice is saved in local storage and persists across page refreshes.
               </Typography>
             </Box>
           </Box>

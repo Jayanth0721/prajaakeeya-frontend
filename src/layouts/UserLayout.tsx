@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -41,8 +41,8 @@ import AppFooter from '../components/AppFooter';
 
 import RainEffect from '../components/RainEffect';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 const UserLayout = () => {
   const { t } = useTranslation();

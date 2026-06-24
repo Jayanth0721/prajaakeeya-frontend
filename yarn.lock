@@ -1440,6 +1440,11 @@
   resolved "https://registry.npmjs.org/@firebase/webchannel-wrapper/-/webchannel-wrapper-1.0.6.tgz"
   integrity sha512-Vr/Mqu79dMwGRAyGbJ4uN4+BtXB3/mRTdzetD1daWNeG8QaWuzhhbG77GltO5c0yYmYls8i250iX73624GJd7Q==
 
+"@fontsource-variable/geist@^5.2.9":
+  version "5.2.9"
+  resolved "https://registry.npmjs.org/@fontsource-variable/geist/-/geist-5.2.9.tgz"
+  integrity sha512-TP+QSBG3wxKGPE33CbMy/L0Nu3qvJ6Fy81Yc4LnQ95xH+i+cfEp8fyU8/kfV14YwszxIFPhnoMTbjL71waVpyQ==
+
 "@grpc/grpc-js@~1.9.0":
   version "1.9.16"
   resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.9.16.tgz"

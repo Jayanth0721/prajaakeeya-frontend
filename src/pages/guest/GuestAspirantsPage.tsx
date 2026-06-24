@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import {
   Box, Typography, Card, CardContent, Avatar, CircularProgress, Stack, useTheme,
   TextField, Chip, Autocomplete, MenuItem,
@@ -24,8 +24,8 @@ import {
 import { fetchAspirantsByConstituency } from '../../services/aspirantService';
 import { useNavigate } from 'react-router-dom';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 
 const filterSx = (isDark: boolean) => ({

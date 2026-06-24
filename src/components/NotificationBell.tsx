@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { IconButton, Badge, SxProps, Theme } from '@mui/material';
 import {
   NotificationsNone as BellIcon,
@@ -11,8 +11,8 @@ import useAuthStore from '../store/useAuthStore';
 import { BRAND } from '../theme';
 import { getUnreadCount, NOTIFICATIONS_CHANGED_EVENT } from '../services/notificationService';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 interface NotificationBellProps {
   /** When provided, overrides the live fetched unread count. */

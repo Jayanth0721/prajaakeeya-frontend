@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
   Box, Typography, Card, CardContent, CircularProgress, Stack, useTheme,
   TextField, Chip, Autocomplete, MenuItem,
@@ -42,8 +42,8 @@ import garbageImg from '../../assets/images/garbage.webp';
 import streetLightImg from '../../assets/images/street-light.webp';
 import savePlanetImg from '../../assets/images/save-the-planet.webp';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 interface IssueCategory {
   name: string;

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+﻿import React, { useMemo, useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
     Box,
@@ -216,8 +216,8 @@ const CandidateDetailsPage: React.FC = () => {
 
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-    const FF_BODY = "'Absans', 'Lora', serif";
+    const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+    const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
     const FF = FF_BODY;
     const sectionCardSx = {
         borderRadius: 3,

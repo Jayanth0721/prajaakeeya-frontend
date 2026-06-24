@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Box, Container, Typography, useTheme, Card, CardContent, CircularProgress, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
 import useAuthStore from '../store/useAuthStore';
@@ -19,8 +19,8 @@ const SignedSopPage: React.FC = () => {
     const textHigh = isDark ? 'rgba(255,255,255,0.66)' : 'rgba(17,24,39,0.72)';
     const textFaint = isDark ? 'rgba(255,255,255,0.38)' : 'rgba(17,24,39,0.42)';
     const BORDER = isDark ? 'rgba(245,168,0,0.20)' : 'rgba(245,168,0,0.35)';
-    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-    const FF_BODY = "'Absans', 'Lora', serif";
+    const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+    const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
     const FF = FF_BODY;
 
     // page uses layout header; no hero background here

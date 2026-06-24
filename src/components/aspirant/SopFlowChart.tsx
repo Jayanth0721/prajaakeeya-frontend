@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+﻿import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,8 +26,8 @@ type ColorKey = keyof typeof C;
 const GOLD = 'rgba(245,168,0,0.75)';
 const GOLDD = 'rgba(245,168,0,0.45)';
 const GOLDB = 'rgba(245,168,0,0.82)';
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 const DARK = '#08060A';
 

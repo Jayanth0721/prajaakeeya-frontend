@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+﻿import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, CircularProgress, Table, TableHead, TableBody, TableRow, TableCell, TextField, Button, Avatar, Dialog, DialogTitle, DialogContent, DialogActions, Stack, Card, CardContent, IconButton, Divider, useTheme, useMediaQuery, Snackbar, Alert } from '@mui/material';
 import { Apartment as ApartmentIcon, Report as ReportIcon, MoreVert as MoreVertIcon, Close as CloseIcon, AttachFile as AttachFileIcon, Delete as DeleteIcon, Person as PersonIcon, Warning as WarningIcon } from '@mui/icons-material';
@@ -10,8 +10,8 @@ import useSnackbar from '../hooks/useSnackbar';
 
 const WardVotersPage: React.FC = () => {
     const { t, i18n } = useTranslation();
-    const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-    const FF_BODY = "'Absans', 'Lora', serif";
+    const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+    const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
     const FF = FF_BODY;
     const isKannada = (i18n.language || '').startsWith('kn');
     const navigate = useNavigate();

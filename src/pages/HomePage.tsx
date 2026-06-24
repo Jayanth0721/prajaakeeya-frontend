@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Box, Grid, Container, useTheme, Typography, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -382,7 +382,7 @@ const HomePage: React.FC = () => {
                 fontSize: '10px',
                 fontWeight: 800,
                 color: '#fff',
-                fontFamily: "'Round 8', sans-serif",
+                fontFamily: "'Heming', 'Geist Variable', 'Geist', sans-serif",
               }}
             >
               1
@@ -417,10 +417,10 @@ const HomePage: React.FC = () => {
           borderRight: isRight ? `4px solid ${BRAND.yellow}` : 'none',
           transition: 'all 0.4s ease',
         }}>
-          <Typography variant="overline" sx={{ fontFamily: "'Round 8', 'Space Grotesk', sans-serif", fontWeight: 700, letterSpacing: 3, color: '#C8180A' }}>
+          <Typography variant="overline" sx={{ fontFamily: "'Heming', 'Geist Variable', 'Geist', sans-serif", fontWeight: 700, letterSpacing: 3, color: '#C8180A' }}>
             {t('pages.landing.homePage.title')}
           </Typography>
-          <Typography variant="h3" sx={{ fontFamily: "'Round 8', 'Space Grotesk', sans-serif", fontWeight: 800, mt: 1, fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
+          <Typography variant="h3" sx={{ fontFamily: "'Heming', 'Geist Variable', 'Geist', sans-serif", fontWeight: 800, mt: 1, fontSize: { xs: '1.75rem', md: '2.5rem' } }}>
             {(() => {
               const text = t('pages.landing.animatedSubtitle', { defaultValue: 'Every citizen shapes our future.' });
               if (text.includes("citizen")) {
@@ -530,10 +530,10 @@ const HomePage: React.FC = () => {
                   <Box component="img" src={prajakeeyaLogo} alt="Prajaakeeya Logo" sx={{ height: '100%', width: '100%', objectFit: 'contain' }} />
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                  <Typography variant="caption" sx={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'rgba(255,255,255,0.75)', fontWeight: 800, fontFamily: "'Absans', 'Lora', serif", lineHeight: 1.1 }}>
+                  <Typography variant="caption" sx={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'rgba(255,255,255,0.75)', fontWeight: 800, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.1 }}>
                     Prajaakeeya Governance
                   </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 800, color: BRAND.green, fontFamily: "'Absans', 'Lora', serif", lineHeight: 1.2, mt: '2px' }}>
+                  <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 800, color: BRAND.green, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.2, mt: '2px' }}>
                     {t('pages.landing.homePage.proceed')}
                   </Typography>
                 </Box>

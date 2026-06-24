@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Button, Typography, Stack } from '@mui/material';
 import { ArrowBack as ArrowBackIcon, AccountTree as AccountTreeIcon } from '@mui/icons-material';
@@ -9,8 +9,8 @@ import SopFlowChart from '../components/aspirant/SopFlowChart';
 import { BRAND } from '../theme';
 import useAuthStore from '../store/useAuthStore';
 import { fetchVotingWindow } from '../services/voteService';
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 
 const SopPage = () => {

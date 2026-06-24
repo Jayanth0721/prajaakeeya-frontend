@@ -13,8 +13,8 @@ import useThemeStore from '../../store/useThemeStore';
 import usePreferenceStore from '../../store/usePreferenceStore';
 import { ArrowForwardRounded as ArrowIcon, AppRegistration as RegisterIcon, HomeRounded as HomeIcon, TuneRounded as TuneIcon } from '@mui/icons-material';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 const CSSStyles = () => (
   <style dangerouslySetInnerHTML={{ __html: `
@@ -118,28 +118,53 @@ const GuestDashboardPage = () => {
     {
       title: t('userDashboard.actions.candidates', { defaultValue: 'View Aspirants' }),
       desc: t('userDashboard.actions.candidatesDesc', { defaultValue: 'View All Aspirants from Your Ward' }),
-      icon: <img src={leaderImg} alt="view aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="11" r="5" stroke={BRAND.red} strokeWidth="1.6" fill="rgba(200,24,10,0.1)"/>
+          <path d="M5 26c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke={BRAND.red} strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="22" cy="9" r="3" stroke={BRAND.red} strokeWidth="1.2" fill="rgba(200,24,10,0.08)" opacity="0.5" strokeDasharray="2 1.5"/>
+        </svg>
+      ),
       path: '/guest/aspirants',
       color: BRAND.red,
     },
     {
       title: t('userDashboard.actions.civicIssues', { defaultValue: 'Public Issues' }),
       desc: t('userDashboard.actions.civicIssuesDesc', { defaultValue: 'Report Your Public Issues' }),
-      icon: <img src={alertImg} alt="civic issues" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="12" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.08)"/>
+          <path d="M15 9v8" stroke="#F5A800" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="15" cy="21" r="1.2" fill="#F5A800"/>
+        </svg>
+      ),
       path: '/guest/civic-issues',
       color: '#F5A800',
     },
     {
       title: t('userDashboard.actions.howUPPWorks', { defaultValue: 'SOP' }),
       desc: t('userDashboard.actions.howWorksTitle', { defaultValue: 'Check the SOP to understand how the Prajaakeeya system works.' }),
-      icon: <img src={sopImg} alt="sop" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="11" stroke={BRAND.red} strokeWidth="1.5" fill="rgba(200,24,10,0.08)"/>
+          <path d="M11.5 12a3.5 3.5 0 0 1 7 0c0 2-2 3-2 5" stroke={BRAND.red} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="15" cy="22" r="1.2" fill={BRAND.red}/>
+        </svg>
+      ),
       path: '/guest/sop',
       color: BRAND.red,
     },
     {
       title: t('userDashboard.actions.registeredAspirants', { defaultValue: 'Registered Aspirants' }),
       desc: t('userDashboard.actions.registeredAspirantsDesc', { defaultValue: 'See all registered aspirants' }),
-      icon: <img src={employeesImg} alt="registered aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)"/>
+          <path d="M3 25c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="21" cy="10" r="3" stroke="#F5A800" strokeWidth="1.4" fill="rgba(245,168,0,0.08)" opacity="0.6"/>
+          <path d="M23 25c0-3.314-2.686-6-6-6" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+        </svg>
+      ),
       path: '/guest/registered-aspirants',
       color: '#F5A800',
     },

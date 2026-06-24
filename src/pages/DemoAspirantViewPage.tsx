@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box, Typography, Avatar, Card, CardContent,
@@ -25,8 +25,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { BRAND } from '../theme';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 
 const StarRating: React.FC<{ value: number; total?: number }> = ({ value, total = 5 }) => {

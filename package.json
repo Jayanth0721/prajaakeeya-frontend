@@ -16,6 +16,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@fontsource-variable/geist": "^5.2.9",
     "@hookform/resolvers": "^3.3.4",
     "@mui/icons-material": "9.1.1",
     "@mui/material": "9.1.1",

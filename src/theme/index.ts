@@ -98,44 +98,44 @@ export const getTheme = (mode: 'light' | 'dark' | 'grey') =>
       },
 
       // ── Typography ───────────────────────────────────────────────────────
-      // Space Grotesk is used for headings/buttons (Rogan look), Lora for body/text (Etna look).
+      // Heming is used for headings/buttons, Geist for body/text.
       typography: {
         fontFamily:
-          '"Absans", "Lora", "Noto Sans Kannada", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          '"Geist Variable", "Geist", "Noto Sans Kannada", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 
         h1: {
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
           fontWeight: 800,
           fontSize: '2.8rem',
           lineHeight: 1.15,
           letterSpacing: '-0.03em',
         },
         h2: {
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
           fontWeight: 700,
           fontSize: '2.25rem',
           lineHeight: 1.2,
           letterSpacing: '-0.02em',
         },
         h3: {
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
           fontWeight: 600,
           fontSize: '1.9rem',
           letterSpacing: '-0.02em',
         },
         h4: {
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
           fontWeight: 600,
           fontSize: '1.55rem',
           letterSpacing: '-0.01em',
         },
         h5: { 
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif', 
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif', 
           fontWeight: 600, 
           fontSize: '1.25rem' 
         },
         h6: { 
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif', 
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif', 
           fontWeight: 600, 
           fontSize: '1.1rem' 
         },
@@ -144,7 +144,7 @@ export const getTheme = (mode: 'light' | 'dark' | 'grey') =>
         body2: { fontSize: '0.875rem', lineHeight: 1.6 },
 
         button: {
-          fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+          fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
           textTransform: 'none',
           fontWeight: 600,
           letterSpacing: '0.03em',
@@ -268,7 +268,7 @@ export const getTheme = (mode: 'light' | 'dark' | 'grey') =>
             root: { 
               borderRadius: 4, 
               fontWeight: 600,
-              fontFamily: '"Round 8", "Space Grotesk", sans-serif',
+              fontFamily: '"Heming", "Geist Variable", "Geist", sans-serif',
             },
           },
           variants: [

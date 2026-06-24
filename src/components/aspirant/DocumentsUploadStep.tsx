@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import React, { useEffect, useState } from 'react';
 import {
@@ -27,8 +27,8 @@ const GOLD = '#F5A800';
 const GOLDD = 'rgba(245,168,0,0.45)';
 const DARK = '#0D0F12';
 const BORDER = 'rgba(245,168,0,0.18)';
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 
 const containerVariants = {

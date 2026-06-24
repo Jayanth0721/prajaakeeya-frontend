@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import {
     Box, Typography, CircularProgress, Table, TableHead, TableBody, TableRow, TableCell,
     TextField, Avatar, Card, CardContent, Stack, useTheme, useMediaQuery, Pagination, Chip, InputAdornment
@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { getAllAspirants } from '../../services/aspirantService';
 import { BRAND } from '../../theme';
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 const FF = FF_BODY;
 
 const GuestRegisteredAspirantsPage = () => {

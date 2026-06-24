@@ -1,4 +1,4 @@
-/**
+﻿/**
  * KattePage.tsx
  *
  * Katte (ಕಟ್ಟೆ) — Prajaakeeya's civic discussion forum.
@@ -65,8 +65,8 @@ import { BRAND } from '../theme';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-const FF_BODY = "'Absans', 'Lora', serif";
+const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 const ALL_CATEGORIES: { value: KatteCategory | 'all'; label: string }[] = [
   { value: 'all', label: 'All Topics' },

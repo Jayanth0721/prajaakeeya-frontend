@@ -145,7 +145,14 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
       description: t('userDashboard.actions.registeredAspirantsDesc') || 'See all registered aspirants',
-      icon: <img src={employeesImg} alt="aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)"/>
+          <path d="M3 25c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="21" cy="10" r="3" stroke="#F5A800" strokeWidth="1.4" fill="rgba(245,168,0,0.08)" opacity="0.6"/>
+          <path d="M23 25c0-3.314-2.686-6-6-6" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+        </svg>
+      ),
       path: `/user/registered-aspirants`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -153,7 +160,13 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.civicIssues') || 'Public Issues',
       description: t('userDashboard.actions.civicIssuesDesc') || 'Report and track issues in your ward',
-      icon: <img src={alertImg} alt="civic issues" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="12" stroke="#C8180A" strokeWidth="1.6" fill="rgba(200,24,10,0.08)"/>
+          <path d="M15 9v8" stroke="#C8180A" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="15" cy="21" r="1.2" fill="#C8180A"/>
+        </svg>
+      ),
       path: '/user/civic-issues',
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -164,7 +177,16 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants',
       description: t('userDashboard.actions.myLokSabhaAspirantsDesc') || 'Aspirants in your Lok Sabha constituency',
-      icon: <img src={leaderImg} alt="lok sabha aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="3" y="20" width="24" height="3" rx="1" fill="rgba(37,58,154,0.15)" stroke="#253A9A" strokeWidth="1.4"/>
+          <path d="M15 5 C8 5 4 13 4 20 h22 C26 13 22 5 15 5z" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.1)" strokeLinejoin="round"/>
+          <line x1="15" y1="5" x2="15" y2="20" stroke="#253A9A" strokeWidth="1.2" strokeDasharray="2 2"/>
+          <line x1="9" y1="8" x2="9" y2="20" stroke="#253A9A" strokeWidth="1" strokeDasharray="2 2" opacity="0.6"/>
+          <line x1="21" y1="8" x2="21" y2="20" stroke="#253A9A" strokeWidth="1" strokeDasharray="2 2" opacity="0.6"/>
+          <rect x="13" y="3" width="4" height="4" rx="1" fill="#253A9A"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=lok_sabha`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -172,7 +194,15 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
       description: t('userDashboard.actions.myStateAssemblyAspirantsDesc') || 'Aspirants in your Assembly constituency',
-      icon: <img src={advisorImg} alt="state assembly aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="5" y="12" width="20" height="13" rx="1.5" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
+          <rect x="10" y="18" width="4" height="7" rx="1" fill="rgba(34,197,94,0.2)" stroke="#22c55e" strokeWidth="1.2"/>
+          <rect x="16" y="18" width="4" height="7" rx="1" fill="rgba(34,197,94,0.2)" stroke="#22c55e" strokeWidth="1.2"/>
+          <path d="M3 12h24" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+          <path d="M15 4l10 8H5l10-8z" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.12)" strokeLinejoin="round"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=state_assembly`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -184,7 +214,16 @@ const UserDashboardPage = () => {
     ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
       title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
       description: t('userDashboard.actions.myMunicipalCorporationAspirantsDesc') || 'Aspirants in your corporation ward',
-      icon: <img src={staffImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="4" y="14" width="22" height="12" rx="1.5" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)"/>
+          <rect x="8" y="18" width="3" height="4" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <rect x="13.5" y="17" width="3" height="5" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <rect x="19" y="18" width="3" height="4" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <path d="M2 14h26M8 14V9M15 14V6M22 14V9" stroke="#F5A800" strokeWidth="1.3" strokeLinecap="round"/>
+          <rect x="12" y="4" width="6" height="4" rx="1" fill="#F5A800" opacity="0.7"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=municipal_corporation`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -192,7 +231,14 @@ const UserDashboardPage = () => {
     ...((user as any)?.gramPanchayatConstituency != null ? [{
       title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
       description: t('userDashboard.actions.myGramPanchayatAspirantsDesc') || 'Aspirants in your Gram Panchayat',
-      icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M5 26 Q8 16 15 12 Q22 16 25 26" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)" strokeLinejoin="round"/>
+          <circle cx="15" cy="10" r="3.5" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.15)"/>
+          <path d="M10 20c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+          <line x1="3" y1="26" x2="27" y2="26" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=gram_panchayat`,
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -200,7 +246,15 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.registerAspirant') || 'Register as Aspirant',
       description: t('userDashboard.actions.registerAspirantDesc') || 'Apply to become an aspirant in your ward',
-      icon: <img src={managerImg} alt="register aspirant" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="13" cy="10" r="4.5" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.1)"/>
+          <path d="M4 26c0-4.97 4.03-9 9-9" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="22" cy="21" r="6" fill="rgba(245,168,0,0.12)" stroke="#F5A800" strokeWidth="1.6"/>
+          <line x1="22" y1="18" x2="22" y2="24" stroke="#F5A800" strokeWidth="1.8" strokeLinecap="round"/>
+          <line x1="19" y1="21" x2="25" y2="21" stroke="#F5A800" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      ),
       path: '/user/aspirants/register',
       variant: 'contained' as const,
       color: 'primary' as const,
@@ -208,7 +262,13 @@ const UserDashboardPage = () => {
     {
       title: t('userDashboard.actions.howUPPWorks') || 'How Prajakeeya Works',
       description: t('userDashboard.actions.howWorksTitle') || 'Learn the Prajakeeya SOP and how the system works.',
-      icon: <img src={sopImg} alt="sop" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="11" stroke="#C8180A" strokeWidth="1.5" fill="rgba(200,24,10,0.08)"/>
+          <path d="M11.5 12a3.5 3.5 0 0 1 7 0c0 2-2 3-2 5" stroke="#C8180A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="15" cy="22" r="1.2" fill="#C8180A"/>
+        </svg>
+      ),
       path: '/user/sop',
       variant: 'outlined' as const,
       color: 'primary' as const
@@ -218,7 +278,16 @@ const UserDashboardPage = () => {
       description: isKannada
         ? 'ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಮತ್ತು ಸಕ್ರಿಯ ನಾಗರಿಕರ ತಂಡವನ್ನು ಸೇರಿಕೊಳ್ಳಿ.'
         : 'Join our team of volunteers and active citizens.',
-      icon: <img src={employeesImg} alt="karyakartas" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="8" cy="11" r="3" stroke="#253A9A" strokeWidth="1.4" fill="rgba(37,58,154,0.1)"/>
+          <path d="M2 24c0-3.314 2.686-6 6-6" stroke="#253A9A" strokeWidth="1.4" strokeLinecap="round"/>
+          <circle cx="15" cy="10" r="3.5" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.15)"/>
+          <path d="M7 24c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#253A9A" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="22" cy="11" r="3" stroke="#253A9A" strokeWidth="1.4" fill="rgba(37,58,154,0.1)"/>
+          <path d="M24 18c3.314 0 6 2.686 6 6" stroke="#253A9A" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: '/user/karyakartas',
       variant: 'outlined' as const,
       color: 'secondary' as const
@@ -228,42 +297,79 @@ const UserDashboardPage = () => {
   const aspirantActions = [
     {
       title: t('userDashboard.actions.myProfile') || 'My Profile',
-      icon: <img src={userImg} alt="my profile" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="11" r="5" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.1)"/>
+          <path d="M5 26c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="22" cy="9" r="3" stroke="#F5A800" strokeWidth="1.2" fill="rgba(245,168,0,0.08)" opacity="0.5" strokeDasharray="2 1.5"/>
+        </svg>
+      ),
       path: '/user/dashboard/profile',
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: t('userDashboard.actions.civicIssues') || 'Public Issues',
-      icon: <img src={alertImg} alt="civic issues" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="12" stroke="#C8180A" strokeWidth="1.6" fill="rgba(200,24,10,0.08)"/>
+          <path d="M15 9v8" stroke="#C8180A" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="15" cy="21" r="1.2" fill="#C8180A"/>
+        </svg>
+      ),
       path: '/user/civic-issues',
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: t('userDashboard.actions.howUPPWorks') || 'How Prajakeeya Works',
-      icon: <img src={sopImg} alt="sop" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="11" stroke="#C8180A" strokeWidth="1.5" fill="rgba(200,24,10,0.08)"/>
+          <path d="M11.5 12a3.5 3.5 0 0 1 7 0c0 2-2 3-2 5" stroke="#C8180A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+          <circle cx="15" cy="22" r="1.2" fill="#C8180A"/>
+        </svg>
+      ),
       path: '/user/sop',
       variant: 'outlined' as const,
       color: 'primary' as const,
     },
     {
       title: t('userDashboard.actions.meetCitizens') || 'Meet Citizens',
-      icon: <img src={meetImg} alt="meet citizens" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="4" y="8" width="22" height="16" rx="3" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
+          <circle cx="11" cy="15" r="3" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.15)"/>
+          <circle cx="19" cy="15" r="3" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.15)"/>
+          <path d="M14 15h2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: '/user/dashboard/posts',
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: t('userDashboard.actions.videoMeetings') || 'Video Meetings',
-      icon: <img src={videoCameraImg} alt="video meetings" width={120} height={120} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="3" y="9" width="18" height="13" rx="2.5" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.08)"/>
+          <path d="M21 13l6-3v10l-6-3v-4z" stroke="#253A9A" strokeWidth="1.4" strokeLinejoin="round" fill="rgba(37,58,154,0.12)"/>
+          <circle cx="9" cy="15" r="2" fill="rgba(37,58,154,0.3)" stroke="#253A9A" strokeWidth="1.2"/>
+        </svg>
+      ),
       path: '/user/dashboard/meetings',
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: t('userDashboard.actions.chatWithCitizens') || 'Chat with Citizens',
-      icon: <img src={chatImg} alt="chat with citizens" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M4 6h22a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9l-5 4V8a2 2 0 0 1 2-2z" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)" strokeLinejoin="round"/>
+          <line x1="9" y1="13" x2="21" y2="13" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round"/>
+          <line x1="9" y1="17" x2="17" y2="17" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: `/user/chat/${user?.aspirantId || ''}`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -272,14 +378,31 @@ const UserDashboardPage = () => {
     // page nudges them to /user/complete-profile if the constituency isn't set.
     {
       title: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants',
-      icon: <img src={leaderImg} alt="lok sabha aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="3" y="20" width="24" height="3" rx="1" fill="rgba(37,58,154,0.15)" stroke="#253A9A" strokeWidth="1.4"/>
+          <path d="M15 5 C8 5 4 13 4 20 h22 C26 13 22 5 15 5z" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.1)" strokeLinejoin="round"/>
+          <line x1="15" y1="5" x2="15" y2="20" stroke="#253A9A" strokeWidth="1.2" strokeDasharray="2 2"/>
+          <line x1="9" y1="8" x2="9" y2="20" stroke="#253A9A" strokeWidth="1" strokeDasharray="2 2" opacity="0.6"/>
+          <line x1="21" y1="8" x2="21" y2="20" stroke="#253A9A" strokeWidth="1" strokeDasharray="2 2" opacity="0.6"/>
+          <rect x="13" y="3" width="4" height="4" rx="1" fill="#253A9A"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=lok_sabha`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
-      icon: <img src={advisorImg} alt="state assembly aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="5" y="12" width="20" height="13" rx="1.5" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
+          <rect x="10" y="18" width="4" height="7" rx="1" fill="rgba(34,197,94,0.2)" stroke="#22c55e" strokeWidth="1.2"/>
+          <rect x="16" y="18" width="4" height="7" rx="1" fill="rgba(34,197,94,0.2)" stroke="#22c55e" strokeWidth="1.2"/>
+          <path d="M3 12h24" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+          <path d="M15 4l10 8H5l10-8z" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.12)" strokeLinejoin="round"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=state_assembly`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -288,14 +411,30 @@ const UserDashboardPage = () => {
     // saved one — a person belongs to exactly one local body, never both.
     ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
       title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
-      icon: <img src={staffImg} alt="municipal corporation aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="4" y="14" width="22" height="12" rx="1.5" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)"/>
+          <rect x="8" y="18" width="3" height="4" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <rect x="13.5" y="17" width="3" height="5" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <rect x="19" y="18" width="3" height="4" rx="0.8" fill="rgba(245,168,0,0.3)" stroke="#F5A800" strokeWidth="1.1"/>
+          <path d="M2 14h26M8 14V9M15 14V6M22 14V9" stroke="#F5A800" strokeWidth="1.3" strokeLinecap="round"/>
+          <rect x="12" y="4" width="6" height="4" rx="1" fill="#F5A800" opacity="0.7"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=municipal_corporation`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
     }] : []),
     ...((user as any)?.gramPanchayatConstituency != null ? [{
       title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
-      icon: <img src={meetImg} alt="gram panchayat aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M5 26 Q8 16 15 12 Q22 16 25 26" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)" strokeLinejoin="round"/>
+          <circle cx="15" cy="10" r="3.5" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.15)"/>
+          <path d="M10 20c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+          <line x1="3" y1="26" x2="27" y2="26" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: `/user/aspirantslist?type=gram_panchayat`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -310,14 +449,30 @@ const UserDashboardPage = () => {
     // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
-      icon: <img src={employeesImg} alt="registered aspirants" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)"/>
+          <path d="M3 25c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
+          <circle cx="21" cy="10" r="3" stroke="#F5A800" strokeWidth="1.4" fill="rgba(245,168,0,0.08)" opacity="0.6"/>
+          <path d="M23 25c0-3.314-2.686-6-6-6" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+        </svg>
+      ),
       path: `/user/registered-aspirants`,
       variant: 'outlined' as const,
       color: 'secondary' as const,
     },
     {
       title: isKannada ? 'ಕಾರ್ಯಕರ್ತರು' : 'Karyakartas',
-      icon: <img src={employeesImg} alt="karyakartas" width={30} height={30} />,
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="8" cy="11" r="3" stroke="#253A9A" strokeWidth="1.4" fill="rgba(37,58,154,0.1)"/>
+          <path d="M2 24c0-3.314 2.686-6 6-6" stroke="#253A9A" strokeWidth="1.4" strokeLinecap="round"/>
+          <circle cx="15" cy="10" r="3.5" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.15)"/>
+          <path d="M7 24c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#253A9A" strokeWidth="1.5" strokeLinecap="round"/>
+          <circle cx="22" cy="11" r="3" stroke="#253A9A" strokeWidth="1.4" fill="rgba(37,58,154,0.1)"/>
+          <path d="M24 18c3.314 0 6 2.686 6 6" stroke="#253A9A" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
       path: '/user/karyakartas',
       variant: 'outlined' as const,
       color: 'secondary' as const,
@@ -364,8 +519,8 @@ const UserDashboardPage = () => {
   // Aspirant registration is complete when role=aspirant and documentStatus=completed
   const isAspirantRegistrationComplete = isAspirant;
 
-  const FF_HEADING = "'Round 8', 'Space Grotesk', sans-serif";
-  const FF_BODY = "'Absans', 'Lora', serif";
+  const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
+  const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
   const isDark = theme.palette.mode === 'dark';
 
   // ── Theme-aware colour helpers ──────────────────────────────────────────
@@ -802,9 +957,40 @@ const UserDashboardPage = () => {
   // Aspirant-only quick tiles shown on the mobile home above the aspirants
   // list (same actions & icons as the desktop aspirant tiles).
   const aspirantQuickTiles = [
-    { title: t('userDashboard.actions.meetCitizens') || 'Meet Citizens', icon: <img src={meetImg} alt="meet citizens" width={30} height={30} />, path: '/user/dashboard/posts' },
-    { title: t('userDashboard.actions.videoMeetings') || 'Video Meetings', icon: <img src={videoCameraImg} alt="video meetings" width={82} height={82} style={{ objectFit: 'contain' }} />, path: '/user/dashboard/meetings' },
-    { title: t('userDashboard.actions.chatWithCitizens') || 'Chat with Citizens', icon: <img src={chatImg} alt="chat with citizens" width={30} height={30} />, path: `/user/chat/${user?.aspirantId || ''}` },
+    {
+      title: t('userDashboard.actions.meetCitizens') || 'Meet Citizens',
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="4" y="8" width="22" height="16" rx="3" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
+          <circle cx="11" cy="15" r="3" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.15)"/>
+          <circle cx="19" cy="15" r="3" stroke="#22c55e" strokeWidth="1.4" fill="rgba(34,197,94,0.15)"/>
+          <path d="M14 15h2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
+      path: '/user/dashboard/posts'
+    },
+    {
+      title: t('userDashboard.actions.videoMeetings') || 'Video Meetings',
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <rect x="3" y="9" width="18" height="13" rx="2.5" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.08)"/>
+          <path d="M21 13l6-3v10l-6-3v-4z" stroke="#253A9A" strokeWidth="1.4" strokeLinejoin="round" fill="rgba(37,58,154,0.12)"/>
+          <circle cx="9" cy="15" r="2" fill="rgba(37,58,154,0.3)" stroke="#253A9A" strokeWidth="1.2"/>
+        </svg>
+      ),
+      path: '/user/dashboard/meetings'
+    },
+    {
+      title: t('userDashboard.actions.chatWithCitizens') || 'Chat with Citizens',
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <path d="M4 6h22a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9l-5 4V8a2 2 0 0 1 2-2z" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)" strokeLinejoin="round"/>
+          <line x1="9" y1="13" x2="21" y2="13" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round"/>
+          <line x1="9" y1="17" x2="17" y2="17" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round"/>
+        </svg>
+      ),
+      path: `/user/chat/${user?.aspirantId || ''}`
+    },
   ];
   const mobileAspirantTiles = (
     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 1.5 }}>
