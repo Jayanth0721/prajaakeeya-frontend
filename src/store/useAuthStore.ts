@@ -186,10 +186,10 @@ const useAuthStore = create<AuthState>()(
         } catch (err) {
           console.warn('[auth] fetchProfile failed', err);
           // Cookie mode: /auth/me is the source of truth for "am I logged in".
-          // If it fails (no/expired session cookie) on load, reflect that as
-          // unauthenticated so the UI shows login instead of a stale persisted
-          // user. (The apiClient interceptor already attempts refresh first; a
-          // failure here means refresh didn't help / there was no session.)
+          // A 401 here simply means no/expired session, so reflect that as
+          // unauthenticated and let the UI route to login. /auth/me is a "soft"
+          // endpoint in the apiClient interceptor (no refresh, no logout/reload),
+          // so this catch is the ONLY place that reacts to it — no loop.
           if (COOKIE_AUTH) {
             set({ user: null, isAdmin: false, isAuthenticated: false });
             setSentryUser(null);

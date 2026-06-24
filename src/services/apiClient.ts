@@ -46,14 +46,24 @@ apiClient.interceptors.response.use(
   async (error) => {
     if (COOKIE_AUTH && error.response?.status === 401) {
       const original = error.config;
-      // Never try to refresh the refresh call itself, and only retry once.
+      // "Soft" auth endpoints: a 401 here is normal ("not logged in" / session
+      // gone) and is handled by the caller — it must NOT trigger refresh or the
+      // logout-with-reload machinery. /auth/me in particular is the session
+      // probe on every page load; treating its 401 as a hard logout caused an
+      // infinite loop (me → refresh → logout → reload → me …). The refresh and
+      // login endpoints are excluded too so we never try to refresh them.
       const isAuthEndpoint =
         typeof original?.url === 'string' &&
-        (original.url.includes('/auth/refresh') ||
+        (original.url.includes('/auth/me') ||
+          original.url.includes('/auth/refresh') ||
           original.url.includes('/auth/logout') ||
           original.url.includes('/auth/google/exchange') ||
           original.url.includes('/auth/admin/login'));
-      if (original && !original._retried && !isAuthEndpoint) {
+      if (isAuthEndpoint) {
+        // Let the caller (e.g. fetchProfile's catch) handle it quietly.
+        return Promise.reject(error);
+      }
+      if (original && !original._retried) {
         original._retried = true;
         try {
           refreshing ??= refreshClient.post('/auth/refresh');
@@ -62,16 +72,17 @@ apiClient.interceptors.response.use(
           return apiClient(original); // replay the original request with the fresh cookie
         } catch (refreshErr) {
           refreshing = null;
-          // Refresh expired/revoked → a real logout.
-          useAuthStore.getState().logout();
+          // Refresh expired/revoked → clear the session. Use clearSession (NOT
+          // logout) so we don't hard-reload the page here; reloading on a failed
+          // refresh is what sustained the request loop. The app's auth guards
+          // react to isAuthenticated=false and route to login.
+          useAuthStore.getState().clearSession();
           return Promise.reject(refreshErr);
         }
       }
-      // A request that 401s even AFTER a successful refresh-and-retry (or a 401
-      // on an auth endpoint itself) means the session is genuinely gone — log
-      // out rather than leave the user in a broken half-authenticated state.
+      // 401 again AFTER a successful refresh-and-retry → session genuinely gone.
       if (original?._retried) {
-        useAuthStore.getState().logout();
+        useAuthStore.getState().clearSession();
       }
     } else if (!COOKIE_AUTH && error.response?.status === 401) {
       // Legacy header-auth: a 401 means the stored token is no longer valid.
