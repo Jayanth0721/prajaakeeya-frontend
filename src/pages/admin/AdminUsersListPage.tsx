@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Box, Card, CardContent, Stack, Typography, TextField, InputAdornment,
-    Button, CircularProgress, Pagination, Grid, Dialog, DialogTitle,
-    DialogContent, DialogActions,
+    CircularProgress, Pagination, Grid,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +20,6 @@ const AdminUsersListPage: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [total, setTotal] = useState(0);
     const limit = 20;
-    const [confirm, setConfirm] = useState<{ open: boolean; id?: number; action?: 'block' | 'unblock' }>({ open: false });
     const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const load = useCallback((pageNum: number, searchTerm: string) => {
@@ -54,28 +52,6 @@ const AdminUsersListPage: React.FC = () => {
     const handlePageChange = (_: any, value: number) => {
         setPage(value);
         load(value, search);
-    };
-
-    const handleToggleBlock = (user: AdminUser) => {
-        setConfirm({ open: true, id: user.id, action: user.isBlocked ? 'unblock' : 'block' });
-    };
-
-    const performConfirm = async () => {
-        if (!confirm.id || !confirm.action) return setConfirm({ open: false });
-        try {
-            if (confirm.action === 'block') {
-                await adminUsersService.blockUser(confirm.id);
-                setUsers(prev => prev.map(u => u.id === confirm.id ? { ...u, isBlocked: true } : u));
-            } else {
-                await adminUsersService.unblockUser(confirm.id);
-                setUsers(prev => prev.map(u => u.id === confirm.id ? { ...u, isBlocked: false } : u));
-            }
-        } catch (e) {
-            console.error('Action failed', e);
-            load(page, search);
-        } finally {
-            setConfirm({ open: false });
-        }
     };
 
     if (!isAdmin) return null;
@@ -116,7 +92,6 @@ const AdminUsersListPage: React.FC = () => {
                             <UsersTable
                                 users={users}
                                 onView={(id) => navigate(`/admin/users/${id}`)}
-                                onToggleBlock={handleToggleBlock}
                             />
                             <Grid
                                 container
@@ -135,17 +110,6 @@ const AdminUsersListPage: React.FC = () => {
                         </>
                     )}
                 </CardContent>
-            </Card>
-            <Dialog open={confirm.open} onClose={() => setConfirm({ open: false })}>
-                <DialogTitle>Confirm</DialogTitle>
-                <DialogContent>
-                    <Typography>Are you sure you want to {confirm.action} this user?</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setConfirm({ open: false })}>Cancel</Button>
-                    <Button color="primary" variant="contained" onClick={performConfirm}>Yes</Button>
-                </DialogActions>
-            </Dialog>
         </Stack>
     );
 };

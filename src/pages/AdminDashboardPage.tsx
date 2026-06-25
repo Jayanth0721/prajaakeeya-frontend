@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Box, Card, CardContent, Chip, Grid, LinearProgress, Stack, Typography } from '@mui/material';
+import { Alert, Box, Grid, Stack, Typography } from '@mui/material';
 import {
-  LocationOn as LocationOnIcon,
   People as PeopleIcon,
-  HowToVote as HowToVoteIcon,
-  BarChart as BarChartIcon
+  HowToVote as HowToVoteIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import StatsCard from '../components/StatsCard';
@@ -14,16 +12,10 @@ import { isMockMode } from '../config/appMode';
 interface DashboardResponse {
   totals: {
     wards: number;
-    voters: number;
     aspirants: number;
     votes: number;
+    citizens: number;
   };
-  extractionQueue: Array<{
-    wardId?: number;
-    wardName: string;
-    status: string;
-    progress: number;
-  }>;
 }
 
 const AdminDashboardPage = () => {
@@ -34,32 +26,10 @@ const AdminDashboardPage = () => {
     () => ({
       totals: {
         wards: 28,
-        voters: 125000,
         aspirants: 45,
-        votes: 87500
-      },
-      extractionQueue: [
-        {
-          wardName: 'Ward 101 - Central',
-          status: 'Completed',
-          progress: 100
-        },
-        {
-          wardName: 'Ward 102 - North',
-          status: 'Processing',
-          progress: 75
-        },
-        {
-          wardName: 'Ward 103 - South',
-          status: 'Processing',
-          progress: 45
-        },
-        {
-          wardName: 'Ward 104 - East',
-          status: 'Pending',
-          progress: 0
-        }
-      ]
+        votes: 87500,
+        citizens: 125000
+      }
     }),
     []
   );
@@ -72,8 +42,7 @@ const AdminDashboardPage = () => {
       .get<DashboardResponse>('/admin/dashboard')
       .then((response) => {
         setData({
-          totals: response.data.totals,
-          extractionQueue: response.data.extractionQueue || []
+          totals: response.data.totals
         });
       })
       .catch((err) => {
@@ -81,19 +50,6 @@ const AdminDashboardPage = () => {
       })
       .finally(() => setLoading(false));
   }, [t]);
-
-  const getStatusColor = (status: string): 'default' | 'primary' | 'success' | 'warning' | 'error' => {
-    if (status.toLowerCase().includes('complete') || status.toLowerCase().includes('done')) {
-      return 'success';
-    }
-    if (status.toLowerCase().includes('error') || status.toLowerCase().includes('failed')) {
-      return 'error';
-    }
-    if (status.toLowerCase().includes('processing') || status.toLowerCase().includes('running')) {
-      return 'primary';
-    }
-    return 'default';
-  };
 
   return (
     <Stack spacing={4}>
@@ -120,21 +76,8 @@ const AdminDashboardPage = () => {
             md: 3
           }}>
           <StatsCard
-            label={t('adminDashboard.cards.wards')}
-            value={data.totals.wards}
-            icon={<LocationOnIcon />}
-            color="primary"
-          />
-        </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            sm: 6,
-            md: 3
-          }}>
-          <StatsCard
             label={t('adminDashboard.cards.voters')}
-            value={data.totals.voters}
+            value={data.totals.citizens}
             icon={<PeopleIcon />}
             color="info"
           />
@@ -150,19 +93,6 @@ const AdminDashboardPage = () => {
             value={data.totals.aspirants}
             icon={<HowToVoteIcon />}
             color="secondary"
-          />
-        </Grid>
-        <Grid
-          size={{
-            xs: 12,
-            sm: 6,
-            md: 3
-          }}>
-          <StatsCard
-            label={t('adminDashboard.cards.votes')}
-            value={data.totals.votes}
-            icon={<BarChartIcon />}
-            color="success"
           />
         </Grid>
       </Grid>

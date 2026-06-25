@@ -563,7 +563,7 @@ const GuestCivicIssuesPage = () => {
         </Typography>
       ) : (
         <Stack spacing={1.5}>
-          {categories.map((cat, idx) => {
+          {[...categories].sort((a, b) => b.count - a.count).map((cat, idx) => {
             const iconResult = getIcon(cat.name);
             const IssueIcon = (iconResult as any).Icon ?? ReportProblemIcon;
             const issueColor = iconResult.color;

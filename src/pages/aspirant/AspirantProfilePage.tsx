@@ -7,6 +7,7 @@ import useAuthStore from '../../store/useAuthStore';
 import { getAspirantById, withdrawMe } from '../../services/aspirantService';
 import AspirantProfileTab from '../../components/aspirant/AspirantProfileTab';
 import ProfileCompletionPage from '../ProfileCompletionPage';
+import { safeUrl } from '../../utils/safeUrl';
 
 const AspirantProfilePage: React.FC = () => {
     const { t } = useTranslation();
@@ -111,7 +112,8 @@ const AspirantProfilePage: React.FC = () => {
             document.body.removeChild(link);
             URL.revokeObjectURL(link.href);
         } catch {
-            window.open(url, '_blank');
+            const safe = safeUrl(url);
+            if (safe) window.open(safe, '_blank');
         }
     };
 

@@ -81,6 +81,7 @@ import capitolInactiveImg from '../assets/images/capitol.png';
 import capitolActiveImg from '../assets/images/capitol1.webp';
 import { BRAND } from '../theme';
 import SopAgreementCard from '../components/aspirant/SopAgreementCard';
+import { safeUrl } from '../utils/safeUrl';
 
 interface Candidate {
   id: number;
@@ -2669,7 +2670,10 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                                       onClick={() => {
                                         void trackInteraction(candidate.id);
                                         const raw = meeting.meetingLink;
-                                        const link = raw && !/^https?:\/\//i.test(raw) ? `https://${raw}` : raw;
+                                        const prefixed = raw && !/^https?:\/\//i.test(raw) ? `https://${raw}` : raw;
+                                        // C-SEC-4: meetingLink is aspirant-supplied — never navigate to a
+                                        // script-capable scheme. safeUrl returns null for those; bail out.
+                                        const link = safeUrl(prefixed);
                                         if (!link) return;
                                         // iOS standalone PWA / wrapped WebView silently no-ops window.open('_blank'),
                                         // which is why Instagram (and other) meeting links rendered blank on iOS while
@@ -2871,7 +2875,8 @@ const WardCandidateListPage = ({ embedded = false }: WardCandidateListPageProps 
                             const startDate = !isNaN(startNum) ? new Date(startNum > 1e12 ? startNum : startNum * 1000) : null;
                             const endDate = !isNaN(endNum) ? new Date(endNum > 1e12 ? endNum : endNum * 1000) : null;
                             const visitStatus = getMeetingTimeStatus(startDate ? startDate.getTime() : null, endDate ? endDate.getTime() : null, now, isDemoCandidate(candidate));
-                            const mapsLink = visit.googleMapsLink ?? (/^https?:\/\//i.test(visit.location || '') ? visit.location : null);
+                            // C-SEC-4: googleMapsLink is aspirant-supplied — sanitize before rendering as an href.
+                            const mapsLink = safeUrl(visit.googleMapsLink) ?? (/^https?:\/\//i.test(visit.location || '') ? visit.location : null);
                             return (
                               <Box key={visit.id || idx} sx={{ mb: 1, p: 1, borderRadius: '8px', bgcolor: insetBg, border: `1px solid ${BRAND.red}`, position: 'relative' }}>
                                 <Button

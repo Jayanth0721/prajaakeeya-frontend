@@ -23,7 +23,6 @@ import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
 import LanguageSelector from '../components/LanguageSelector';
 import HomeIcon from '@mui/icons-material/Home';
 import ForumIcon from '@mui/icons-material/ForumRounded';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import InfoIcon from '@mui/icons-material/Info';
@@ -42,7 +41,6 @@ const PublicLayout = () => {
     { label: t('pages.landing.nav.home'), path: '/', icon: <HomeIcon /> },
     { label: 'Katte', path: '/guest/discussions', icon: <ForumIcon /> },
     { label: t('pages.landing.nav.about'), path: '/about', icon: <InfoIcon /> },
-    { label: t('pages.landing.nav.aspirants'), path: '/aspirants', icon: <PersonAddIcon /> },
     // { label: t('pages.landing.nav.candidates'), path: '/candidateslist', icon: <PeopleIcon /> },
     { label: t('pages.landing.nav.elections'), path: '/elections', icon: <BarChartIcon /> },
     { label: t('pages.landing.nav.contact'), path: '/contact-us', icon: <ContactMailIcon /> }

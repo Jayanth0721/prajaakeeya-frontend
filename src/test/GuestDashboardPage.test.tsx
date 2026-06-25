@@ -1,10 +1,11 @@
 // PAGE TEST for GuestDashboardPage — the public (not-logged-in) home grid of
-// action tiles (View Aspirants, Public Issues, SOP, Registered Aspirants) plus
-// a hero banner that shows the total registered-citizens count.
+// action tiles (View Aspirants, Public Issues, SOP, Registered Aspirants) under
+// a hero banner.
 //
 // What this page does (the parts we care about for tests):
-//   - On mount it fetches the total voters count (getVoters) and, if a numeric
-//     total comes back, shows it in the hero strip (toLocaleString).
+//   - On mount it fetches the total registered-citizens count (getCitizensCount)
+//     and, if a numeric total comes back, shows it in the hero strip
+//     (toLocaleString).
 //   - Renders a hero heading. Because i18n.language is 'en' (not 'kn'), the page
 //     uses the HARDCODED English string "Guest Dashboard".
 //   - Renders a grid of clickable action tiles whose titles come from
@@ -13,7 +14,7 @@
 //
 // Setup notes:
 //   - react-i18next mocked with STABLE t/i18n refs.
-//   - voterService.getVoters fully mocked — no network.
+//   - statsService.getCitizensCount fully mocked — no network.
 //   - useNavigate spied; the rest of react-router-dom stays real.
 //   - No auth store needed (guest page reads no store).
 
@@ -36,9 +37,9 @@ vi.mock('react-router-dom', async (orig) => ({
   useNavigate: () => navigate,
 }));
 
-// voterService.getVoters — page reads resp.data.totalUsers (falls back to .total).
-vi.mock('../services/voterService', () => ({
-  getVoters: vi.fn(() => Promise.resolve({ data: { totalUsers: 4567 } })),
+// statsService.getCitizensCount — page reads resp.data.citizens.
+vi.mock('../services/statsService', () => ({
+  getCitizensCount: vi.fn(() => Promise.resolve({ data: { citizens: 67832 } })),
 }));
 
 describe('GuestDashboardPage (/guest/dashboard)', () => {
@@ -55,10 +56,10 @@ describe('GuestDashboardPage (/guest/dashboard)', () => {
     expect(screen.getByText('Contact Us')).toBeInTheDocument();
   });
 
-  it('shows the registered-citizens count fetched from getVoters', async () => {
+  it('shows the registered-citizens count fetched from getCitizensCount', async () => {
     renderWithProviders(<GuestDashboardPage />, { route: '/guest/dashboard' });
-    // 4567 -> "4,567" via toLocaleString once the on-mount fetch resolves.
-    expect(await screen.findByText('4,567')).toBeInTheDocument();
+    // 67832 -> "67,832" via toLocaleString once the on-mount fetch resolves.
+    expect(await screen.findByText('67,832')).toBeInTheDocument();
   });
 
   it('navigates to the elections page when the "Election" tile is clicked', async () => {

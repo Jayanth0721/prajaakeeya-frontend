@@ -3,15 +3,11 @@ import {
   Box, Card, CardContent, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, CircularProgress, Alert,
   Avatar, TextField, InputAdornment, Pagination, Stack, Chip, Button,
-  Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import BlockIcon from '@mui/icons-material/Block';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { getAllAspirants, AdminAspirant } from '../../services/aspirantService';
-import adminUsersService from '../../services/adminUsersService';
 
 const AdminAspirantListPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,62 +20,53 @@ const AdminAspirantListPage: React.FC = () => {
   const [total, setTotal] = useState(0);
   const limit = 20;
 
-  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; aspirant?: AdminAspirant; action?: 'block' | 'unblock' }>({ open: false });
-  const [actionLoading, setActionLoading] = useState(false);
-  const [actionError, setActionError] = useState('');
+  // Monotonic request id: only the most recently issued fetch is allowed to
+  // write state. If two fetches overlap (StrictMode's dev double-invoke, fast
+  // typing, rapid pagination), the superseded one's response is ignored — so the
+  // spinner and rows don't flicker as stale responses land out of order.
+  const reqIdRef = React.useRef(0);
 
   const fetchAspirants = useCallback((pageNum: number, searchTerm: string) => {
+    const reqId = ++reqIdRef.current;
     setLoading(true);
     setError('');
     getAllAspirants(pageNum, limit, searchTerm || undefined)
       .then((resp) => {
+        if (reqId !== reqIdRef.current) return; // a newer request superseded this one
         setAspirants(resp.data.data);
         setTotal(resp.data.total);
         setTotalPages(resp.data.totalPages);
       })
-      .catch((err) => setError(err?.response?.data?.message || 'Failed to load aspirants'))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (reqId !== reqIdRef.current) return;
+        setError(err?.response?.data?.message || 'Failed to load aspirants');
+      })
+      .finally(() => {
+        if (reqId !== reqIdRef.current) return; // don't clear the spinner for a stale request
+        setLoading(false);
+      });
   }, []);
 
+  // Single fetch path for both the initial load and search. Previously a
+  // separate mount effect ALSO called fetchAspirants(1, ''), so the page issued
+  // two overlapping page-1 requests on load (three under StrictMode's double-
+  // invoke in dev) — the cause of the request spam and the spinner flicker.
+  // The initial load runs immediately (no 400ms delay); subsequent keystrokes
+  // are debounced.
+  const isFirstRun = React.useRef(true);
   useEffect(() => {
-    fetchAspirants(1, '');
-  }, [fetchAspirants]);
-
-  // Debounce search — fires 400ms after user stops typing
-  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      setPage(1);
+      fetchAspirants(1, search);
+      return;
+    }
     const timer = setTimeout(() => {
       setPage(1);
       fetchAspirants(1, search);
     }, 400);
     return () => clearTimeout(timer);
-  }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const openConfirm = (aspirant: AdminAspirant, action: 'block' | 'unblock') => {
-    setActionError('');
-    setConfirmDialog({ open: true, aspirant, action });
-  };
-
-  const handleBlockAction = async () => {
-    const { aspirant, action } = confirmDialog;
-    if (!aspirant || !action) return;
-    setActionLoading(true);
-    setActionError('');
-    try {
-      if (action === 'block') {
-        await adminUsersService.blockUser(aspirant.userId);
-      } else {
-        await adminUsersService.unblockUser(aspirant.userId);
-      }
-      setAspirants((prev) =>
-        prev.map((a) => a.id === aspirant.id ? { ...a, isBlocked: action === 'block' } : a)
-      );
-      setConfirmDialog({ open: false });
-    } catch (err: any) {
-      setActionError(err?.response?.data?.message || `Failed to ${action} aspirant`);
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  }, [search, fetchAspirants]);
 
   return (
     <Box>
@@ -177,31 +164,10 @@ const AdminAspirantListPage: React.FC = () => {
                                 size="small"
                                 variant="outlined"
                                 startIcon={<VisibilityIcon fontSize="small" />}
-                                onClick={() => navigate(`/admin/users/${a.id}`)}
+                                onClick={() => navigate(`/admin/registered-aspirants/${a.id}`)}
                               >
                                 View
                               </Button>
-                              {a.isBlocked ? (
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="success"
-                                  startIcon={<CheckCircleIcon fontSize="small" />}
-                                  onClick={() => openConfirm(a, 'unblock')}
-                                >
-                                  Unblock
-                                </Button>
-                              ) : (
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="error"
-                                  startIcon={<BlockIcon fontSize="small" />}
-                                  onClick={() => openConfirm(a, 'block')}
-                                >
-                                  Block
-                                </Button>
-                              )}
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -225,35 +191,6 @@ const AdminAspirantListPage: React.FC = () => {
           </Box>
         )}
       </Stack>
-      {/* Block / Unblock Confirmation Dialog */}
-      <Dialog open={confirmDialog.open} onClose={() => !actionLoading && setConfirmDialog({ open: false })} maxWidth="xs" fullWidth>
-        <DialogTitle>
-          {confirmDialog.action === 'block' ? 'Block Aspirant' : 'Unblock Aspirant'}
-        </DialogTitle>
-        <DialogContent>
-          {actionError && <Alert severity="error" sx={{ mb: 2 }}>{actionError}</Alert>}
-          <Typography>
-            Are you sure you want to{' '}
-            <strong>{confirmDialog.action}</strong>{' '}
-            <strong>{confirmDialog.aspirant?.name}</strong>?
-            {confirmDialog.action === 'block' && ' They will no longer be able to access the platform.'}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmDialog({ open: false })} disabled={actionLoading}>
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color={confirmDialog.action === 'block' ? 'error' : 'success'}
-            onClick={handleBlockAction}
-            disabled={actionLoading}
-            startIcon={actionLoading ? <CircularProgress size={16} color="inherit" /> : undefined}
-          >
-            {confirmDialog.action === 'block' ? 'Block' : 'Unblock'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

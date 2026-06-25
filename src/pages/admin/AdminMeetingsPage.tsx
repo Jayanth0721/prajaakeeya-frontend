@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Card,
@@ -28,15 +27,13 @@ import {
 } from '@mui/material';
 import VideoCallIcon from '@mui/icons-material/VideoCall';
 import LinkIcon from '@mui/icons-material/Link';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import meetingsService, { Meeting } from '../../services/meetingsService';
 import { getWards } from '../../services/wardService';
 import { Autocomplete } from '@mui/material';
+import { safeUrl } from '../../utils/safeUrl';
 
 const AdminMeetingsPage: React.FC = () => {
-    const navigate = useNavigate();
     const [meetings, setMeetings] = useState<Meeting[]>([]);
     const [loading, setLoading] = useState(false);
     const [wardFilter, setWardFilter] = useState('');
@@ -116,7 +113,10 @@ const AdminMeetingsPage: React.FC = () => {
     };
 
     const openMeetingLink = (url: string) => {
-        window.open(url, '_blank');
+        // C-SEC-4: meetingLink is user-supplied — block script-capable schemes.
+        const safe = safeUrl(url);
+        if (!safe) return;
+        window.open(safe, '_blank');
     };
 
     return (
@@ -129,9 +129,6 @@ const AdminMeetingsPage: React.FC = () => {
                             Admin - Meetings
                         </Typography>
                     </Box>
-                    <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={() => navigate('/admin/meetings/create')}>
-                        Create Meeting
-                    </Button>
                 </Box>
 
                 <Card>
@@ -268,15 +265,6 @@ const AdminMeetingsPage: React.FC = () => {
                                                         {meeting.createdBy.name}
                                                     </TableCell>
                                                     <TableCell align="right">
-                                                        <Tooltip title="Edit Meeting">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => navigate(`/admin/meetings/${meeting.id}/edit`)}
-                                                                color="secondary"
-                                                            >
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                        </Tooltip>
                                                         <Tooltip title="Join Meeting">
                                                             <IconButton
                                                                 size="small"

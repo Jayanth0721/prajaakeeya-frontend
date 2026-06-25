@@ -502,6 +502,10 @@
     "ward": "प्रभाग",
     "booth": "बूथचे नाव"
   },
+  "guestDashboard": {
+    "title": "पाहुणे डॅशबोर्ड",
+    "subtitle": "प्रजाकीय एक्सप्लोर करा — सहभागी होण्यासाठी नोंदणी करा"
+  },
   "userDashboard": {
     "welcomeBack": "पुन्हा स्वागत आहे",
     "citizensRegistered": "नागरिक नोंदणीकृत आहेत.",

@@ -8,10 +8,12 @@ import employeesImg from '../../assets/images/employees.webp';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BRAND } from '../../theme';
+
 import { getVoters } from '../../services/voterService';
 import useThemeStore from '../../store/useThemeStore';
 import usePreferenceStore from '../../store/usePreferenceStore';
 import { ArrowForwardRounded as ArrowIcon, AppRegistration as RegisterIcon, HomeRounded as HomeIcon, TuneRounded as TuneIcon } from '@mui/icons-material';
+
 
 const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
 const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
@@ -78,19 +80,18 @@ const GuestDashboardPage = () => {
   const textHigh = isDark ? '#A0A5B0' : '#4B5563';
   const BORDER = mode === 'grey' ? 'rgba(0, 0, 0, 0.08)' : isDark ? '#5B403D' : 'rgba(239, 68, 68, 0.2)';
 
-  const [totalVoters, setTotalVoters] = React.useState<number | null>(null);
+  const [totalCitizens, setTotalCitizens] = React.useState<number | null>(null);
 
   const handleActionClick = (path: string) => {
     navigate(path);
   };
-
   React.useEffect(() => {
     let cancelled = false;
-    getVoters(1, 1)
+    getCitizensCount()
       .then((resp) => {
         if (cancelled) return;
-        const total = (resp?.data as any)?.totalUsers ?? (resp?.data as any)?.total ?? null;
-        if (typeof total === 'number') setTotalVoters(total);
+        const total = resp?.data?.citizens;
+        if (typeof total === 'number') setTotalCitizens(total);
       })
       .catch(() => { /* ignore — count stays hidden */ });
     return () => { cancelled = true; };
@@ -256,6 +257,7 @@ const GuestDashboardPage = () => {
             position: 'relative',
             zIndex: 2,
           }}>
+
             <Grid container spacing={4} sx={{ alignItems: 'center' }}>
               {/* Left Column - Branding and Directives */}
               <Grid size={{ xs: 12, md: 7 }}>
@@ -409,7 +411,7 @@ const GuestDashboardPage = () => {
                       textTransform: 'uppercase',
                       color: GOLD,
                     }}>
-                      {t('userDashboard.totalVoters', { defaultValue: 'No. of Registered Citizens' })}
+                      {t('userDashboard.totalCitizens', { defaultValue: 'No. of Registered Citizens' })}
                     </Typography>
                     <Box sx={{
                       px: 1, py: 0.3, borderRadius: '4px',
@@ -431,7 +433,7 @@ const GuestDashboardPage = () => {
                     lineHeight: 1.1,
                     letterSpacing: '-0.02em',
                   }}>
-                    {totalVoters != null ? totalVoters.toLocaleString() : '...'}
+                    {totalCitizens != null ? totalCitizens.toLocaleString() : '...'}
                   </Typography>
 
                   {/* SVG Sparkline chart representing growth trend */}
@@ -496,6 +498,7 @@ const GuestDashboardPage = () => {
                 </Box>
               </Grid>
             </Grid>
+
           </Box>
         </Box>
       </motion.div>

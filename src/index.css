@@ -1,5 +1,9 @@
 @import '@fontsource-variable/geist';
 
+/* C-PERF-2: Inter + Playfair Display are now loaded via the single
+   consolidated <link> in index.html (faster, non-render-blocking) instead
+   of this @import, which CSS serialises after the parent stylesheet. */
+
 /* Global base styles */
 html,
 body,

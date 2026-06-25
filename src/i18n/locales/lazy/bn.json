@@ -502,6 +502,10 @@
     "ward": "ওয়ার্ড",
     "booth": "বুথের নাম"
   },
+  "guestDashboard": {
+    "title": "অতিথি ড্যাশবোর্ড",
+    "subtitle": "প্রজাকীয় অন্বেষণ করুন — অংশগ্রহণ করতে নিবন্ধন করুন"
+  },
   "userDashboard": {
     "welcomeBack": "আবার স্বাগতম",
     "citizensRegistered": "নাগরিক নিবন্ধিত হয়েছেন।",

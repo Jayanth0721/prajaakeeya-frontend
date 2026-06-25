@@ -37,6 +37,7 @@ import {
   type GPVillage,
 } from "../services/electionService";
 import { updateUserConstituencies } from "../services/authService";
+import { COOKIE_AUTH } from "../config/authMode";
 import useAuthStore from "../store/useAuthStore";
 import LanguageSelector from "../components/LanguageSelector";
 import { BRAND } from "../theme";
@@ -64,6 +65,11 @@ interface OnboardingAnswers {
 }
 
 const STORAGE_KEY = "__USER_LOCATION_ANSWERS__";
+// Set once the user has been through the onboarding wizard — whether they
+// filled it in or skipped every step. The App.tsx onboarding guard reads this
+// so a user who deliberately skipped all constituencies is let into the app
+// instead of being bounced back to the wizard on every /user/* navigation.
+export const ONBOARDING_DISMISSED_KEY = "__USER_LOCATION_ONBOARDED__";
 
 const UserConstituencyOnboardingPage = () => {
   const { t } = useTranslation();
@@ -333,6 +339,10 @@ const UserConstituencyOnboardingPage = () => {
   const finish = async (final: OnboardingAnswers) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(final));
+      // Mark onboarding as done so the guard lets the user in even if they
+      // skipped every step (constituencies still null). Both "skip all" and a
+      // completed submit reach finish(), so this covers both exits.
+      localStorage.setItem(ONBOARDING_DISMISSED_KEY, "1");
     } catch {
       // ignore
     }
@@ -352,7 +362,15 @@ const UserConstituencyOnboardingPage = () => {
       payload.municipalCorporationConstituencyId != null ||
       payload.gramPanchayatConstituencyId != null;
 
-    if (!hasAnything || !token) {
+    // In cookie mode there is no client-side token (the httpOnly session cookie
+    // authenticates), so DON'T gate the save on `token` — that check would be
+    // always-true and silently skip the backend update, leaving the user's
+    // selection unsaved. Only the "nothing selected" case skips the save; auth
+    // is guaranteed since this page is behind an auth guard.
+    const isAuthed = COOKIE_AUTH
+      ? useAuthStore.getState().isAuthenticated
+      : Boolean(token);
+    if (!hasAnything || !isAuthed) {
       navigate("/user/dashboard", { replace: true });
       return;
     }
@@ -361,7 +379,8 @@ const UserConstituencyOnboardingPage = () => {
     setSubmitError(null);
     try {
       const { data } = await updateUserConstituencies(payload);
-      setAuth(token, data);
+      // Cookie mode: pass '' (no token to pin); legacy mode keeps the token.
+      setAuth(COOKIE_AUTH ? '' : (token ?? ''), data);
       // The POST response only carries the constituency IDs, not the nested
       // `municipalCorporationConstituency` / `gramPanchayatConstituency` objects
       // that the dashboard checks to render local-body tiles. Refresh from

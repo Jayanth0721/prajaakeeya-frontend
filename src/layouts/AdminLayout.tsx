@@ -22,6 +22,7 @@ import {
 import {
   AddLocation as AddLocationIcon,
   Description as DescriptionIcon,
+  Dashboard as DashboardIcon,
   People as PeopleIcon,
   HowToVote as HowToVoteIcon,
   Logout as LogoutIcon,
@@ -59,6 +60,7 @@ const AdminLayout = () => {
 
   const navItems = useMemo(
     () => [
+      { label: 'Dashboard', to: '/admin/dashboard', icon: <DashboardIcon /> },
       { label: 'User List', to: '/admin/users', icon: <PeopleIcon /> },
       { label: 'Aspirant List', to: '/admin/registered-aspirants', icon: <PeopleIcon /> },
       { label: 'Elections', to: '/admin/elections', icon: <HowToVoteIcon /> },
@@ -68,7 +70,6 @@ const AdminLayout = () => {
       { label: 'Create Municipality', to: '/admin/municipalities', icon: <LocationCityIcon /> },
       { label: 'Create Ward', to: '/admin/wards/create', icon: <AddLocationIcon /> },
       { label: 'Create Grama Panchayat', to: '/admin/grama-panchayat', icon: <GrassIcon /> },
-      // { label: 'Upload SOP', to: '/admin/upload-sop', icon: <DescriptionIcon /> },
       // { label: 'Reported List', to: '/admin/reports', icon: <DescriptionIcon /> },
     ],
     [t]

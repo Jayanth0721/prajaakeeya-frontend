@@ -12,7 +12,13 @@ import AuthLayout from "./layouts/AuthLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import GuestLayout from "./layouts/GuestLayout";
 import useAuthStore from "./store/useAuthStore";
-import { setupPushForUser, setPushNavigator, consumePendingPushRoute } from "./services/pushNotifications";
+import { COOKIE_AUTH } from "./config/authMode";
+// C-PERF-4 follow-up: load the push-notification service lazily. A static import
+// pulls the whole Firebase SDK (firebase/app + firebase/messaging) into the main
+// entry chunk, so every visitor downloads it on first paint even though push only
+// matters for authenticated users who grant permission. Importing it on demand
+// inside the effects below moves Firebase into its own chunk, off the critical path.
+const loadPush = () => import("./services/pushNotifications");
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
 
@@ -31,35 +37,24 @@ const COMING_SOON = false;
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage"));
 const CreateWardPage = lazy(() => import("./pages/CreateWardPage"));
-const UploadBoothPdfsPage = lazy(() => import("./pages/UploadBoothPdfsPage"));
-const VoterCountPage = lazy(() => import("./pages/VoterCountPage"));
-const ReportsListPage = lazy(() => import("./pages/admin/ReportsListPage"));
-const ReportDetailsPage = lazy(() => import("./pages/admin/ReportDetailsPage"));
 const AdminUsersListPage = lazy(() => import("./pages/admin/AdminUsersListPage"));
 const AdminUserDetailsPage = lazy(() => import("./pages/admin/AdminUserDetailsPage"));
 const AdminCreateUserPage = lazy(() => import("./pages/admin/AdminCreateUserPage"));
 const AdminEditUserPage = lazy(() => import("./pages/admin/AdminEditUserPage"));
 const AdminMeetingsPage = lazy(() => import("./pages/admin/AdminMeetingsPage"));
-const AdminCreateMeetingPage = lazy(() => import("./pages/admin/AdminCreateMeetingPage"));
-const AdminEditMeetingPage = lazy(() => import("./pages/admin/AdminEditMeetingPage"));
 const AdminVotingWindowPage = lazy(() => import("./pages/admin/AdminVotingWindowPage"));
-const AdminTelegramLinksPage = lazy(() => import("./pages/admin/AdminTelegramLinksPage"));
 const AdminElectionsPage = lazy(() => import("./pages/admin/AdminElectionsPage"));
 const AdminParliamentaryPage = lazy(() => import("./pages/admin/AdminParliamentaryPage"));
 const AdminAssemblyPage = lazy(() => import("./pages/admin/AdminAssemblyPage"));
 const AdminMunicipalityPage = lazy(() => import("./pages/admin/AdminMunicipalityPage"));
 const AdminGramaPanchayatPage = lazy(() => import("./pages/admin/AdminGramaPanchayatPage"));
-const AdminUploadSopPage = lazy(() => import("./pages/admin/AdminUploadSopPage"));
 const AdminAspirantListPage = lazy(() => import("./pages/admin/AdminAspirantListPage"));
-const UserLoginPage = lazy(() => import("./pages/UserLoginPage"));
 const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
 const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
-const UserPledgePage = lazy(() => import("./pages/UserPledgePage"));
 const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
 const CivicIssuesPage = lazy(() => import("./pages/CivicIssuesPage"));
 const ReportIssuePage = lazy(() => import("./pages/ReportIssuePage"));
-const CivicIssueDetailPage = lazy(() => import("./pages/CivicIssueDetailPage"));
 const AspirantDeclarationPage = lazy(() => import("./pages/AspirantDeclarationPage"));
 const AspirantRegistrationPage = lazy(() => import("./pages/AspirantRegistrationPage"));
 const DocumentsUploadPage = lazy(() => import("./pages/DocumentsUploadPage"));
@@ -68,17 +63,12 @@ const DocumentsUploadPage = lazy(() => import("./pages/DocumentsUploadPage"));
 const SopPage = lazy(() => import("./pages/SopPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 const SignedSopPage = lazy(() => import("./pages/SignedSopPage"));
-const AspirantApprovalPage = lazy(() => import("./pages/AspirantApprovalPage"));
 const WardCandidateListPage = lazy(() => import("./pages/WardCandidateListPage"));
 const WardVotersPage = lazy(() => import("./pages/WardVotersPage"));
 const RegisteredAspirantsPage = lazy(() => import("./pages/RegisteredAspirantsPage"));
 const AspirantViewDetailsPage = lazy(() => import("./pages/AspirantViewDetailsPage"));
 const DemoAspirantViewPage = lazy(() => import("./pages/DemoAspirantViewPage"));
-const CandidateDetailsPage = lazy(() => import("./pages/CandidateDetailsPage"));
-const AspirantOtpVerificationPage = lazy(() => import("./pages/AspirantOtpVerificationPage"));
-const VotingPage = lazy(() => import("./pages/VotingPage"));
 const VotingResultPage = lazy(() => import("./pages/VotingResultPage"));
-const WardDiscussionPage = lazy(() => import("./pages/WardDiscussionPage"));
 const KattePage = lazy(() => import("./pages/KattePage"));
 const ErrorPage = lazy(() => import("./pages/ErrorPage"));
 const LoadingPage = lazy(() => import("./pages/LoadingPage"));
@@ -91,7 +81,6 @@ const PreferencesPage = lazy(() => import("./pages/PreferencesPage"));
 const AspirantProfilePage = lazy(() => import("./pages/aspirant/AspirantProfilePage"));
 const AspirantMeetingLinksPage = lazy(() => import("./pages/aspirant/AspirantMeetingLinksPage"));
 const AspirantChatPage = lazy(() => import("./pages/aspirant/AspirantChatPage"));
-const AspirantDiscussionPage = lazy(() => import("./pages/AspirantDiscussionPage"));
 const AspirantPostsPage = lazy(() => import("./pages/aspirant/AspirantPostsPage"));
 const AspirantRequestsPage = lazy(() => import("./pages/aspirant/AspirantRequestsPage"));
 
@@ -119,15 +108,17 @@ const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
 
 const App = () => {
   const { t } = useTranslation();
-  const { isAdmin, isAuthenticated, token, fetchProfile } = useAuthStore();
+  const { isAdmin, isAuthenticated, token, user, fetchProfile } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Let push-notification deep links (iOS native bridge) navigate in-SPA
     // instead of doing a full page reload.
-    setPushNavigator((path) => navigate(path));
-    return () => setPushNavigator(null);
+    void loadPush().then((m) => m.setPushNavigator((path) => navigate(path)));
+    return () => {
+      void loadPush().then((m) => m.setPushNavigator(null));
+    };
   }, [navigate]);
 
   useEffect(() => {
@@ -138,12 +129,13 @@ const App = () => {
     // "navigates only after a refresh"). Triggers: mount, visibilitychange,
     // window focus, and the PUSH_NAVIGATE message as a fast-path nudge. The
     // consumer deletes the stash, so multiple triggers never double-navigate.
-    void consumePendingPushRoute();
+    const consumeRoute = () => void loadPush().then((m) => m.consumePendingPushRoute());
+    consumeRoute();
 
     const onVisible = () => {
-      if (document.visibilityState === "visible") void consumePendingPushRoute();
+      if (document.visibilityState === "visible") consumeRoute();
     };
-    const onFocus = () => void consumePendingPushRoute();
+    const onFocus = () => consumeRoute();
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onFocus);
 
@@ -151,7 +143,7 @@ const App = () => {
     if ("serviceWorker" in navigator) {
       onSwMessage = (event: MessageEvent) => {
         const msg = event.data as { type?: string } | null;
-        if (msg && msg.type === "PUSH_NAVIGATE") void consumePendingPushRoute();
+        if (msg && msg.type === "PUSH_NAVIGATE") consumeRoute();
       };
       navigator.serviceWorker.addEventListener("message", onSwMessage);
       // addEventListener('message') does not start the client message queue;
@@ -169,18 +161,63 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // On page reload / first mount, if we have a persisted token, fetch fresh user data
-    if (token) {
+    // On page reload / first mount, restore the session by fetching fresh user
+    // data. Legacy mode only bothers when a token was persisted. Cookie mode has
+    // no client-side token — the httpOnly session cookie is the only signal —
+    // so we always ask /auth/me, which returns the user if the cookie is valid
+    // or 401s (→ interceptor handles refresh/logout) if not.
+    if (COOKIE_AUTH || token) {
       void fetchProfile();
     }
   }, [token, fetchProfile]);
 
   useEffect(() => {
+    // Constituency onboarding guard. The decision must be data-driven (are all
+    // four constituencies null?) rather than relying on the "celebrated" flag in
+    // AuthCallbackPage — otherwise a returning login (e.g. after the user deleted
+    // their account and signed in again) skips onboarding even though their
+    // constituencies are null. Once the fresh profile is loaded, send a
+    // non-admin user with no constituency set to the onboarding wizard. Only
+    // redirect from /user/* routes so we never hijack onboarding/login/admin/
+    // public pages. Mirrors the "hasAny" check on UserConstituencyOnboardingPage
+    // (gramPanchayat is matched as != null, the others by .id).
+    if (!isAuthenticated || isAdmin || !user) return;
+    // If the user already went through the wizard and chose to skip every
+    // constituency, don't trap them back here on each /user/* navigation.
+    // Keep this string in sync with ONBOARDING_DISMISSED_KEY in
+    // UserConstituencyOnboardingPage (kept local to preserve the page's lazy
+    // chunk instead of importing from it).
+    if (localStorage.getItem("__USER_LOCATION_ONBOARDED__") === "1") return;
+    const hasAnyConstituency =
+      user.lokSabhaConstituency?.id != null ||
+      user.stateAssemblyConstituency?.id != null ||
+      user.municipalCorporationConstituency?.id != null ||
+      user.gramPanchayatConstituency != null;
+    if (!hasAnyConstituency && location.pathname.startsWith("/user")) {
+      navigate("/onboarding/location", { replace: true });
+    }
+  }, [isAuthenticated, isAdmin, user, location.pathname, navigate]);
+
+  useEffect(() => {
     // Wire web push (FCM) for the signed-in user: registers silently if the
     // user already granted notifications, otherwise prompts on their next
     // gesture. No-op unless Firebase env is configured + push is supported.
-    if (isAuthenticated && token) {
-      return setupPushForUser();
+    // Cookie mode has no client-side token, so gate on isAuthenticated alone —
+    // requiring `token` here would silently disable push for cookie-auth users.
+    if (isAuthenticated && (COOKIE_AUTH || token)) {
+      // The service's setupPushForUser() returns a cleanup fn, but the dynamic
+      // import resolves async — capture it and run it when the effect tears down
+      // (even if teardown happens before the import settles).
+      let cleanup: (() => void) | undefined;
+      let cancelled = false;
+      void loadPush().then((m) => {
+        if (cancelled) return;
+        cleanup = m.setupPushForUser();
+      });
+      return () => {
+        cancelled = true;
+        cleanup?.();
+      };
     }
   }, [isAuthenticated, token]);
 
@@ -264,25 +301,7 @@ const App = () => {
               }
             />
           </Route>
-          <Route element={<AuthLayout title={t("userLogin.title")} />}>
-            <Route
-              path="/login"
-              element={
-                <RedirectIfAuth>
-                  <UserLoginPage />
-                </RedirectIfAuth>
-              }
-            />
-          </Route>
           <Route element={<AuthLayout title={t("userRegister.title")} />}>
-            <Route
-              path="/signup"
-              element={
-                <RedirectIfAuth>
-                  <UserPledgePage />
-                </RedirectIfAuth>
-              }
-            />
             <Route
               path="/register"
               element={
@@ -297,7 +316,6 @@ const App = () => {
           <Route element={<PublicLayout />}>
             {/* <Route path="/aspirantslist" element={<WardCandidateListPage />} /> */}
             <Route path="/elections" element={<VotingResultPage />} />
-            <Route path="/aspirants" element={<AspirantApprovalPage />} />
             <Route path="/about" element={<AboutPage />} />
           </Route>
 
@@ -311,7 +329,6 @@ const App = () => {
 
           {/* Candidate details should use the UserLayout header (same as dashboard) */}
           <Route element={<UserLayout />}>
-            <Route path="/aspirants/:id" element={<CandidateDetailsPage />} />
           </Route>
 
           {/* Admin routes - auth required but API calls bypassed */}
@@ -327,29 +344,12 @@ const App = () => {
           >
             <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="wards/create" element={<CreateWardPage />} />
-            <Route path="upload-pdfs" element={<UploadBoothPdfsPage />} />
-            <Route path="voter-count" element={<VoterCountPage />} />
-            <Route
-              path="aspirants/approval"
-              element={<AspirantApprovalPage />}
-            />
             <Route path="voting-results" element={<VotingResultPage />} />
-            <Route path="reports" element={<ReportsListPage />} />
-            <Route path="reports/:id" element={<ReportDetailsPage />} />
             <Route path="users" element={<AdminUsersListPage />} />
             <Route path="users/create" element={<AdminCreateUserPage />} />
             <Route path="users/:id/edit" element={<AdminEditUserPage />} />
             <Route path="meetings" element={<AdminMeetingsPage />} />
-            <Route
-              path="meetings/create"
-              element={<AdminCreateMeetingPage />}
-            />
-            <Route
-              path="meetings/:id/edit"
-              element={<AdminEditMeetingPage />}
-            />
             <Route path="voting-window" element={<AdminVotingWindowPage />} />
-            <Route path="telegram-links" element={<AdminTelegramLinksPage />} />
             <Route path="elections" element={<AdminElectionsPage />} />
             <Route path="parliamentary" element={<AdminParliamentaryPage />} />
             <Route path="assembly" element={<AdminAssemblyPage />} />
@@ -358,10 +358,9 @@ const App = () => {
               path="grama-panchayat"
               element={<AdminGramaPanchayatPage />}
             />
-            <Route path="upload-sop" element={<AdminUploadSopPage />} />
             <Route path="registered-aspirants" element={<AdminAspirantListPage />} />
             <Route path="registered-aspirants/:id" element={<AdminUserDetailsPage />} />
-            <Route path="/admin/users/:id" element={<AdminUserDetailsPage />} />
+            <Route path="users/:id" element={<AdminUserDetailsPage />} />
           </Route>
 
           {/* Standalone onboarding route — auth required, no UserLayout chrome */}
@@ -390,17 +389,12 @@ const App = () => {
             />
             <Route path="civic-issues" element={<CivicIssuesPage />} />
             <Route path="civic-issues/report" element={<ReportIssuePage />} />
-            <Route path="civic-issues/:id" element={<CivicIssueDetailPage />} />
             <Route path="dashboard/profile" element={<AspirantProfilePage />} />
             <Route
               path="dashboard/meetings"
               element={<AspirantMeetingLinksPage />}
             />
             <Route path="dashboard/chat" element={<AspirantChatPage />} />
-            <Route
-              path="dashboard/aspirant-discussion"
-              element={<AspirantDiscussionPage />}
-            />
             <Route path="dashboard/posts" element={<AspirantPostsPage />} />
             <Route
               path="dashboard/requests"
@@ -423,10 +417,6 @@ const App = () => {
               path="aspirants/sop"
               element={<SopUploadPage />}
             /> */}
-            <Route
-              path="aspirants/verify-otp"
-              element={<AspirantOtpVerificationPage />}
-            />
             <Route path="aspirantslist" element={<WardCandidateListPage />} />
             <Route path="voters" element={<WardVotersPage />} />
             <Route
@@ -447,7 +437,6 @@ const App = () => {
               element={<WardVotersPage />}
             />
             <Route path="chat/:aspirantId" element={<UserChatPage />} />
-            <Route path="vote" element={<VotingPage />} />
             <Route path="discussions" element={<KattePage />} />
             <Route path="sop" element={<SopPage />} />
             <Route path="notifications" element={<NotificationsPage />} />

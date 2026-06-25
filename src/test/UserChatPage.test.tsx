@@ -3,8 +3,7 @@
 //
 // What this page does (the parts we care about for tests):
 //   - Reads the :aspirantId route param; on mount it fetches the message thread
-//     (getAspirantMessages) and the ward aspirant list (fetchWardAspirants /
-//     fetchWardAspirantsByNumber) to figure out who is an aspirant.
+//     (getAspirantMessages).
 //   - Renders a header (Aspirant chip + "Interview room"), a scrollable message
 //     list, a TextField for typing, and a Send button.
 //   - Typing text + clicking Send calls postUserChatMessage and appends the
@@ -18,13 +17,11 @@
 //   - react-i18next is mocked with STABLE module-level t/i18n refs so the
 //     fetchMessages useCallback (which doesn't depend on t, but the page reads
 //     t in render) stays referentially stable and effects don't loop.
-//   - aspirantChatService + aspirantService are fully mocked — no network.
+//   - aspirantChatService is fully mocked — no network.
 //   - useParams returns { aspirantId: '1' }; useNavigate is spied; the rest of
 //     react-router-dom (incl. useLocation) stays real.
 //   - scrollIntoView is stubbed (jsdom has no layout) since the page scrolls to
 //     the bottom after load/send.
-//   - The auth store is seeded with a voter who has a wardId so the aspirant
-//     list fetch path runs.
 
 import { renderWithProviders, screen, fireEvent, waitFor } from './test-utils';
 import UserChatPage from '../pages/UserChatPage';
@@ -71,18 +68,12 @@ vi.mock('../services/aspirantChatService', () => ({
   subscribeToAspirantChat: vi.fn(() => ({ close: vi.fn() })),
 }));
 
-// Aspirant list lookup on mount — resolve with one aspirant.
-vi.mock('../services/aspirantService', () => ({
-  fetchWardAspirants: vi.fn(() => Promise.resolve({ data: [{ id: 1, name: 'Rao', userId: 7 }] })),
-  fetchWardAspirantsByNumber: vi.fn(() => Promise.resolve({ data: [] })),
-}));
-
 describe('UserChatPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // jsdom has no scrollIntoView; the page calls it after load/send.
     (Element.prototype as any).scrollIntoView = vi.fn();
-    // Voter with a wardId so the aspirant-list fetch path runs.
+    // Seed a signed-in voter; the page reads `user` for message ownership.
     useAuthStore.setState({
       token: 't',
       user: { id: 1, name: 'Asha', role: 'voter', wardId: 1, wardNumber: '12', wardName: 'North' } as any,

@@ -1,17 +1,14 @@
 import React from 'react';
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    IconButton, Tooltip, Box, Typography, Chip, Avatar,
+    Box, Typography, Chip, Avatar,
 } from '@mui/material';
-import BlockIcon from '@mui/icons-material/Block';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { AdminUser } from '../../services/adminUsersService';
 
 type Props = {
     users: AdminUser[];
     onView?: (id: number) => void;
-    onToggleBlock?: (user: AdminUser) => void;
     onDelete?: (id: number) => void;
     onEdit?: (id: number) => void;
 };
@@ -23,7 +20,7 @@ const safeAvatarSrc = (url?: string | null) => {
     return url;
 };
 
-const UsersTable: React.FC<Props> = ({ users, onToggleBlock }) => {
+const UsersTable: React.FC<Props> = ({ users }) => {
     if (!users || users.length === 0) return <Box sx={{ py: 4 }}><Typography>No users found.</Typography></Box>;
 
     return (
@@ -34,7 +31,6 @@ const UsersTable: React.FC<Props> = ({ users, onToggleBlock }) => {
                         <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }} align="right">Block</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -58,17 +54,6 @@ const UsersTable: React.FC<Props> = ({ users, onToggleBlock }) => {
                                     ? <Chip label="Blocked" color="error" size="small" />
                                     : <Chip label="Active" color="success" size="small" />
                                 }
-                            </TableCell>
-                            <TableCell align="right">
-<Tooltip title={u.isBlocked ? 'Unblock' : 'Block'}>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => onToggleBlock && onToggleBlock(u)}
-                                        color={u.isBlocked ? 'error' : 'default'}
-                                    >
-                                        {u.isBlocked ? <LockOpenIcon /> : <BlockIcon />}
-                                    </IconButton>
-                                </Tooltip>
                             </TableCell>
                         </TableRow>
                     ))}

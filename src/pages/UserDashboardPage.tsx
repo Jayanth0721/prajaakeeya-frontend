@@ -25,27 +25,26 @@ import {
 } from '@mui/icons-material';
 import prajakeeyaLogo from '../assets/images/prajakeeya.webp';
 import chatImg from '../assets/images/chat.webp';
-import alertImg from '../assets/images/alert.webp';
-import employeesImg from '../assets/images/employees.webp';
 import videoCameraImg from '../assets/images/video.webp';
-import userImg from '../assets/images/user.webp';
-import king1Img from '../assets/images/king1.png';
-import sopImg from '../assets/images/sop.webp';
 import meetImg from '../assets/images/meet.webp';
-import leaderImg from '../assets/images/leader.webp';
-import managerImg from '../assets/images/manager.webp';
-import advisorImg from '../assets/images/office.webp';
-import staffImg from '../assets/images/staff.webp';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
+import { COOKIE_AUTH } from '../config/authMode';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
 import { fetchAllWards } from '../services/wardService';
 import { getVoters } from '../services/voterService';
-import WardCandidateListPage from './WardCandidateListPage';
+// C-PERF-4: Lazy-load the candidate list instead of a static import. The
+// dashboard renders it inline (<React.Suspense fallback={null}>
+          <WardCandidateListPage embedded />
+        </React.Suspense> below), so we
+// can't drop it — but a static import merges its ~98 KB chunk into the
+// dashboard chunk, defeating code-splitting. Lazy() keeps the same UX while
+// splitting it into its own chunk that streams in behind the dashboard shell.
+const WardCandidateListPage = React.lazy(() => import('./WardCandidateListPage'));
 
 const UserDashboardPage = () => {
   const { user, token } = useAuthStore();
@@ -65,7 +64,7 @@ const UserDashboardPage = () => {
 
   const { t, i18n } = useTranslation();
   const isKannada = (i18n.language || '').startsWith('kn');
-  const actionTitleFontSize = isKannada ? { xs: '0.9rem', md: '1rem' } : { xs: '1rem', md: '1.125rem' };
+const actionTitleFontSize = isKannada ? { xs: '0.9rem', md: '1rem' } : { xs: '1rem', md: '1.125rem' };
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -132,7 +131,7 @@ const UserDashboardPage = () => {
     psName: ''
   };
 
-  const actions = [
+const actions = [
     // Registered Citizens tile — temporarily disabled
     // {
     //   title: t('userDashboard.actions.voters') || 'View Voters',
@@ -501,7 +500,6 @@ const UserDashboardPage = () => {
       navigate(target);
     }
   };
-
   const DRAFT_KEY = `aspirant_registration_draft_${user?.id ?? 'guest'}`;
   const [hasLocalDraft, setHasLocalDraft] = React.useState(false);
   React.useEffect(() => {
@@ -516,7 +514,7 @@ const UserDashboardPage = () => {
   const hasIncompleteAspirant = Boolean(user?.role === 'aspirant' && (user as any)?.documentStatus !== 'completed');
   const shouldShowContinue = hasLocalDraft || hasIncompleteAspirant;
 
-  // Aspirant registration is complete when role=aspirant and documentStatus=completed
+// Aspirant registration is complete when role=aspirant and documentStatus=completed
   const isAspirantRegistrationComplete = isAspirant;
 
   const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
@@ -535,7 +533,7 @@ const UserDashboardPage = () => {
   const borderSubtle = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(17,24,39,0.10)';
   const borderFaint = isDark ? 'rgba(255,255,255,0.09)' : 'rgba(17,24,39,0.08)';
 
-  const heroBg = isDark
+const heroBg = isDark
     ? 'radial-gradient(130% 150% at 6% 0%, rgba(200,24,10,0.2) 0%, rgba(10,8,8,1) 55%), radial-gradient(120% 130% at 100% 0%, rgba(37,58,154,0.16) 0%, rgba(10,8,8,1) 55%)'
     : 'linear-gradient(135deg, rgba(200,24,10,0.07) 0%, rgba(245,168,0,0.07) 50%, rgba(37,58,154,0.05) 100%)';
   const gridOverlay = isDark
@@ -670,7 +668,11 @@ const UserDashboardPage = () => {
       } catch (apiErr) {
         const resp = await fetch(src, {
           method: 'GET',
+          // Cookie mode: no token to send as a header; authenticate via the
+          // httpOnly session cookie instead (raw fetch omits cookies unless
+          // credentials:'include' is set). Legacy mode keeps the Bearer header.
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+          credentials: COOKIE_AUTH ? 'include' : 'same-origin',
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         blob = await resp.blob();
@@ -1097,8 +1099,7 @@ const UserDashboardPage = () => {
         {mobileHero}
         {pendingAspirantAlert}
         {isAspirant && mobileAspirantTiles}
-        
-        {/* Desktop Action Cards Grid */}
+{/* Desktop Action Cards Grid */}
         {!isSm && (
           <Box
             sx={{
