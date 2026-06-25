@@ -319,10 +319,9 @@ const HomePage: React.FC = () => {
 
   // Derive layout flags from the single active layout
   const isReverse  = activeLayout === 'reverse';
-  const isStraight = activeLayout === 'straight';
-  const isLeft     = activeLayout === 'left';
-  const isRight    = activeLayout === 'right';
-
+  const isStraight = activeLayout === 'straight' || activeLayout === 'cardover';
+  const isLeft     = false;
+  const isRight    = false;
   return (
     <Box sx={{ bgcolor: bg, minHeight: '100vh', color: isDark ? '#E2E2E3' : '#111827', pb: 0, overflowX: 'hidden' }}>
       <style>{CSS}</style>
@@ -470,7 +469,6 @@ const HomePage: React.FC = () => {
                 boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(17, 24, 39, 0.05)',
                 transition: 'transform 0.3s ease, border-color 0.3s ease',
                 '&:hover': { transform: 'scale(1.02)', borderColor: '#C8180A' },
-                ...(isLeft && { borderLeft: `4px solid ${BRAND.red}` }),
               }}
             />
           </Grid>
@@ -488,7 +486,6 @@ const HomePage: React.FC = () => {
                 boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(245, 168, 0, 0.05)',
                 transition: 'transform 0.3s ease, border-color 0.3s ease',
                 '&:hover': { transform: 'scale(1.02)', borderColor: '#F5A800' },
-                ...(isRight && { borderRight: `4px solid ${BRAND.yellow}` }),
               }}
             />
           </Grid>

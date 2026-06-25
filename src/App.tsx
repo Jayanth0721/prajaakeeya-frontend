@@ -264,48 +264,6 @@ const App = () => {
         <style>{`
           /* Preferences Overrides */
 
-          /* --- LEFT ALIGNMENT PREFERENCE --- */
-          .layout-pref-left .MuiTypography-h1,
-          .layout-pref-left .MuiTypography-h2,
-          .layout-pref-left .MuiTypography-h3,
-          .layout-pref-left .MuiTypography-h4,
-          .layout-pref-left .MuiTypography-h5,
-          .layout-pref-left .MuiTypography-h6,
-          .layout-pref-left h1,
-          .layout-pref-left h2,
-          .layout-pref-left h3,
-          .layout-pref-left h4,
-          .layout-pref-left h5,
-          .layout-pref-left h6 {
-            text-align: left !important;
-          }
-          .layout-pref-left .MuiTypography-h3,
-          .layout-pref-left .MuiTypography-h4 {
-            border-left: 4px solid #C8180A !important;
-            padding-left: 12px !important;
-          }
-
-          /* --- RIGHT ALIGNMENT PREFERENCE --- */
-          .layout-pref-right .MuiTypography-h1,
-          .layout-pref-right .MuiTypography-h2,
-          .layout-pref-right .MuiTypography-h3,
-          .layout-pref-right .MuiTypography-h4,
-          .layout-pref-right .MuiTypography-h5,
-          .layout-pref-right .MuiTypography-h6,
-          .layout-pref-right h1,
-          .layout-pref-right h2,
-          .layout-pref-right h3,
-          .layout-pref-right h4,
-          .layout-pref-right h5,
-          .layout-pref-right h6 {
-            text-align: right !important;
-          }
-          .layout-pref-right .MuiTypography-h3,
-          .layout-pref-right .MuiTypography-h4 {
-            border-right: 4px solid #F5A800 !important;
-            padding-right: 12px !important;
-          }
-
           /* --- REVERSE VIEW PREFERENCE --- */
           .layout-pref-reverse .MuiGrid-container,
           .layout-pref-reverse .MuiGrid2-container,
@@ -321,31 +279,42 @@ const App = () => {
             flex-basis: 100% !important;
             width: 100% !important;
           }
-        `}</style>
-      )}
 
-      {/* ── Left/Right accent strip when those layouts are active ── */}
-      {activeLayout === 'left' && (
-        <Box sx={{
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: 4,
-          zIndex: 1100,
-          background: `linear-gradient(180deg, ${BRAND.red}, ${BRAND.red}55, transparent)`,
-        }} />
-      )}
-      {activeLayout === 'right' && (
-        <Box sx={{
-          position: 'fixed',
-          top: 0,
-          bottom: 0,
-          right: 0,
-          width: 4,
-          zIndex: 1100,
-          background: `linear-gradient(180deg, ${BRAND.yellow}, ${BRAND.yellow}55, transparent)`,
-        }} />
+          /* --- CARD OVER FLOW VIEW PREFERENCE --- */
+          .layout-pref-cardover .MuiGrid-item,
+          .layout-pref-cardover .MuiGrid2-root:not(.MuiGrid2-container) {
+            max-width: 100% !important;
+            flex-basis: 100% !important;
+            width: 100% !important;
+            position: sticky !important;
+            background-color: inherit;
+            border-radius: 12px;
+          }
+
+          /* Card over z-indexes for smooth overlapping transitions */
+          .layout-pref-cardover .MuiGrid-item:nth-of-type(1),
+          .layout-pref-cardover .MuiGrid2-root:nth-of-type(1) {
+            top: 100px !important;
+            z-index: 10 !important;
+          }
+
+          .layout-pref-cardover .MuiGrid-item:nth-of-type(2),
+          .layout-pref-cardover .MuiGrid2-root:nth-of-type(2) {
+            top: 130px !important;
+            z-index: 20 !important;
+          }
+
+          .layout-pref-cardover .MuiGrid-item:nth-of-type(3),
+          .layout-pref-cardover .MuiGrid2-root:nth-of-type(3) {
+            top: 160px !important;
+            z-index: 30 !important;
+          }
+
+          .layout-pref-cardover .MuiCard-root,
+          .layout-pref-cardover .MuiPaper-root {
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.15), 0 10px 30px rgba(0,0,0,0.15) !important;
+          }
+        `}</style>
       )}
 
       <Box className={activeLayout ? `layout-pref-${activeLayout}` : ""} sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

@@ -32,6 +32,7 @@ import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useAuthStore from '../store/useAuthStore';
+import usePreferenceStore from '../store/usePreferenceStore';
 import { COOKIE_AUTH } from '../config/authMode';
 import { BRAND } from '../theme';
 import apiClient from '../services/apiClient';
@@ -48,6 +49,7 @@ const WardCandidateListPage = React.lazy(() => import('./WardCandidateListPage')
 
 const UserDashboardPage = () => {
   const { user, token } = useAuthStore();
+  const { activeLayout } = usePreferenceStore();
 
   // helper: normalize scheduledAt values (supports numeric strings, ISO strings, and numbers)
   const parseScheduledAt = (val: any): number | null => {
@@ -296,6 +298,7 @@ const actions = [
   const aspirantActions = [
     {
       title: t('userDashboard.actions.myProfile') || 'My Profile',
+      description: t('userDashboard.actions.myProfileDesc') || 'Update and manage your public candidate profile details.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <circle cx="15" cy="11" r="5" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.1)"/>
@@ -309,6 +312,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.civicIssues') || 'Public Issues',
+      description: t('userDashboard.actions.civicIssuesDesc') || 'Report and track issues in your ward',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <circle cx="15" cy="15" r="12" stroke="#C8180A" strokeWidth="1.6" fill="rgba(200,24,10,0.08)"/>
@@ -322,6 +326,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.howUPPWorks') || 'How Prajakeeya Works',
+      description: t('userDashboard.actions.howWorksTitle') || 'Learn the Prajakeeya SOP and how the system works.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <circle cx="15" cy="15" r="11" stroke="#C8180A" strokeWidth="1.5" fill="rgba(200,24,10,0.08)"/>
@@ -335,6 +340,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.meetCitizens') || 'Meet Citizens',
+      description: t('userDashboard.actions.meetCitizensDesc') || 'Connect with voters and publish updates about your work.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <rect x="4" y="8" width="22" height="16" rx="3" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
@@ -349,6 +355,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.videoMeetings') || 'Video Meetings',
+      description: t('userDashboard.actions.videoMeetingsDesc') || 'Schedule and host virtual meetings with citizens.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <rect x="3" y="9" width="18" height="13" rx="2.5" stroke="#253A9A" strokeWidth="1.5" fill="rgba(37,58,154,0.08)"/>
@@ -362,6 +369,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.chatWithCitizens') || 'Chat with Citizens',
+      description: t('userDashboard.actions.chatWithCitizensDesc') || 'Chat directly with citizens in your ward.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <path d="M4 6h22a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H9l-5 4V8a2 2 0 0 1 2-2z" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)" strokeLinejoin="round"/>
@@ -377,6 +385,7 @@ const actions = [
     // page nudges them to /user/complete-profile if the constituency isn't set.
     {
       title: t('userDashboard.actions.myLokSabhaAspirants') || 'My Lok Sabha Aspirants',
+      description: t('userDashboard.actions.myLokSabhaAspirantsDesc') || 'Aspirants in your Lok Sabha constituency',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <rect x="3" y="20" width="24" height="3" rx="1" fill="rgba(37,58,154,0.15)" stroke="#253A9A" strokeWidth="1.4"/>
@@ -393,6 +402,7 @@ const actions = [
     },
     {
       title: t('userDashboard.actions.myStateAssemblyAspirants') || 'My State Assembly Aspirants',
+      description: t('userDashboard.actions.myStateAssemblyAspirantsDesc') || 'Aspirants in your Assembly constituency',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <rect x="5" y="12" width="20" height="13" rx="1.5" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)"/>
@@ -410,6 +420,7 @@ const actions = [
     // saved one — a person belongs to exactly one local body, never both.
     ...((user as any)?.municipalCorporationConstituency?.id != null ? [{
       title: t('userDashboard.actions.myMunicipalCorporationAspirants') || 'My Municipal Corporation Aspirants',
+      description: t('userDashboard.actions.myMunicipalCorporationAspirantsDesc') || 'Aspirants in your corporation ward',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <rect x="4" y="14" width="22" height="12" rx="1.5" stroke="#F5A800" strokeWidth="1.5" fill="rgba(245,168,0,0.08)"/>
@@ -426,6 +437,7 @@ const actions = [
     }] : []),
     ...((user as any)?.gramPanchayatConstituency != null ? [{
       title: t('userDashboard.actions.myGramPanchayatAspirants') || 'My Gram Panchayat Aspirants',
+      description: t('userDashboard.actions.myGramPanchayatAspirantsDesc') || 'Aspirants in your Gram Panchayat',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <path d="M5 26 Q8 16 15 12 Q22 16 25 26" stroke="#22c55e" strokeWidth="1.5" fill="rgba(34,197,94,0.08)" strokeLinejoin="round"/>
@@ -448,6 +460,7 @@ const actions = [
     // },
     {
       title: t('userDashboard.actions.registeredAspirants') || 'Registered Aspirants',
+      description: t('userDashboard.actions.registeredAspirantsDesc') || 'See all registered aspirants',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)"/>
@@ -462,6 +475,9 @@ const actions = [
     },
     {
       title: isKannada ? 'ಕಾರ್ಯಕರ್ತರು' : 'Karyakartas',
+      description: isKannada
+        ? 'ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಮತ್ತು ಸಕ್ರಿಯ ನಾಗರಿಕರ ತಂಡವನ್ನು ಸೇರಿಕೊಳ್ಳಿ.'
+        : 'Join our team of community volunteers.',
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
           <circle cx="8" cy="11" r="3" stroke="#253A9A" strokeWidth="1.4" fill="rgba(37,58,154,0.1)"/>
@@ -1098,121 +1114,269 @@ const heroBg = isDark
       <Stack spacing={{ xs: 2.5, md: 3 }} sx={{ fontFamily: FF_BODY, pb: { xs: 2, md: 4 } }}>
         {mobileHero}
         {pendingAspirantAlert}
-        {isAspirant && mobileAspirantTiles}
+        {isAspirant && activeLayout !== 'cardover' && mobileAspirantTiles}
 {/* Desktop Action Cards Grid */}
-        {!isSm && (
+        {activeLayout === 'cardover' ? (
           <Box
             sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: 'repeat(2, minmax(0, 1fr))',
-                md: 'repeat(3, minmax(0, 1fr))',
-              },
-              gap: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
               width: '100%',
               mx: 'auto',
               px: { xs: 1, sm: 0 },
+              pb: 4,
             }}
           >
-            {displayActions.map((action, index) => (
-              <Box key={action.path} sx={{ display: 'flex', flexDirection: 'column' }}>
-                <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.34, delay: 0.12 + index * 0.05 }} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <Card
-                    onClick={() => handleActionClick(action)}
-                    sx={{
-                      height: '100%',
-                      borderRadius: '18px',
-                      background: isDark
-                        ? `radial-gradient(ellipse at 60% 0%, rgba(200,80,0,0.12) 0%, rgba(10,6,4,0.98) 55%), radial-gradient(ellipse at 10% 90%, rgba(${index % 2 === 0 ? '200,80,0' : '37,58,154'},0.1) 0%, transparent 60%), #0a0604`
-                        : 'linear-gradient(150deg, #fffdf7 0%, #fff8e8 100%)',
-                      backgroundImage: isDark
-                        ? `radial-gradient(circle, rgba(255,180,60,0.13) 1px, transparent 1px), radial-gradient(circle, rgba(255,120,30,0.06) 1px, transparent 1px), radial-gradient(ellipse at 60% 0%, rgba(200,80,0,0.14) 0%, transparent 55%)`
-                        : 'none',
-                      backgroundSize: isDark ? '48px 48px, 22px 22px, 100% 100%' : 'auto',
-                      backgroundPosition: isDark ? '0 0, 11px 11px, 0 0' : '0 0',
-                      border: `1.5px solid ${isDark
-                        ? (index % 2 === 0 ? 'rgba(245,140,0,0.65)' : 'rgba(80,110,240,0.55)')
-                        : (index % 2 === 0 ? 'rgba(245,168,0,0.4)' : 'rgba(37,58,154,0.35)')}`,
-                      boxShadow: isDark
-                        ? (index % 2 === 0
-                          ? '0 0 18px rgba(245,130,0,0.45), 0 0 42px rgba(200,80,0,0.2), inset 0 0 20px rgba(180,60,0,0.07)'
-                          : '0 0 18px rgba(60,90,240,0.45), 0 0 42px rgba(37,58,154,0.22), inset 0 0 20px rgba(37,58,154,0.07)')
-                        : '0 4px 20px rgba(245,168,0,0.07)',
-                      overflow: 'hidden',
-                      cursor: (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') ? 'default' : 'pointer',
-                      opacity: (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') ? 0.45 : 1,
-                      transition: 'transform 0.28s cubic-bezier(.17,.67,.4,1.3), box-shadow 0.3s ease, border-color 0.3s ease',
-                      '&:hover': {
-                        transform: 'translateY(-6px) scale(1.018)',
-                        boxShadow: isDark
-                          ? (index % 2 === 0
-                            ? '0 0 30px rgba(245,140,0,0.65), 0 0 70px rgba(200,80,0,0.3), 0 24px 50px rgba(0,0,0,0.6)'
-                            : '0 0 30px rgba(80,110,240,0.65), 0 0 70px rgba(37,58,154,0.35), 0 24px 50px rgba(0,0,0,0.6)')
-                          : '0 0 24px rgba(245,168,0,0.2), 0 14px 32px rgba(17,24,39,0.1)',
-                        borderColor: isDark
-                          ? (index % 2 === 0 ? 'rgba(255,160,0,0.9)' : 'rgba(100,140,255,0.8)')
-                          : (index % 2 === 0 ? 'rgba(245,168,0,0.7)' : 'rgba(37,58,154,0.6)'),
-                      },
-                    }}
+            {displayActions.map((action, index) => {
+              const isActionDisabled = (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') || (action as any).disabled;
+              return (
+                <Box
+                  key={action.path}
+                  sx={{
+                    position: 'sticky',
+                    top: { xs: 70 + index * 20, sm: 80 + index * 25 },
+                    zIndex: 10 + index,
+                    width: '100%',
+                  }}
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-50px' }}
+                    transition={{ duration: 0.4 }}
                   >
-                    {isDark && <Box sx={{
-                      height: '3px', background: index % 2 === 0
-                        ? 'linear-gradient(90deg, rgba(255,160,0,0) 0%, rgba(255,160,0,0.9) 45%, rgba(255,160,0,0) 100%)'
-                        : 'linear-gradient(90deg, rgba(100,140,255,0) 0%, rgba(100,140,255,0.85) 45%, rgba(100,140,255,0) 100%)'
-                    }} />}
-                    <CardContent sx={{ p: { xs: 2.2, md: 2.8 }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1.6, height: '100%' }}>
-                      <Box sx={{
-                        width: 72, height: 72, borderRadius: '20px',
+                    <Card
+                      onClick={() => handleActionClick(action)}
+                      sx={{
+                        borderRadius: '20px',
                         background: isDark
-                          ? 'linear-gradient(145deg, #1a0f04 0%, #100a02 100%)'
-                          : 'radial-gradient(circle at 30% 30%, rgba(245,168,0,0.22), rgba(245,168,0,0.06))',
-                        color: GOLD,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        border: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(245,168,0,0.4)'}`,
+                          ? `linear-gradient(145deg, #1A1D24, #12141C)`
+                          : '#FFFFFF',
+                        border: `1.5px solid ${isDark
+                          ? (index % 2 === 0 ? 'rgba(245,140,0,0.65)' : 'rgba(80,110,240,0.55)')
+                          : (index % 2 === 0 ? 'rgba(245,168,0,0.4)' : 'rgba(37,58,154,0.35)')}`,
                         boxShadow: isDark
-                          ? `0 0 0 5px rgba(245,140,0,0.08), 0 0 18px rgba(245,130,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05)`
-                          : `0 0 0 5px rgba(245,168,0,0.1), 0 4px 14px rgba(245,168,0,0.18)`,
-                        transition: 'box-shadow 0.28s ease, transform 0.28s ease',
-                        '& svg': { fontSize: 30 },
-                      }}>
-                        {action.icon}
-                      </Box>
-                      <Typography sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: isDark ? '#fff' : textPrimary, fontSize: actionTitleFontSize, lineHeight: 1.2, textAlign: 'center', letterSpacing: '-0.01em', textShadow: isDark ? '0 0 18px rgba(255,255,255,0.25)' : 'none' }}>
-                        {action.title}
-                      </Typography>
-                      <Button
-                        size="small"
-                        variant="contained"
+                          ? '0 -8px 24px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.7)'
+                          : '0 -4px 16px rgba(0,0,0,0.03), 0 12px 24px rgba(0,0,0,0.08)',
+                        cursor: isActionDisabled ? 'default' : 'pointer',
+                        opacity: isActionDisabled ? 0.45 : 1,
+                        transition: 'transform 0.28s ease',
+                        '&:hover': {
+                          transform: isActionDisabled ? 'none' : 'translateY(-4px) scale(1.005)',
+                        },
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <CardContent
                         sx={{
-                          fontFamily: FF_HEADING,
-                          fontWeight: 700,
-                          fontSize: '0.78rem',
-                          textTransform: 'none',
-                          mt: 0.25,
-                          px: 2.5,
-                          py: 0.55,
-                          borderRadius: '20px',
-                          minWidth: { xs: '130px', md: '225px' },
-                          color: '#fff',
-                          background: 'linear-gradient(135deg, #dd1f11de 0%, #e02110c2 100%)',
-                          boxShadow: '0 4px 14px rgba(200,24,10,0.35)',
-                          letterSpacing: '0.02em',
-                          transition: 'all 0.22s ease',
-                          '&:hover': {
-                            background: 'linear-gradient(135deg, #e02010 0%, #C8180A 100%)',
-                            boxShadow: '0 6px 22px rgba(200,24,10,0.5)',
-                            transform: 'translateY(-1px)',
-                          },
+                          p: { xs: 2.5, sm: 3, md: 4 },
+                          display: 'flex',
+                          flexDirection: { xs: 'column', sm: 'row' },
+                          alignItems: 'center',
+                          gap: { xs: 2.5, sm: 4 },
+                          '&:last-child': { pb: { xs: 2.5, sm: 3, md: 4 } },
                         }}
                       >
-                        {t('common.clickHere', { defaultValue: 'Click here' })}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Box>
-            ))}
+                        {/* Larger icon container */}
+                        <Box
+                          sx={{
+                            width: { xs: 72, sm: 84, md: 96 },
+                            height: { xs: 72, sm: 84, md: 96 },
+                            borderRadius: '20px',
+                            background: isDark
+                              ? 'linear-gradient(145deg, #1a0f04 0%, #100a02 100%)'
+                              : 'radial-gradient(circle at 30% 30%, rgba(245,168,0,0.22), rgba(245,168,0,0.06))',
+                            color: GOLD,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(245,168,0,0.4)'}`,
+                            boxShadow: isDark
+                              ? '0 4px 14px rgba(0,0,0,0.4)'
+                              : '0 4px 12px rgba(245,168,0,0.1)',
+                            flexShrink: 0,
+                            '& svg': { fontSize: { xs: 36, sm: 42, md: 48 } },
+                            '& img': { width: { xs: 36, sm: 42, md: 48 }, height: { xs: 36, sm: 42, md: 48 } },
+                          }}
+                        >
+                          {action.icon}
+                        </Box>
+
+                        {/* Title and brief description */}
+                        <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', sm: 'left' } }}>
+                          <Typography
+                            sx={{
+                              fontFamily: FF_HEADING,
+                              fontWeight: 800,
+                              color: isDark ? '#fff' : textPrimary,
+                              fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.35rem' },
+                              lineHeight: 1.25,
+                              mb: 0.75,
+                            }}
+                          >
+                            {action.title}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: FF_BODY,
+                              color: textSecondary,
+                              fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' },
+                              lineHeight: 1.55,
+                            }}
+                          >
+                            {action.description || 'Access details and actions for this feature.'}
+                          </Typography>
+                        </Box>
+
+                        {/* Proceed button */}
+                        <Button
+                          variant="contained"
+                          sx={{
+                            fontFamily: FF_HEADING,
+                            fontWeight: 800,
+                            fontSize: { xs: '0.78rem', md: '0.82rem' },
+                            textTransform: 'none',
+                            px: { xs: 3, md: 4 },
+                            py: { xs: 0.8, md: 1.1 },
+                            borderRadius: '20px',
+                            minWidth: { xs: '130px', sm: '160px' },
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, #dd1f11de 0%, #e02110c2 100%)',
+                            boxShadow: '0 4px 14px rgba(200,24,10,0.35)',
+                            transition: 'all 0.22s ease',
+                            flexShrink: 0,
+                            alignSelf: { xs: 'stretch', sm: 'center' },
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #e02010 0%, #C8180A 100%)',
+                              boxShadow: '0 6px 22px rgba(200,24,10,0.5)',
+                            },
+                          }}
+                        >
+                          {t('common.clickHere', { defaultValue: 'Click here' })}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Box>
+              );
+            })}
           </Box>
+        ) : (
+          !isSm && (
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: {
+                  xs: 'repeat(2, minmax(0, 1fr))',
+                  md: 'repeat(3, minmax(0, 1fr))',
+                },
+                gap: 2,
+                width: '100%',
+                mx: 'auto',
+                px: { xs: 1, sm: 0 },
+              }}
+            >
+              {displayActions.map((action, index) => (
+                <Box key={action.path} sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.34, delay: 0.12 + index * 0.05 }} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Card
+                      onClick={() => handleActionClick(action)}
+                      sx={{
+                        height: '100%',
+                        borderRadius: '18px',
+                        background: isDark
+                          ? `radial-gradient(ellipse at 60% 0%, rgba(200,80,0,0.12) 0%, rgba(10,6,4,0.98) 55%), radial-gradient(ellipse at 10% 90%, rgba(${index % 2 === 0 ? '200,80,0' : '37,58,154'},0.1) 0%, transparent 60%), #0a0604`
+                          : 'linear-gradient(150deg, #fffdf7 0%, #fff8e8 100%)',
+                        backgroundImage: isDark
+                          ? `radial-gradient(circle, rgba(255,180,60,0.13) 1px, transparent 1px), radial-gradient(circle, rgba(255,120,30,0.06) 1px, transparent 1px), radial-gradient(ellipse at 60% 0%, rgba(200,80,0,0.14) 0%, transparent 55%)`
+                          : 'none',
+                        backgroundSize: isDark ? '48px 48px, 22px 22px, 100% 100%' : 'auto',
+                        backgroundPosition: isDark ? '0 0, 11px 11px, 0 0' : '0 0',
+                        border: `1.5px solid ${isDark
+                          ? (index % 2 === 0 ? 'rgba(245,140,0,0.65)' : 'rgba(80,110,240,0.55)')
+                          : (index % 2 === 0 ? 'rgba(245,168,0,0.4)' : 'rgba(37,58,154,0.35)')}`,
+                        boxShadow: isDark
+                          ? (index % 2 === 0
+                            ? '0 0 18px rgba(245,130,0,0.45), 0 0 42px rgba(200,80,0,0.2), inset 0 0 20px rgba(180,60,0,0.07)'
+                            : '0 0 18px rgba(60,90,240,0.45), 0 0 42px rgba(37,58,154,0.22), inset 0 0 20px rgba(37,58,154,0.07)')
+                          : '0 4px 20px rgba(245,168,0,0.07)',
+                        overflow: 'hidden',
+                        cursor: (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') ? 'default' : 'pointer',
+                        opacity: (isAspirantRegistrationComplete && action.path === '/user/aspirants/register') ? 0.45 : 1,
+                        transition: 'transform 0.28s cubic-bezier(.17,.67,.4,1.3), box-shadow 0.3s ease, border-color 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-6px) scale(1.018)',
+                          boxShadow: isDark
+                            ? (index % 2 === 0
+                              ? '0 0 30px rgba(245,140,0,0.65), 0 0 70px rgba(200,80,0,0.3), 0 24px 50px rgba(0,0,0,0.6)'
+                              : '0 0 30px rgba(80,110,240,0.65), 0 0 70px rgba(37,58,154,0.35), 0 24px 50px rgba(0,0,0,0.6)')
+                            : '0 0 24px rgba(245,168,0,0.2), 0 14px 32px rgba(17,24,39,0.1)',
+                          borderColor: isDark
+                            ? (index % 2 === 0 ? 'rgba(255,160,0,0.9)' : 'rgba(100,140,255,0.8)')
+                            : (index % 2 === 0 ? 'rgba(245,168,0,0.7)' : 'rgba(37,58,154,0.6)'),
+                        },
+                      }}
+                    >
+                      {isDark && <Box sx={{
+                        height: '3px', background: index % 2 === 0
+                          ? 'linear-gradient(90deg, rgba(255,160,0,0) 0%, rgba(255,160,0,0.9) 45%, rgba(255,160,0,0) 100%)'
+                          : 'linear-gradient(90deg, rgba(100,140,255,0) 0%, rgba(100,140,255,0.85) 45%, rgba(100,140,255,0) 100%)'
+                      }} />}
+                      <CardContent sx={{ p: { xs: 2.2, md: 2.8 }, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1.6, height: '100%' }}>
+                        <Box sx={{
+                          width: 72, height: 72, borderRadius: '20px',
+                          background: isDark
+                            ? 'linear-gradient(145deg, #1a0f04 0%, #100a02 100%)'
+                            : 'radial-gradient(circle at 30% 30%, rgba(245,168,0,0.22), rgba(245,168,0,0.06))',
+                          color: GOLD,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          border: `1.5px solid ${isDark ? 'rgba(245,168,0,0.35)' : 'rgba(245,168,0,0.4)'}`,
+                          boxShadow: isDark
+                            ? `0 0 0 5px rgba(245,140,0,0.08), 0 0 18px rgba(245,130,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05)`
+                            : `0 0 0 5px rgba(245,168,0,0.1), 0 4px 14px rgba(245,168,0,0.18)`,
+                          transition: 'box-shadow 0.28s ease, transform 0.28s ease',
+                          '& svg': { fontSize: 30 },
+                        }}>
+                          {action.icon}
+                        </Box>
+                        <Typography sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: isDark ? '#fff' : textPrimary, fontSize: actionTitleFontSize, lineHeight: 1.2, textAlign: 'center', letterSpacing: '-0.01em', textShadow: isDark ? '0 0 18px rgba(255,255,255,0.25)' : 'none' }}>
+                          {action.title}
+                        </Typography>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          sx={{
+                            fontFamily: FF_HEADING,
+                            fontWeight: 700,
+                            fontSize: '0.78rem',
+                            textTransform: 'none',
+                            mt: 0.25,
+                            px: 2.5,
+                            py: 0.55,
+                            borderRadius: '20px',
+                            minWidth: { xs: '130px', md: '225px' },
+                            color: '#fff',
+                            background: 'linear-gradient(135deg, #dd1f11de 0%, #e02110c2 100%)',
+                            boxShadow: '0 4px 14px rgba(200,24,10,0.35)',
+                            letterSpacing: '0.02em',
+                            transition: 'all 0.22s ease',
+                            '&:hover': {
+                              background: 'linear-gradient(135deg, #e02010 0%, #C8180A 100%)',
+                              boxShadow: '0 6px 22px rgba(200,24,10,0.5)',
+                              transform: 'translateY(-1px)',
+                            },
+                          }}
+                        >
+                          {t('common.clickHere', { defaultValue: 'Click here' })}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Box>
+              ))}
+            </Box>
+          )
         )}
 
         <WardCandidateListPage embedded />

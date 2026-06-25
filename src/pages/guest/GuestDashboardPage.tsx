@@ -505,120 +505,269 @@ const GuestDashboardPage = () => {
       </motion.div>
 
       {/* Grid of Action Tiles */}
-      <Box sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
-        gap: 3.5,
-        width: '100%',
-        mx: 'auto',
-      }}>
-        {actions.map((action, index) => (
-          <Box key={action.path} sx={{ display: 'flex', flexDirection: 'column' }}>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 0.45, delay: 0.1 + index * 0.08 }} 
-              style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-            >
-              <Card
-                onClick={() => handleActionClick(action.path)}
+      {activeLayout === 'cardover' ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            width: '100%',
+            mx: 'auto',
+            pb: 4,
+          }}
+        >
+          {actions.map((action, index) => {
+            return (
+              <Box
+                key={action.path}
                 sx={{
-                  height: '100%',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  background: theme.palette.background.paper,
-                  border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'}`,
-                  boxShadow: isDark ? '0 4px 20px rgba(0, 0, 0, 0.25)' : '0 4px 20px rgba(0, 0, 0, 0.02)',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                  '&:hover': {
-                    transform: 'translateY(-6px)',
-                    boxShadow: isDark
-                      ? `0 14px 36px rgba(0,0,0,0.5), 0 0 0 1px ${action.color}35`
-                      : `0 14px 36px rgba(0, 0, 0, 0.06), 0 0 0 1px ${action.color}35`,
-                    borderColor: action.color,
-                  },
+                  position: 'sticky',
+                  top: { xs: 70 + index * 20, sm: 80 + index * 25 },
+                  zIndex: 10 + index,
+                  width: '100%',
                 }}
               >
-                {/* Accent bar at the top */}
-                <Box sx={{ height: '4px', background: action.color, opacity: 0.85 }} />
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-50px' }}
+                  transition={{ duration: 0.4 }}
+                  style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+                >
+                  <Card
+                    onClick={() => handleActionClick(action.path)}
+                    sx={{
+                      borderRadius: '20px',
+                      cursor: 'pointer',
+                      background: theme.palette.background.paper,
+                      border: `1.5px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'}`,
+                      boxShadow: isDark
+                        ? '0 -8px 24px rgba(0,0,0,0.5), 0 12px 32px rgba(0,0,0,0.7)'
+                        : '0 -4px 16px rgba(0,0,0,0.03), 0 12px 24px rgba(0,0,0,0.08)',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                      '&:hover': {
+                        transform: 'translateY(-4px) scale(1.005)',
+                        borderColor: action.color,
+                        boxShadow: isDark
+                          ? `0 14px 36px rgba(0,0,0,0.5), 0 0 0 1px ${action.color}35`
+                          : `0 14px 36px rgba(0, 0, 0, 0.06), 0 0 0 1px ${action.color}35`,
+                      },
+                    }}
+                  >
+                    {/* Accent bar at the top */}
+                    <Box sx={{ height: '4px', background: action.color, opacity: 0.85 }} />
 
-                <CardContent sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flexGrow: 1 }}>
-                  {/* Circular Icon Container with rotation on hover */}
-                  <Box sx={{
-                    width: 58,
-                    height: 58,
-                    borderRadius: '50%',
-                    background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.015)',
+                    <CardContent
+                      sx={{
+                        p: { xs: 2.5, sm: 3, md: 4 },
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: 'center',
+                        gap: { xs: 2.5, sm: 4 },
+                        '&:last-child': { pb: { xs: 2.5, sm: 3, md: 4 } },
+                      }}
+                    >
+                      {/* Larger icon container */}
+                      <Box
+                        sx={{
+                          width: { xs: 72, sm: 84, md: 96 },
+                          height: { xs: 72, sm: 84, md: 96 },
+                          borderRadius: '20px',
+                          background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.015)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
+                          flexShrink: 0,
+                          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                          '.MuiCard-root:hover &': {
+                            background: `${action.color}12`,
+                            borderColor: action.color,
+                            transform: 'rotate(10deg) scale(1.08)',
+                          },
+                          '& svg': { fontSize: { xs: 36, sm: 42, md: 48 } },
+                          '& img': { width: { xs: 36, sm: 42, md: 48 }, height: { xs: 36, sm: 42, md: 48 } },
+                        }}
+                      >
+                        {action.icon}
+                      </Box>
+
+                      {/* Title and description */}
+                      <Box sx={{ flexGrow: 1, textAlign: { xs: 'center', sm: 'left' } }}>
+                        <Typography
+                          sx={{
+                            fontFamily: FF_HEADING,
+                            fontWeight: 800,
+                            color: textPrimary,
+                            fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.35rem' },
+                            lineHeight: 1.25,
+                            mb: 0.75,
+                            letterSpacing: '-0.01em',
+                          }}
+                        >
+                          {action.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontFamily: FF_BODY,
+                            color: textHigh,
+                            fontSize: { xs: '0.85rem', sm: '0.9rem', md: '0.95rem' },
+                            lineHeight: 1.55,
+                            fontWeight: 500,
+                          }}
+                        >
+                          {action.desc}
+                        </Typography>
+                      </Box>
+
+                      {/* Launch indicator link with arrow horizontal shift */}
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.8,
+                          color: action.color,
+                          fontWeight: 700,
+                          fontSize: '0.82rem',
+                          flexShrink: 0,
+                          alignSelf: { xs: 'stretch', sm: 'center' },
+                          justifyContent: { xs: 'center', sm: 'flex-start' },
+                          '& .arrow-icon': {
+                            fontSize: '16px',
+                            transition: 'transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                          },
+                          '.MuiCard-root:hover & .arrow-icon': {
+                            transform: 'translateX(6px)',
+                          },
+                        }}
+                      >
+                        <span>{isKannada ? 'ಸೇವೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ' : 'Launch Service'}</span>
+                        <ArrowIcon className="arrow-icon" />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Box>
+            );
+          })}
+        </Box>
+      ) : (
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
+          gap: 3.5,
+          width: '100%',
+          mx: 'auto',
+        }}>
+          {actions.map((action, index) => (
+            <Box key={action.path} sx={{ display: 'flex', flexDirection: 'column' }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ duration: 0.45, delay: 0.1 + index * 0.08 }} 
+                style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+              >
+                <Card
+                  onClick={() => handleActionClick(action.path)}
+                  sx={{
+                    height: '100%',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    background: theme.palette.background.paper,
+                    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)'}`,
+                    boxShadow: isDark ? '0 4px 20px rgba(0, 0, 0, 0.25)' : '0 4px 20px rgba(0, 0, 0, 0.02)',
+                    overflow: 'hidden',
+                    position: 'relative',
                     display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
-                    mb: 3.5,
+                    flexDirection: 'column',
                     transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                    '.MuiCard-root:hover &': {
-                      background: `${action.color}12`,
+                    '&:hover': {
+                      transform: 'translateY(-6px)',
+                      boxShadow: isDark
+                        ? `0 14px 36px rgba(0,0,0,0.5), 0 0 0 1px ${action.color}35`
+                        : `0 14px 36px rgba(0, 0, 0, 0.06), 0 0 0 1px ${action.color}35`,
                       borderColor: action.color,
-                      transform: 'rotate(10deg) scale(1.08)',
-                    }
-                  }}>
-                    {action.icon}
-                  </Box>
-
-                  {/* Title */}
-                  <Typography sx={{
-                    fontFamily: FF_HEADING,
-                    fontWeight: 800,
-                    color: textPrimary,
-                    fontSize: '1.12rem',
-                    lineHeight: 1.3,
-                    mb: 1.2,
-                    letterSpacing: '-0.01em',
-                  }}>
-                    {action.title}
-                  </Typography>
-
-                  {/* Description */}
-                  <Typography sx={{
-                    fontFamily: FF_BODY,
-                    color: textHigh,
-                    fontSize: '0.84rem',
-                    lineHeight: 1.55,
-                    fontWeight: 500,
-                  }}>
-                    {action.desc}
-                  </Typography>
-
-                  {/* Launch indicator link with arrow horizontal shift */}
-                  <Box sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.8,
-                    mt: 'auto',
-                    pt: 3.5,
-                    color: action.color,
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    '& .arrow-icon': {
-                      fontSize: '16px',
-                      transition: 'transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
                     },
-                    '.MuiCard-root:hover & .arrow-icon': {
-                      transform: 'translateX(6px)',
-                    }
-                  }}>
-                    <span>{isKannada ? 'ಸೇವೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ' : 'Launch Service'}</span>
-                    <ArrowIcon className="arrow-icon" />
-                  </Box>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </Box>
-        ))}
-      </Box>
+                  }}
+                >
+                  {/* Accent bar at the top */}
+                  <Box sx={{ height: '4px', background: action.color, opacity: 0.85 }} />
+
+                  <CardContent sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flexGrow: 1 }}>
+                    {/* Circular Icon Container with rotation on hover */}
+                    <Box sx={{
+                      width: 58,
+                      height: 58,
+                      borderRadius: '50%',
+                      background: isDark ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.015)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'}`,
+                      mb: 3.5,
+                      transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                      '.MuiCard-root:hover &': {
+                        background: `${action.color}12`,
+                        borderColor: action.color,
+                        transform: 'rotate(10deg) scale(1.08)',
+                      }
+                    }}>
+                      {action.icon}
+                    </Box>
+
+                    {/* Title */}
+                    <Typography sx={{
+                      fontFamily: FF_HEADING,
+                      fontWeight: 800,
+                      color: textPrimary,
+                      fontSize: '1.12rem',
+                      lineHeight: 1.3,
+                      mb: 1.2,
+                      letterSpacing: '-0.01em',
+                    }}>
+                      {action.title}
+                    </Typography>
+
+                    {/* Description */}
+                    <Typography sx={{
+                      fontFamily: FF_BODY,
+                      color: textHigh,
+                      fontSize: '0.84rem',
+                      lineHeight: 1.55,
+                      fontWeight: 500,
+                    }}>
+                      {action.desc}
+                    </Typography>
+
+                    {/* Launch indicator link with arrow horizontal shift */}
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.8,
+                      mt: 'auto',
+                      pt: 3.5,
+                      color: action.color,
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      '& .arrow-icon': {
+                        fontSize: '16px',
+                        transition: 'transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                      },
+                      '.MuiCard-root:hover & .arrow-icon': {
+                        transform: 'translateX(6px)',
+                      }
+                    }}>
+                      <span>{isKannada ? 'ಸೇವೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ' : 'Launch Service'}</span>
+                      <ArrowIcon className="arrow-icon" />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Box>
+          ))}
+        </Box>
+      )}
     </Stack>
   );
 };

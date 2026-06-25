@@ -9,7 +9,7 @@ import { persist } from 'zustand/middleware';
  *  - 'right'    → content anchored to the right with a gold accent strip
  *  - null       → default layout (no override)
  */
-export type LayoutVariant = 'reverse' | 'straight' | 'left' | 'right' | null;
+export type LayoutVariant = 'reverse' | 'straight' | 'cardover' | null;
 
 interface PreferenceState {
   activeLayout: LayoutVariant;

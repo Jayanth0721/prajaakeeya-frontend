@@ -54,36 +54,17 @@ const PreviewStraight: React.FC<PreviewProps> = ({ active, isDark }) => {
   );
 };
 
-const PreviewLeft: React.FC<PreviewProps> = ({ active, isDark }) => {
+const PreviewCardOver: React.FC<PreviewProps> = ({ active, isDark }) => {
   const bg = isDark ? '#1E2224' : '#F1F5F9';
-  const panel = active ? BRAND.red : (isDark ? '#3A3F45' : '#CBD5E1');
+  const c1 = active ? BRAND.red : (isDark ? '#3A3F45' : '#CBD5E1');
+  const c2 = active ? BRAND.yellow : (isDark ? '#2A2F35' : '#E2E8F0');
   return (
     <svg viewBox="0 0 120 72" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
       <rect width="120" height="72" rx="6" fill={bg} />
-      <rect x="8" y="8" width="6" height="56" rx="3" fill={panel} />
-      <rect x="20" y="10" width="90" height="22" rx="4" fill={active ? `rgba(200,24,10,0.12)` : (isDark ? '#2A2F35' : '#E2E8F0')} />
-      <rect x="20" y="38" width="90" height="22" rx="4" fill={active ? `rgba(245,168,0,0.10)` : (isDark ? '#252A30' : '#EEF2F7')} />
-      <rect x="26" y="16" width="36" height="4" rx="2" fill={active ? BRAND.red : (isDark ? '#555' : '#94A3B8')} />
-      <rect x="26" y="23" width="24" height="3" rx="1.5" fill={isDark ? '#444' : '#CBD5E1'} />
-      <rect x="26" y="44" width="36" height="4" rx="2" fill={active ? BRAND.yellow : (isDark ? '#555' : '#94A3B8')} />
-      <rect x="26" y="51" width="24" height="3" rx="1.5" fill={isDark ? '#444' : '#CBD5E1'} />
-    </svg>
-  );
-};
-
-const PreviewRight: React.FC<PreviewProps> = ({ active, isDark }) => {
-  const bg = isDark ? '#1E2224' : '#F1F5F9';
-  const panel = active ? BRAND.yellow : (isDark ? '#3A3F45' : '#CBD5E1');
-  return (
-    <svg viewBox="0 0 120 72" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
-      <rect width="120" height="72" rx="6" fill={bg} />
-      <rect x="106" y="8" width="6" height="56" rx="3" fill={panel} />
-      <rect x="10" y="10" width="90" height="22" rx="4" fill={active ? `rgba(245,168,0,0.10)` : (isDark ? '#2A2F35' : '#E2E8F0')} />
-      <rect x="10" y="38" width="90" height="22" rx="4" fill={active ? `rgba(200,24,10,0.10)` : (isDark ? '#252A30' : '#EEF2F7')} />
-      <rect x="16" y="16" width="36" height="4" rx="2" fill={active ? BRAND.yellow : (isDark ? '#555' : '#94A3B8')} />
-      <rect x="16" y="23" width="24" height="3" rx="1.5" fill={isDark ? '#444' : '#CBD5E1'} />
-      <rect x="16" y="44" width="36" height="4" rx="2" fill={active ? BRAND.red : (isDark ? '#555' : '#94A3B8')} />
-      <rect x="16" y="51" width="24" height="3" rx="1.5" fill={isDark ? '#444' : '#CBD5E1'} />
+      <rect x="15" y="10" width="90" height="30" rx="4" fill={c2} stroke={active ? BRAND.yellow : 'none'} strokeWidth="1" />
+      <rect x="15" y="25" width="90" height="35" rx="4" fill={c1} style={{ filter: 'drop-shadow(0 -4px 6px rgba(0,0,0,0.15))' }} />
+      <rect x="22" y="35" width="40" height="4" rx="2" fill={active ? '#fff' : (isDark ? '#555' : '#94A3B8')} />
+      <rect x="22" y="44" width="24" height="3" rx="1.5" fill={active ? 'rgba(255,255,255,0.5)' : (isDark ? '#444' : '#CBD5E1')} />
     </svg>
   );
 };
@@ -292,20 +273,12 @@ const PreferencesPage: React.FC = () => {
       Preview: PreviewStraight,
     },
     {
-      id: 'left',
-      title: 'Left-Aligned Appearance',
-      description: 'Anchors headings, text, and call-to-action buttons to the left with a vivid red accent strip.',
+      id: 'cardover',
+      title: 'Card Over Flow Layout',
+      description: 'Allows cards to slide up and stack cleanly over each other as you scroll down, creating a smooth visual overlap transition.',
       accentColor: BRAND.red,
-      badgeLabel: 'Alignment',
-      Preview: PreviewLeft,
-    },
-    {
-      id: 'right',
-      title: 'Right-Aligned Appearance',
-      description: 'Mirrors the left variant — content flows from the right side with a gold accent strip.',
-      accentColor: BRAND.yellow,
-      badgeLabel: 'Alignment',
-      Preview: PreviewRight,
+      badgeLabel: 'Scrolling',
+      Preview: PreviewCardOver,
     },
   ];
 
