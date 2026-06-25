@@ -39,8 +39,8 @@ import { fetchAllWards } from '../services/wardService';
 import { getVoters } from '../services/voterService';
 // C-PERF-4: Lazy-load the candidate list instead of a static import. The
 // dashboard renders it inline (<React.Suspense fallback={null}>
-          <WardCandidateListPage embedded />
-        </React.Suspense> below), so we
+//           <WardCandidateListPage embedded />
+//         </React.Suspense> below), so we
 // can't drop it — but a static import merges its ~98 KB chunk into the
 // dashboard chunk, defeating code-splitting. Lazy() keeps the same UX while
 // splitting it into its own chunk that streams in behind the dashboard shell.

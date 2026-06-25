@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { BRAND } from '../../theme';
 
 import { getVoters } from '../../services/voterService';
+import { getCitizensCount } from '../../services/statsService';
 import useThemeStore from '../../store/useThemeStore';
 import usePreferenceStore from '../../store/usePreferenceStore';
 import { ArrowForwardRounded as ArrowIcon, AppRegistration as RegisterIcon, HomeRounded as HomeIcon, TuneRounded as TuneIcon } from '@mui/icons-material';
@@ -88,7 +89,7 @@ const GuestDashboardPage = () => {
   React.useEffect(() => {
     let cancelled = false;
     getCitizensCount()
-      .then((resp) => {
+      .then((resp: any) => {
         if (cancelled) return;
         const total = resp?.data?.citizens;
         if (typeof total === 'number') setTotalCitizens(total);

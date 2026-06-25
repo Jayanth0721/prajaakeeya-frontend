@@ -110,6 +110,7 @@ const AdminUsersListPage: React.FC = () => {
                         </>
                     )}
                 </CardContent>
+            </Card>
         </Stack>
     );
 };
