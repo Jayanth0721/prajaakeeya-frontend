@@ -21,6 +21,8 @@ import { COOKIE_AUTH } from "./config/authMode";
 const loadPush = () => import("./services/pushNotifications");
 import Preloader, { dismissPreloader } from "./components/Preloader";
 import OfflineBanner from "./components/OfflineBanner";
+import usePreferenceStore from "./store/usePreferenceStore";
+import { BRAND } from "./theme";
 
 // Coming Soon branch renders these BEFORE the <Suspense> boundary, so keep
 // them static (the legal pages are tiny and also reused in normal routes).
@@ -109,6 +111,7 @@ const RedirectIfAuth = ({ children }: { children: React.ReactElement }) => {
 const App = () => {
   const { t } = useTranslation();
   const { isAdmin, isAuthenticated, token, user, fetchProfile } = useAuthStore();
+  const { activeLayout } = usePreferenceStore();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -257,11 +260,100 @@ const App = () => {
 
   return (
     <>
-      {(location.pathname === "/" ||
-        location.pathname === "/index.html" ||
-        location.pathname === "/loading") && <Preloader />}
-      <OfflineBanner />
-      <Suspense
+      {activeLayout && (
+        <style>{`
+          /* Preferences Overrides */
+
+          /* --- LEFT ALIGNMENT PREFERENCE --- */
+          .layout-pref-left .MuiTypography-h1,
+          .layout-pref-left .MuiTypography-h2,
+          .layout-pref-left .MuiTypography-h3,
+          .layout-pref-left .MuiTypography-h4,
+          .layout-pref-left .MuiTypography-h5,
+          .layout-pref-left .MuiTypography-h6,
+          .layout-pref-left h1,
+          .layout-pref-left h2,
+          .layout-pref-left h3,
+          .layout-pref-left h4,
+          .layout-pref-left h5,
+          .layout-pref-left h6 {
+            text-align: left !important;
+          }
+          .layout-pref-left .MuiTypography-h3,
+          .layout-pref-left .MuiTypography-h4 {
+            border-left: 4px solid #C8180A !important;
+            padding-left: 12px !important;
+          }
+
+          /* --- RIGHT ALIGNMENT PREFERENCE --- */
+          .layout-pref-right .MuiTypography-h1,
+          .layout-pref-right .MuiTypography-h2,
+          .layout-pref-right .MuiTypography-h3,
+          .layout-pref-right .MuiTypography-h4,
+          .layout-pref-right .MuiTypography-h5,
+          .layout-pref-right .MuiTypography-h6,
+          .layout-pref-right h1,
+          .layout-pref-right h2,
+          .layout-pref-right h3,
+          .layout-pref-right h4,
+          .layout-pref-right h5,
+          .layout-pref-right h6 {
+            text-align: right !important;
+          }
+          .layout-pref-right .MuiTypography-h3,
+          .layout-pref-right .MuiTypography-h4 {
+            border-right: 4px solid #F5A800 !important;
+            padding-right: 12px !important;
+          }
+
+          /* --- REVERSE VIEW PREFERENCE --- */
+          .layout-pref-reverse .MuiGrid-container,
+          .layout-pref-reverse .MuiGrid2-container,
+          .layout-pref-reverse .MuiGrid-root.MuiGrid-container,
+          .layout-pref-reverse .MuiGrid2-root.MuiGrid2-container {
+            flex-direction: row-reverse !important;
+          }
+
+          /* --- STRAIGHT STACK VIEW PREFERENCE --- */
+          .layout-pref-straight .MuiGrid-item,
+          .layout-pref-straight .MuiGrid2-root:not(.MuiGrid2-container) {
+            max-width: 100% !important;
+            flex-basis: 100% !important;
+            width: 100% !important;
+          }
+        `}</style>
+      )}
+
+      {/* ── Left/Right accent strip when those layouts are active ── */}
+      {activeLayout === 'left' && (
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          width: 4,
+          zIndex: 1100,
+          background: `linear-gradient(180deg, ${BRAND.red}, ${BRAND.red}55, transparent)`,
+        }} />
+      )}
+      {activeLayout === 'right' && (
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          right: 0,
+          width: 4,
+          zIndex: 1100,
+          background: `linear-gradient(180deg, ${BRAND.yellow}, ${BRAND.yellow}55, transparent)`,
+        }} />
+      )}
+
+      <Box className={activeLayout ? `layout-pref-${activeLayout}` : ""} sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        {(location.pathname === "/" ||
+          location.pathname === "/index.html" ||
+          location.pathname === "/loading") && <Preloader />}
+        <OfflineBanner />
+        <Suspense
         fallback={
           <Box
             sx={{
@@ -490,6 +582,7 @@ const App = () => {
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </Suspense>
+      </Box>
     </>
   );
 };
