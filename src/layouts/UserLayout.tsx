@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -117,9 +117,17 @@ const UserLayout = () => {
       {mode === 'grey' && rainEnabled && <RainEffect />}
       {showHeader && (
         <AppBar position="sticky" elevation={0} sx={{
-        background: navBg,
+        /* Glassmorphic frosted AppBar */
+        background: isDark
+          ? 'rgba(13,15,18,0.72)'
+          : 'rgba(255,255,255,0.72)',
+        backdropFilter: 'blur(24px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(24px) saturate(1.8)',
         color: isDark ? 'white' : 'text.primary',
-        borderBottom: `1px solid ${theme.palette.divider}`,
+        borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(200,24,10,0.06)'}`,
+        boxShadow: isDark
+          ? '0 4px 24px -4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)'
+          : '0 4px 24px -4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
         '&::before': isDark ? {
           content: '""',
           position: 'absolute',
@@ -337,11 +345,24 @@ const UserLayout = () => {
           </Toolbar>
         </Container>
 
-        {/* Desktop primary nav — mirrors the mobile bottom nav, shown on sm+.
-            Same items / paths / active-state; replaces the bottom bar on desktop. */}
+        {/* Desktop primary nav — Anchored Glassmorphic Tab Indicator */}
         <Box sx={{ display: { xs: 'none', sm: 'block' }, borderTop: `1px solid ${theme.palette.divider}` }}>
           <Container maxWidth="xl" sx={{ px: { xs: 1, sm: 2 } }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: { sm: 0.5, md: 1 }, py: 0.5 }}>
+            <Box sx={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap',
+              gap: { sm: 0.5, md: 0.75 }, py: 0.6,
+              /* glassmorphic container tint */
+              borderRadius: 2.5,
+              mx: { sm: 2, md: 4 },
+              my: 0.5,
+              px: 1,
+              background: isDark
+                ? 'rgba(255,255,255,0.02)'
+                : 'rgba(255,255,255,0.5)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(200,24,10,0.06)'}`,
+            }}>
               {bottomNavItems.map((item, idx) => {
                 const active = idx === currentNavIndex;
                 return (
@@ -353,19 +374,54 @@ const UserLayout = () => {
                       fontFamily: FF_HEADING,
                       fontWeight: 700,
                       textTransform: 'none',
-                      borderRadius: 2,
-                      px: { sm: 1.2, md: 2 },
-                      py: 0.9,
-                      fontSize: { sm: '0.8rem', md: '0.9rem' },
+                      borderRadius: 50,
+                      px: { sm: 1.6, md: 2.2 },
+                      py: 0.8,
+                      fontSize: { sm: '0.8rem', md: '0.88rem' },
+                      position: 'relative',
+                      overflow: 'hidden',
+                      transition: 'all 0.32s cubic-bezier(.4,0,.2,1)',
                       color: active
-                        ? (isDark ? BRAND.yellow : BRAND.saffron)
-                        : (isDark ? 'rgba(255,255,255,0.72)' : 'text.secondary'),
-                      bgcolor: active ? 'rgba(245,168,0,0.12)' : 'transparent',
-                      '& .MuiButton-startIcon': { mr: 0.6 },
-                      '&:hover': {
-                        bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'action.hover',
-                        color: isDark ? '#fff' : 'text.primary',
+                        ? '#fff'
+                        : (isDark ? 'rgba(255,255,255,0.68)' : 'rgba(17,24,39,0.62)'),
+                      background: active
+                        ? isDark
+                          ? 'linear-gradient(135deg, rgba(245,168,0,0.85) 0%, rgba(200,24,10,0.7) 100%)'
+                          : 'linear-gradient(135deg, rgba(200,24,10,0.88) 0%, rgba(245,168,0,0.75) 100%)'
+                        : 'transparent',
+                      backdropFilter: active ? 'blur(16px)' : 'none',
+                      WebkitBackdropFilter: active ? 'blur(16px)' : 'none',
+                      border: active
+                        ? `1px solid ${isDark ? 'rgba(245,168,0,0.4)' : 'rgba(200,24,10,0.25)'}` 
+                        : '1px solid transparent',
+                      boxShadow: active
+                        ? isDark
+                          ? '0 4px 20px -4px rgba(245,168,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)'
+                          : '0 4px 20px -4px rgba(200,24,10,0.3), inset 0 1px 0 rgba(255,255,255,0.5)'
+                        : 'none',
+                      '& .MuiButton-startIcon': {
+                        mr: 0.6,
+                        transition: 'transform 0.3s ease',
                       },
+                      '&:hover': active
+                        ? {
+                            boxShadow: isDark
+                              ? '0 6px 28px -4px rgba(245,168,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2)'
+                              : '0 6px 28px -4px rgba(200,24,10,0.4), inset 0 1px 0 rgba(255,255,255,0.6)',
+                            transform: 'translateY(-1px)',
+                          }
+                        : {
+                            background: isDark
+                              ? 'rgba(255,255,255,0.06)'
+                              : 'rgba(200,24,10,0.04)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(200,24,10,0.08)'}`,
+                            color: isDark ? '#fff' : 'rgba(17,24,39,0.85)',
+                            '& .MuiButton-startIcon': {
+                              transform: 'scale(1.1)',
+                            },
+                          },
                     }}
                   >
                     {item.label}
@@ -385,6 +441,7 @@ const UserLayout = () => {
       <AppFooter />
 
       {/* Mobile bottom navigation — fixed, xs only */}
+      {/* Mobile bottom navigation — Anchored Glassmorphic Tab Indicator */}
       {showHeader && (
         <Paper
           elevation={0}
@@ -395,11 +452,11 @@ const UserLayout = () => {
             left: 0,
             right: 0,
             zIndex: (theme) => theme.zIndex.appBar,
-            // Solid opaque base so page content scrolling underneath never shows
-            // through; the gradient sits on top via backgroundImage.
-            backgroundColor: isDark ? '#0d0f12' : '#ffffff',
-            backgroundImage: navBg,
-            borderTop: `1px solid ${theme.palette.divider}`,
+            /* Glassmorphic frosted base */
+            backgroundColor: isDark ? 'rgba(13,15,18,0.72)' : 'rgba(255,255,255,0.72)',
+            backdropFilter: 'blur(24px) saturate(1.8)',
+            WebkitBackdropFilter: 'blur(24px) saturate(1.8)',
+            borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(200,24,10,0.06)'}`,
             pb: 'calc(8px + env(safe-area-inset-bottom))',
           }}
         >
@@ -409,20 +466,32 @@ const UserLayout = () => {
             onChange={(_, newValue) => navigate(bottomNavItems[newValue].path)}
             sx={{
               bgcolor: 'transparent',
-              height: 62,
+              height: 66,
               alignItems: 'flex-start',
               pt: 1,
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 0,
                 px: 0.5,
-                // Anchor icon + label to the top so every icon lines up on the
-                // same row regardless of how many lines its label wraps to.
                 justifyContent: 'flex-start',
-                gap: 0.5,
-                color: isDark ? '#fff' : 'rgba(17,24,39,0.5)',
+                gap: 0.4,
+                color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(17,24,39,0.42)',
+                transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
+                borderRadius: 2,
+                mx: 0.3,
+                position: 'relative',
               },
               '& .MuiBottomNavigationAction-root.Mui-selected': {
-                color: isDark ? BRAND.yellow : BRAND.saffron,
+                color: isDark ? '#fff' : BRAND.saffron,
+                background: isDark
+                  ? 'linear-gradient(180deg, rgba(245,168,0,0.18) 0%, rgba(245,168,0,0.04) 100%)'
+                  : 'linear-gradient(180deg, rgba(200,24,10,0.1) 0%, rgba(200,24,10,0.02) 100%)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                '& .MuiSvgIcon-root': {
+                  filter: isDark
+                    ? 'drop-shadow(0 2px 8px rgba(245,168,0,0.5))'
+                    : 'drop-shadow(0 2px 8px rgba(200,24,10,0.35))',
+                },
               },
               '& .MuiBottomNavigationAction-label': {
                 mt: 0,
@@ -430,7 +499,8 @@ const UserLayout = () => {
                 fontFamily: FF_HEADING,
                 fontWeight: 700,
                 fontSize: '0.62rem',
-                '&.Mui-selected': { fontSize: '0.64rem' },
+                transition: 'all 0.3s ease',
+                '&.Mui-selected': { fontSize: '0.64rem', fontWeight: 800 },
               },
             }}
           >

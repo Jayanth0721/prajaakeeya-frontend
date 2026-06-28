@@ -52,6 +52,7 @@ const AdminMunicipalityPage = lazy(() => import("./pages/admin/AdminMunicipality
 const AdminGramaPanchayatPage = lazy(() => import("./pages/admin/AdminGramaPanchayatPage"));
 const AdminAspirantListPage = lazy(() => import("./pages/admin/AdminAspirantListPage"));
 const UserRegisterPage = lazy(() => import("./pages/UserRegisterPage"));
+const PortalRegisterPage = lazy(() => import("./pages/PortalRegisterPage"));
 const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage"));
 const UserConstituencyOnboardingPage = lazy(() => import("./pages/UserConstituencyOnboardingPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
@@ -78,6 +79,10 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const OathPage = lazy(() => import("./pages/OathPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const PreferencesPage = lazy(() => import("./pages/PreferencesPage"));
+const PortalPage = lazy(() => import("./pages/PortalPage"));
+const PrajaaVartePage = lazy(() => import("./pages/portal/PrajaaVartePage"));
+const PrajaalyticsPage = lazy(() => import("./pages/portal/PrajaalyticsPage"));
+const DisavowPage = lazy(() => import("./pages/portal/DisavowPage"));
 
 // Aspirant mobile route pages
 const AspirantProfilePage = lazy(() => import("./pages/aspirant/AspirantProfilePage"));
@@ -95,6 +100,9 @@ const GuestAspirantsPage = lazy(() => import("./pages/guest/GuestAspirantsPage")
 const GuestRegisteredAspirantsPage = lazy(() => import("./pages/guest/GuestRegisteredAspirantsPage"));
 const GuestCivicIssuesPage = lazy(() => import("./pages/guest/GuestCivicIssuesPage"));
 const GuestSopPage = lazy(() => import("./pages/guest/GuestSopPage"));
+const GuestContactPage = lazy(() => import("./pages/guest/GuestContactPage"));
+const GuestKaryakartasPage = lazy(() => import("./pages/guest/GuestKaryakartasPage"));
+const GuestStatsPage = lazy(() => import("./pages/guest/GuestStatsPage"));
 const GuestPlaceholderPage = lazy(() => import("./pages/guest/GuestPlaceholderPage"));
 
 const UserChatPage = lazy(() => import("./pages/UserChatPage"));
@@ -345,6 +353,22 @@ const App = () => {
             }
           />
           <Route
+            path="/portal"
+            element={<PortalPage />}
+          />
+          <Route
+            path="/portal/prajaa-varte"
+            element={<PrajaaVartePage />}
+          />
+          <Route
+            path="/portal/prajaalytics"
+            element={<PrajaalyticsPage />}
+          />
+          <Route
+            path="/portal/disavow"
+            element={<DisavowPage />}
+          />
+          <Route
             path="/oath"
             element={
               <RedirectIfAuth>
@@ -370,6 +394,10 @@ const App = () => {
                   <UserRegisterPage />
                 </RedirectIfAuth>
               }
+            />
+            <Route
+              path="/register/portal"
+              element={<PortalRegisterPage />}
             />
           </Route>
 
@@ -528,9 +556,9 @@ const App = () => {
             />
             <Route path="about" element={<AboutPage />} />
             <Route path="elections" element={<VotingResultPage />} />
-            <Route path="stats" element={<GuestPlaceholderPage title="Stats" />} />
-            <Route path="contact-us" element={<GuestPlaceholderPage title="Contact Us" />} />
-            <Route path="karyakartas" element={<GuestPlaceholderPage title="Karyakartas" />} />
+            <Route path="stats" element={<GuestStatsPage />} />
+            <Route path="contact-us" element={<GuestContactPage />} />
+            <Route path="karyakartas" element={<GuestKaryakartasPage />} />
             <Route path="discussions" element={<KattePage />} />
           </Route>
 

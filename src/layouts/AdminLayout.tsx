@@ -186,11 +186,17 @@ const AdminLayout = () => {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : '#ffffff',
+          /* Glassmorphic frosted header */
+          backgroundColor: theme.palette.mode === 'dark'
+            ? 'rgba(19,22,26,0.78)'
+            : 'rgba(255,255,255,0.78)',
+          backdropFilter: 'blur(20px) saturate(1.6)',
+          WebkitBackdropFilter: 'blur(20px) saturate(1.6)',
           color: 'text.primary',
           boxShadow: theme.palette.mode === 'dark'
-            ? '0 1px 3px rgba(0,0,0,0.4)'
-            : '0 1px 3px rgba(0,0,0,0.08)'
+            ? '0 4px 24px -4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)'
+            : '0 4px 24px -4px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)',
+          borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(200,24,10,0.06)'}`,
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, sm: 3 } }}>

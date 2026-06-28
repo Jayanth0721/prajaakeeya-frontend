@@ -9,7 +9,7 @@ const AboutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { mode, setMode, rainEnabled, toggleRain } = useThemeStore();
-  const isDark = mode === 'dark' || mode === 'grey';
+  const isDark = mode === 'dark';
   const isKannada = (i18n.language || '').startsWith('kn');
 
   const FF = "'Geist Variable', 'Geist', sans-serif";

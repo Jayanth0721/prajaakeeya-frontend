@@ -5,6 +5,7 @@ import leaderImg from '../../assets/images/leader.webp';
 import alertImg from '../../assets/images/alert.webp';
 import sopImg from '../../assets/images/sop.webp';
 import employeesImg from '../../assets/images/employees.webp';
+import upendraImg from '../../assets/images/upendra.png';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BRAND } from '../../theme';
@@ -20,7 +21,8 @@ const FF_HEADING = "'Heming', 'Geist Variable', 'Geist', sans-serif";
 const FF_BODY = "'Geist Variable', 'Geist', sans-serif";
 
 const CSSStyles = () => (
-  <style dangerouslySetInnerHTML={{ __html: `
+  <style dangerouslySetInnerHTML={{
+    __html: `
     @keyframes pulse-live {
       0% { transform: scale(0.85); opacity: 0.6; }
       50% { transform: scale(1.15); opacity: 1; }
@@ -122,9 +124,9 @@ const GuestDashboardPage = () => {
       desc: t('userDashboard.actions.candidatesDesc', { defaultValue: 'View All Aspirants from Your Ward' }),
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-          <circle cx="15" cy="11" r="5" stroke={BRAND.red} strokeWidth="1.6" fill="rgba(200,24,10,0.1)"/>
-          <path d="M5 26c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke={BRAND.red} strokeWidth="1.6" strokeLinecap="round"/>
-          <circle cx="22" cy="9" r="3" stroke={BRAND.red} strokeWidth="1.2" fill="rgba(200,24,10,0.08)" opacity="0.5" strokeDasharray="2 1.5"/>
+          <circle cx="15" cy="11" r="5" stroke={BRAND.red} strokeWidth="1.6" fill="rgba(200,24,10,0.1)" />
+          <path d="M5 26c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke={BRAND.red} strokeWidth="1.6" strokeLinecap="round" />
+          <circle cx="22" cy="9" r="3" stroke={BRAND.red} strokeWidth="1.2" fill="rgba(200,24,10,0.08)" opacity="0.5" strokeDasharray="2 1.5" />
         </svg>
       ),
       path: '/guest/aspirants',
@@ -135,9 +137,9 @@ const GuestDashboardPage = () => {
       desc: t('userDashboard.actions.civicIssuesDesc', { defaultValue: 'Report Your Public Issues' }),
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-          <circle cx="15" cy="15" r="12" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.08)"/>
-          <path d="M15 9v8" stroke="#F5A800" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="15" cy="21" r="1.2" fill="#F5A800"/>
+          <circle cx="15" cy="15" r="12" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.08)" />
+          <path d="M15 9v8" stroke="#F5A800" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="15" cy="21" r="1.2" fill="#F5A800" />
         </svg>
       ),
       path: '/guest/civic-issues',
@@ -148,9 +150,9 @@ const GuestDashboardPage = () => {
       desc: t('userDashboard.actions.howWorksTitle', { defaultValue: 'Check the SOP to understand how the Prajaakeeya system works.' }),
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-          <circle cx="15" cy="15" r="11" stroke={BRAND.red} strokeWidth="1.5" fill="rgba(200,24,10,0.08)"/>
-          <path d="M11.5 12a3.5 3.5 0 0 1 7 0c0 2-2 3-2 5" stroke={BRAND.red} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx="15" cy="22" r="1.2" fill={BRAND.red}/>
+          <circle cx="15" cy="15" r="11" stroke={BRAND.red} strokeWidth="1.5" fill="rgba(200,24,10,0.08)" />
+          <path d="M11.5 12a3.5 3.5 0 0 1 7 0c0 2-2 3-2 5" stroke={BRAND.red} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="15" cy="22" r="1.2" fill={BRAND.red} />
         </svg>
       ),
       path: '/guest/sop',
@@ -161,10 +163,10 @@ const GuestDashboardPage = () => {
       desc: t('userDashboard.actions.registeredAspirantsDesc', { defaultValue: 'See all registered aspirants' }),
       icon: (
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-          <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)"/>
-          <path d="M3 25c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round"/>
-          <circle cx="21" cy="10" r="3" stroke="#F5A800" strokeWidth="1.4" fill="rgba(245,168,0,0.08)" opacity="0.6"/>
-          <path d="M23 25c0-3.314-2.686-6-6-6" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round" opacity="0.6"/>
+          <circle cx="11" cy="10" r="4" stroke="#F5A800" strokeWidth="1.6" fill="rgba(245,168,0,0.12)" />
+          <path d="M3 25c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="#F5A800" strokeWidth="1.6" strokeLinecap="round" />
+          <circle cx="21" cy="10" r="3" stroke="#F5A800" strokeWidth="1.4" fill="rgba(245,168,0,0.08)" opacity="0.6" />
+          <path d="M23 25c0-3.314-2.686-6-6-6" stroke="#F5A800" strokeWidth="1.4" strokeLinecap="round" opacity="0.6" />
         </svg>
       ),
       path: '/guest/registered-aspirants',
@@ -232,9 +234,25 @@ const GuestDashboardPage = () => {
     },
   ];
 
+  const sectionTitle = (text: string) => (
+    <Typography sx={{
+      fontFamily: FF_HEADING,
+      fontSize: { xs: '0.85rem', sm: '0.95rem' },
+      fontWeight: 800,
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase',
+      color: GOLD,
+      mb: 2,
+    }}>
+      {text}
+    </Typography>
+  );
+
   return (
     <Stack spacing={5} sx={{ fontFamily: FF_BODY, pb: { xs: 5, md: 8 } }}>
       <CSSStyles />
+
+      {sectionTitle(isKannada ? 'ಪ್ರಜಾಕೀಯ ಆಡಳಿತ' : 'Prajaakeeya Governance')}
 
       {/* Split Hero Banner (Corporate & Creative Level) */}
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -248,7 +266,7 @@ const GuestDashboardPage = () => {
         }}>
           {/* Tech Grid Background Lines */}
           <div className={isDark ? 'tech-grid-overlay' : 'tech-grid-overlay-light'} />
-          
+
           {/* Top color trim */}
           <Box sx={{ height: '4px', background: `linear-gradient(90deg, ${BRAND.red} 0%, #F5A800 50%, ${BRAND.red} 100%)` }} />
 
@@ -352,7 +370,7 @@ const GuestDashboardPage = () => {
                         borderRadius: '6px',
                       }}
                     >
-                      {isKannada ? 'ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ' : 'Back to Home'}
+                      {isKannada ? ' ನಿಮ್ಮ ಬಾಗಿಲ ಆಯ್ದುಕೊಳ್ಳಿ' : 'Choose your Door'}
                     </Button>
                     <Tooltip title={`View Preferences${activePrefs > 0 ? ` (${activePrefs} active)` : ''}`} arrow>
                       <Button
@@ -516,6 +534,7 @@ const GuestDashboardPage = () => {
             pb: 4,
           }}
         >
+          {sectionTitle(isKannada ? 'ಪವರ್ ಫೀಚರ್‌ಗಳು' : 'Power Features')}
           {actions.map((action, index) => {
             return (
               <Box
@@ -653,7 +672,9 @@ const GuestDashboardPage = () => {
           })}
         </Box>
       ) : (
-        <Box sx={{
+        <Box>
+          {sectionTitle(isKannada ? 'ಪವರ್ ಫೀಚರ್‌ಗಳು' : 'Power Features')}
+          <Box sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))', md: 'repeat(3, minmax(0, 1fr))', lg: 'repeat(4, minmax(0, 1fr))' },
           gap: 3.5,
@@ -662,10 +683,10 @@ const GuestDashboardPage = () => {
         }}>
           {actions.map((action, index) => (
             <Box key={action.path} sx={{ display: 'flex', flexDirection: 'column' }}>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                transition={{ duration: 0.45, delay: 0.1 + index * 0.08 }} 
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.1 + index * 0.08 }}
                 style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
               >
                 <Card
@@ -767,7 +788,169 @@ const GuestDashboardPage = () => {
             </Box>
           ))}
         </Box>
+        </Box>
       )}
+
+      <Box sx={{ width: '100%', maxWidth: '1500px', mx: 'auto' }}>
+        {sectionTitle(isKannada ? 'ಪ್ರಜಾಕೀಯದ ಸಂಕ್ಷಿಪ್ತ ಪರಿಚಯ' : 'Brief Introduction of Prajaakeeya')}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'stretch',
+          justifyContent: 'center',
+          gap: { xs: 3, md: 4 },
+          width: '100%',
+          maxWidth: '1500px',
+          mx: 'auto',
+          mt: 2,
+        }}>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: '#FFFFFF',
+          borderRadius: '24px',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.06)',
+          p: { xs: 3, sm: 4 },
+          width: { xs: '100%', md: '320px' },
+          flexShrink: 0,
+        }}>
+          <Box sx={{ width: '100%', maxWidth: '360px', borderRadius: '16px', overflow: 'hidden', background: '#FFFFFF' }}>
+            <img src={upendraImg} alt="Upendra waving Hi" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover' }} />
+          </Box>
+          <Typography sx={{
+            fontFamily: FF_HEADING,
+            fontSize: { xs: '1.4rem', sm: '1.7rem' },
+            fontWeight: 800,
+            color: '#1F2937',
+            mt: 2,
+            letterSpacing: '-0.02em',
+          }}>
+            {isKannada ? 'ಉಪೇಂದ್ರ' : 'Upendra'}
+          </Typography>
+          <Typography sx={{
+            fontFamily: FF_BODY,
+            fontSize: '0.95rem',
+            color: '#4B5563',
+            mt: 0.5,
+            fontWeight: 500,
+          }}>
+            {isKannada ? 'ಪ್ರಜಾಕೀಯಕ್ಕೆ ಸ್ವಾಗತ' : 'Welcomes you to Prajaakeeya'}
+          </Typography>
+        </Box>
+
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          background: '#FFFFFF',
+          borderRadius: '24px',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.06)',
+          p: { xs: 3, sm: 4 },
+          width: '100%',
+          flex: 1,
+          minWidth: 0,
+        }}>
+          <Typography sx={{
+            fontFamily: FF_HEADING,
+            fontSize: { xs: '1.25rem', sm: '1.5rem' },
+            fontWeight: 800,
+            color: '#1F2937',
+            letterSpacing: '-0.02em',
+            mb: 1.5,
+            lineHeight: 1.25,
+          }}>
+            {isKannada ? 'ಉತ್ತಮ ಪ್ರಜಾಕೀಯ ಪಕ್ಷ (UPP)' : 'The Uttama Prajaakeeya Party (UPP)'}
+          </Typography>
+
+          <Stack spacing={1.6}>
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: BRAND.red, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಉತ್ತಮ ಪ್ರಜಾಕೀಯ ಪಕ್ಷ (UPP) ಅನ್ನು ಸೆಪ್ಟೆಂಬರ್ 18, 2018 ರಂದು ಕನ್ನಡ ನಟ ಮತ್ತು ಚಲನಚಿತ್ರ ನಿರ್ಮಾಪಕ ಉಪೇಂದ್ರ ಸ್ಥಾಪಿಸಿದರು.'
+                  : 'The Uttama Prajaakeeya Party (UPP) was founded on September 18, 2018, by the Kannada actor and filmmaker Upendra.'}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: GOLD, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಕರ್ನಾಟಕದ ಬೆಂಗಳೂರಿನಲ್ಲಿ ಮುಖ್ಯ ಕಚೇರಿಯನ್ನು ಹೊಂದಿರುವ ಈ ಸಂಸ್ಥೆಯು ನಾಗರಿಕ-ಕೇಂದ್ರಿತ, ಪಾರದರ್ಶಕ ಆಡಳಿತಾತ್ಮಕ ನೀತಿಗಳ ಮೇಲೆ ಕೇಂದ್ರೀಕರಿಸುತ್ತದೆ.'
+                  : 'Headquartered in Bengaluru, Karnataka, the organization focuses on citizen-centric, transparent governance.'}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: BRAND.red, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಪ್ರತ್ಯಕ್ಷ ಪ್ರಜಾಪ್ರಭುತ್ವ ಮತ್ತು ನಾಗರಿಕ ಸಹಭಾಗಿತ್ವದ ಮೂಲಕ ನೀತಿ ನಿರೂಪಣೆ ಮತ್ತು ನಿರ್ಧಾರ ತೆಗೆಯುವಿಕೆಯಲ್ಲಿ ಜನರ ಸಕ್ರಿಯ ಪಾಲ್ಗೊಳ್ಳುವಿಕೆಯನ್ನು ಉತ್ತೇಜಿಸಲು ಪಕ್ಷವು ಶ್ರಮಿಸುತ್ತದೆ.'
+                  : 'The party strives to empower active citizen participation in policymaking and decision-making through direct democracy and civic engagement.'}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: GOLD, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಪ್ರಜಾಕೀಯ ಎಂಬುದು ಯುಪಿಪಿಯ ಡಿಜಿಟಲ್ ಪ್ರಜಾಪ್ರಭುತ್ವ ವೇದಿಕೆಯಾಗಿದ್ದು, ಪ್ರತಿ ನಾಗರಿಕರಿಗೆ ಆಕಾಂಕ್ಷಿಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲು, ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಲು ಮತ್ತು ಮಾರ್ಗದರ್ಶನ ಮಾಡಲು ಅಧಿಕಾರ ನೀಡುತ್ತದೆ.'
+                  : 'Prajaakeeya is UPP\'s digital democracy platform that empowers every citizen to elect, monitor and guide candidates.'}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: BRAND.red, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಈ ವೇದಿಕೆಯು ಪಾರದರ್ಶಕ ಚುನಾವಣೆಗಳು, ನಾಗರಿಕ ನೋಂದಣಿ ಮತ್ತು ನೈಜ-ಸಮಯದ ಮೇಲ್ವಿಚಾರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ, ಹೀಗಾಗಿ ಪ್ರತಿ ನಿರ್ಧಾರವು ಜವಾಬ್ದೇಹಿಯಾಗಿರುತ್ತದೆ.'
+                  : 'The platform enables transparent elections, citizen registration and real-time accountability — so every decision remains answerable to the people.'}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+              <Box sx={{ minWidth: '6px', height: '6px', borderRadius: '50%', backgroundColor: GOLD, mt: '8px' }} />
+              <Typography sx={{ fontFamily: FF_BODY, fontSize: '0.95rem', color: '#374151', lineHeight: 1.65 }}>
+                {isKannada
+                  ? 'ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಅಥವಾ ಅವರ ಡಿಜಿಟಲ್ ಪ್ರಜಾಪ್ರಭುತ್ವ ವೇದಿಕೆಯನ್ನು ಅನ್ವೇಷಿಸಲು, ಅಧಿಕೃತ ಪ್ರಜಾಕೀಯ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಭೇಟಿ ಮಾಡಬಹುದು.'
+                  : 'For further information or to explore their digital democracy platform, you can visit the official Prajaakeeya website.'}
+              </Typography>
+            </Box>
+          </Stack>
+
+          <Box sx={{
+            mt: 2.5,
+            pt: 2,
+            borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 1.5,
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+              <Box sx={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: BRAND.red }} />
+              <Typography sx={{ fontFamily: FF_HEADING, fontSize: '0.78rem', fontWeight: 700, color: '#4B5563', letterSpacing: '0.04em' }}>
+                {isKannada ? 'ಸ್ಥಾಪನೆ: 18 ಸೆಪ್ಟೆಂಬರ್ 2018' : 'Founded: 18 Sep 2018'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+              <Box sx={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: GOLD }} />
+              <Typography sx={{ fontFamily: FF_HEADING, fontSize: '0.78rem', fontWeight: 700, color: '#4B5563', letterSpacing: '0.04em' }}>
+                {isKannada ? 'ಮುಖ್ಯ ಕಚೇರಿ: ಬೆಂಗಳೂರು' : 'HQ: Bengaluru, Karnataka'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+              <Box sx={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: BRAND.red }} />
+              <Typography sx={{ fontFamily: FF_HEADING, fontSize: '0.78rem', fontWeight: 700, color: '#4B5563', letterSpacing: '0.04em' }}>
+                {isKannada ? 'ಸಂಸ್ಥಾಪಕ: ಉಪೇಂದ್ರ' : 'Founder: Upendra'}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+        </Box>
     </Stack>
   );
 };

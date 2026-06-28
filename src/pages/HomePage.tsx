@@ -74,6 +74,26 @@ const HomePage: React.FC = () => {
   const { mode, rainEnabled } = useThemeStore();
   const { t } = useTranslation();
 
+  const isOnboardingComplete = (() => {
+    try { return localStorage.getItem('__PRAJKP_ONBOARDING__') === 'complete'; } catch { return false; }
+  })();
+
+  const handleGovernanceClick = () => {
+    if (isOnboardingComplete) {
+      navigate('/guest/dashboard');
+    } else {
+      navigate('/oath', { state: { flow: 'governance' } });
+    }
+  };
+
+  const handlePrajaaPrapanchaClick = () => {
+    if (isOnboardingComplete) {
+      navigate('/portal');
+    } else {
+      navigate('/oath', { state: { flow: 'portal' } });
+    }
+  };
+
   const bg = theme.palette.background.default;
   const paper = theme.palette.background.paper;
 
@@ -312,16 +332,31 @@ const HomePage: React.FC = () => {
       position: relative;
       overflow: hidden;
     }
+
+    .layout-pref-straight .homepage-col.MuiGrid-item,
+    .layout-pref-straight .homepage-col.MuiGrid2-root:not(.MuiGrid2-container) {
+      max-width: 50% !important;
+      flex-basis: 50% !important;
+      width: 50% !important;
+    }
+    @media (max-width: 900px) {
+      .layout-pref-straight .homepage-col.MuiGrid-item,
+      .layout-pref-straight .homepage-col.MuiGrid2-root:not(.MuiGrid2-container) {
+        max-width: 100% !important;
+        flex-basis: 100% !important;
+        width: 100% !important;
+      }
+    }
   `;
 
   const { activeLayout } = usePreferenceStore();
   const isActive = activeLayout !== null;
 
   // Derive layout flags from the single active layout
-  const isReverse  = activeLayout === 'reverse';
-  const isStraight = activeLayout === 'straight' || activeLayout === 'cardover';
-  const isLeft     = false;
-  const isRight    = false;
+  const isReverse = activeLayout === 'reverse';
+  const isStraight = activeLayout === 'cardover'; // Only cardover stacks them vertically, 'straight' stays side-by-side
+  const isLeft = false;
+  const isRight = false;
   return (
     <Box sx={{ bgcolor: bg, minHeight: '100vh', color: isDark ? '#E2E2E3' : '#111827', pb: 0, overflowX: 'hidden' }}>
       <style>{CSS}</style>
@@ -456,85 +491,139 @@ const HomePage: React.FC = () => {
             transition: 'all 0.4s ease',
           }}
         >
-          {/* Image 1: Intro Perceptive */}
-          <Grid size={{ xs: 12, md: isStraight ? 12 : 6 }}>
-            <Box
-              component="img"
-              src={introPerceptiveImg}
-              alt="Intro Perceptive"
-              sx={{
-                width: '100%',
-                borderRadius: '12px',
-                border: `1.5px solid ${isDark ? '#5B403D' : 'rgba(239, 68, 68, 0.2)'}`,
-                boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(17, 24, 39, 0.05)',
-                transition: 'transform 0.3s ease, border-color 0.3s ease',
-                '&:hover': { transform: 'scale(1.02)', borderColor: '#C8180A' },
-              }}
-            />
-          </Grid>
-
-          {/* Image 2: People are Owner */}
-          <Grid size={{ xs: 12, md: isStraight ? 12 : 6 }}>
-            <Box
-              component="img"
-              src={peopleAreOwnerImg}
-              alt="People are Owner"
-              sx={{
-                width: '100%',
-                borderRadius: '12px',
-                border: `1.5px solid ${isDark ? '#F5A800' : 'rgba(245, 168, 0, 0.2)'}`,
-                boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(245, 168, 0, 0.05)',
-                transition: 'transform 0.3s ease, border-color 0.3s ease',
-                '&:hover': { transform: 'scale(1.02)', borderColor: '#F5A800' },
-              }}
-            />
-          </Grid>
-
-          {/* Action Row containing Consolidated Proceed Button */}
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-              <button
-                className="hero-btn-red"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '16px',
+          {/* Column 1: Image 1 + Proceed Button */}
+          <Grid className="homepage-col" size={{ xs: 12, md: isStraight ? 12 : 6 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+              <Box
+                component="img"
+                src={introPerceptiveImg}
+                alt="Intro Perceptive"
+                sx={{
                   width: '100%',
-                  maxWidth: '420px',
-                  padding: '12px 24px',
-                  fontSize: '16px',
-                  letterSpacing: '0.5px',
                   borderRadius: '12px',
-                  textAlign: 'left'
+                  border: `1.5px solid ${isDark ? '#5B403D' : 'rgba(239, 68, 68, 0.2)'}`,
+                  boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(17, 24, 39, 0.05)',
+                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                  '&:hover': { transform: 'scale(1.02)', borderColor: '#C8180A' },
                 }}
-                onClick={() => navigate('/oath')}
-              >
-                <Box
-                  sx={{
+              />
+              <Box sx={{ mt: 3, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  className="hero-btn-red"
+                  style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    bgcolor: '#FFFFFF',
-                    borderRadius: '8px',
-                    p: '6px',
-                    height: 38,
-                    width: 38,
-                    flexShrink: 0,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                    gap: '16px',
+                    width: '100%',
+                    maxWidth: '380px',
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    letterSpacing: '0.5px',
+                    borderRadius: '12px',
+                    textAlign: 'left'
                   }}
+                  onClick={handleGovernanceClick}
                 >
-                  <Box component="img" src={prajakeeyaLogo} alt="Prajaakeeya Logo" sx={{ height: '100%', width: '100%', objectFit: 'contain' }} />
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                  <Typography variant="caption" sx={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'rgba(255,255,255,0.75)', fontWeight: 800, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.1 }}>
-                    Prajaakeeya Governance
-                  </Typography>
-                  <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 800, color: BRAND.green, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.2, mt: '2px' }}>
-                    {t('pages.landing.homePage.proceed')}
-                  </Typography>
-                </Box>
-              </button>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: '#FFFFFF',
+                      borderRadius: '8px',
+                      p: '6px',
+                      height: 38,
+                      width: 38,
+                      flexShrink: 0,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                    }}
+                  >
+                    <Box component="img" src={prajakeeyaLogo} alt="Prajaakeeya Logo" sx={{ height: '100%', width: '100%', objectFit: 'contain' }} />
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <Typography variant="caption" sx={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'rgba(255,255,255,0.75)', fontWeight: 800, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.1 }}>
+                      Prajaakeeya Governance
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 800, color: BRAND.green, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.2, mt: '2px', display: 'flex', alignItems: 'center' }}>
+                      <span>{t('pages.landing.homePage.proceed')}</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '6px', flexShrink: 0, display: 'inline-block', verticalAlign: 'middle', transform: 'translateY(0.5px)' }}>
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </Typography>
+                  </Box>
+                </button>
+              </Box>
+            </Box>
+          </Grid>
+
+          {/* Column 2: Image 2 + Portal Button */}
+          <Grid className="homepage-col" size={{ xs: 12, md: isStraight ? 12 : 6 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
+              <Box
+                component="img"
+                src={peopleAreOwnerImg}
+                alt="People are Owner"
+                sx={{
+                  width: '100%',
+                  borderRadius: '12px',
+                  border: `1.5px solid ${isDark ? '#F5A800' : 'rgba(245, 168, 0, 0.2)'}`,
+                  boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.3)' : '0 8px 24px rgba(245, 168, 0, 0.05)',
+                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                  '&:hover': { transform: 'scale(1.02)', borderColor: '#F5A800' },
+                }}
+              />
+              <Box sx={{ mt: 3, width: '100%', display: 'flex', justifyContent: 'center' }}>
+                <button
+                  className="hero-btn-gold"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '16px',
+                    width: '100%',
+                    maxWidth: '380px',
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    letterSpacing: '0.5px',
+                    borderRadius: '12px',
+                    textAlign: 'left',
+                    border: '1.5px solid #F5A800'
+                  }}
+                  onClick={handlePrajaaPrapanchaClick}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: 'rgba(245, 168, 0, 0.1)',
+                      borderRadius: '8px',
+                      p: '6px',
+                      height: 38,
+                      width: 38,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="9" stroke="#F5A800" strokeWidth="2" strokeDasharray="4 2" />
+                      <circle cx="12" cy="12" r="5" stroke="#FFCB00" strokeWidth="2" />
+                      <circle cx="12" cy="12" r="1.5" fill="#E02010" />
+                    </svg>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <Typography variant="caption" sx={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.2px', color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontWeight: 800, fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.1 }}>
+                      Prajaa Prapancha...
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: '16px', fontWeight: 800, color: isDark ? '#F5A800' : '#BE8507', fontFamily: "'Geist Variable', 'Geist', sans-serif", lineHeight: 1.2, mt: '2px', display: 'flex', alignItems: 'center' }}>
+                      <span>Enter Portal Hub</span>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '6px', flexShrink: 0, display: 'inline-block', verticalAlign: 'middle', transform: 'translateY(0.5px)' }}>
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </Typography>
+                  </Box>
+                </button>
+              </Box>
             </Box>
           </Grid>
         </Grid>

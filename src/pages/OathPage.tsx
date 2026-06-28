@@ -3,7 +3,7 @@ import { Box, Button, Stack, Typography, useTheme, keyframes, Container, Paper, 
 import { DarkModeRounded, LightModeRounded, CloudRounded } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import RainEffect from '../components/RainEffect';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppFooter from '../components/AppFooter';
 import useThemeStore from '../store/useThemeStore';
@@ -25,7 +25,9 @@ const amountPulse = keyframes`
 const OathPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
+  const flow = (location.state as any)?.flow || 'governance';
   const { mode, toggleTheme, rainEnabled, toggleRain } = useThemeStore();
   const isDark = mode === 'dark';
   const isKannada = i18n.language === 'kn';
@@ -342,7 +344,10 @@ const OathPage: React.FC = () => {
                 size="large"
                 fullWidth
                 disabled={!pledged}
-                onClick={() => navigate('/register', { state: { fromPledge: true } })}
+                onClick={() => {
+                  try { localStorage.setItem('__PRAJKP_ONBOARDING__', 'pledged'); } catch {}
+                  navigate(flow === 'portal' ? '/register/portal' : '/register', { state: { fromPledge: true } });
+                }}
                 sx={{
                   py: 1.6,
                   fontWeight: 700,

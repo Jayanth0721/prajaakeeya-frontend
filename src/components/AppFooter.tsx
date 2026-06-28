@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Box, Container, Grid, Typography, Link, useTheme, Stack } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +94,7 @@ const AppFooter: React.FC = () => {
               <Link component={RouterLink} to="/guest/dashboard" sx={{ fontFamily: FF_BODY, fontSize: '0.85rem', color: textMuted, textDecoration: 'none', '&:hover': { color: linkColor } }}>
                 Guest Dashboard
               </Link>
-              <Link component={RouterLink} to="/elections" sx={{ fontFamily: FF_BODY, fontSize: '0.85rem', color: textMuted, textDecoration: 'none', '&:hover': { color: linkColor } }}>
+              <Link component={RouterLink} to="/guest/elections" sx={{ fontFamily: FF_BODY, fontSize: '0.85rem', color: textMuted, textDecoration: 'none', '&:hover': { color: linkColor } }}>
                 Elections
               </Link>
             </Stack>

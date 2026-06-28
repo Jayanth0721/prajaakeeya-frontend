@@ -70,7 +70,10 @@ const AuthCallbackPage = () => {
     } else {
       setAuth(jwt, user);
     }
-    navigate('/user/dashboard', { replace: true });
+    try { localStorage.setItem('__PRAJKP_ONBOARDING__', 'complete'); } catch {}
+    const isPortalRegister = sessionStorage.getItem('__PORTAL_REGISTER__') === '1';
+    sessionStorage.removeItem('__PORTAL_REGISTER__');
+    navigate(isPortalRegister ? '/portal' : '/', { replace: true });
   };
 
   // COOKIE_AUTH callback: ?code=<one-time>&state=<csrf>. Verify CSRF, exchange
