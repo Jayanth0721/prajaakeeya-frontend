@@ -1201,7 +1201,7 @@ const CandidateInformationStep = ({
             {fields.map(({ id, colXs, colMd, node }, idx) => (
               <React.Fragment key={id}>
                 {/* {id === 'electionType' && (
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <Alert
                       severity="info"
                       icon={<InfoOutlinedIcon sx={{ color: '#F5A800' }} />}

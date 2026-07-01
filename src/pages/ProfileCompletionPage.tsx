@@ -1114,7 +1114,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                 </>)}
 
                                 {/* Age — commented out */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label={`${t('profile.age') || 'Age'} *`}
@@ -1126,7 +1126,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     />
                                 </Grid> */}
                                 {/* Gender — commented out */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         select
@@ -1142,7 +1142,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     </TextField>
                                 </Grid> */}
                                 {/* Phone Number — commented out */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label={isAspirant ? `${t('profile.mobileNumber') || 'Mobile Number'} *` : (t('profile.mobileNumber') || 'Mobile Number')}
@@ -1152,7 +1152,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     />
                                 </Grid> */}
                                 {/* Voter ID — hidden */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label={t('userRegister.epicId') || 'VOTER ID'}
@@ -1164,7 +1164,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     />
                                 </Grid> */}
                                 {/* Corporation — commented out */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label={t('userDashboard.details.corporation') || 'Corporation'}
@@ -1176,7 +1176,7 @@ const ProfileCompletionPage = ({ hideLogout }: { hideLogout?: boolean } = {}) =>
                                     />
                                 </Grid> */}
                                 {/* Booth Name — hidden */}
-                                {/* <Grid item xs={12} sm={6}>
+                                {/* <Grid size={{ xs: 12, sm: 6 }}>
                                     <TextField
                                         fullWidth
                                         label={t('userDashboard.details.booth') || 'Booth Name'}

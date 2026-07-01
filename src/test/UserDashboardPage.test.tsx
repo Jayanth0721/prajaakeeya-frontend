@@ -88,11 +88,11 @@ describe('UserDashboardPage', () => {
     } as any);
   });
 
-  it('renders the desktop hero banner heading', () => {
+  it('renders the desktop hero banner heading', async () => {
     renderWithProviders(<UserDashboardPage />, { route: '/user/dashboard' });
     // Non-aspirant hero shows the English brand line ("The Real Prajaakeeya")
     // since i18n.language is 'en'.
-    expect(screen.getByText('The Real Prajaakeeya')).toBeInTheDocument();
+    expect(await screen.findByText('The Real Prajaakeeya')).toBeInTheDocument();
   });
 
   it('renders the embedded aspirants list (WardCandidateListPage)', () => {

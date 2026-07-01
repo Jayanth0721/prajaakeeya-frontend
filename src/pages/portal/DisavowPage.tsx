@@ -372,7 +372,7 @@ const DisavowPage: React.FC = () => {
               { label: 'Resolved', value: stats.resolved, color: '#22c55e' },
               { label: 'Disputed Content', value: stats.disputed, color: '#C8180A' },
             ].map((stat, idx) => (
-              <Grid item xs={6} md={2.4} key={idx}>
+              <Grid size={{ xs: 6, md: 2.4 }} key={idx}>
                 <Paper sx={{ p: 2, textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
                   <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: stat.color }}>
                     {stat.value}
@@ -392,7 +392,7 @@ const DisavowPage: React.FC = () => {
                 placeholder="Search requests..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{ startAdornment: <SearchIcon sx={{ color: '#9CA3AF', mr: 1 }} /> }}
+                slotProps={{ input: { startAdornment: <SearchIcon sx={{ color: '#9CA3AF', mr: 1 }} /> } }}
                 sx={{ minWidth: 250, fontFamily: FF_HEADING }}
               />
               <FormControl size="small" sx={{ minWidth: 150 }}>
@@ -627,7 +627,7 @@ const DisavowPage: React.FC = () => {
               { status: 'disputed', label: 'Disputed', count: 2, color: '#F5A800', Icon: WarningIcon },
               { status: 'unverified', label: 'Unverified', count: 1, color: '#6B7280', Icon: HelpIcon },
             ].map((item) => (
-              <Grid item xs={6} md={3} key={item.status}>
+              <Grid size={{ xs: 6, md: 3 }} key={item.status}>
                 <Paper sx={{ p: 2, border: `2px solid ${item.color}`, borderRadius: '12px' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <item.Icon sx={{ color: item.color, fontSize: 24 }} />
@@ -666,7 +666,7 @@ const DisavowPage: React.FC = () => {
                 { step: 4, title: 'Resolution', desc: 'Decision made with status update', Icon: CheckCircleIcon },
                 { step: 5, title: 'Appeal (if needed)', desc: 'Escalate to senior review board', Icon: GavelIcon },
               ].map((item) => (
-                <Grid item xs={12} sm={6} md={2.4} key={item.step}>
+                <Grid size={{ xs: 12, sm: 6, md: 2.4 }} key={item.step}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Box sx={{
                       width: 48, height: 48, borderRadius: '50%', bgcolor: `${BRAND.red}15`,

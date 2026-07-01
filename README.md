@@ -30,7 +30,7 @@
 | Area | Technology |
 |------|-----------|
 | Framework | [React 19](https://react.dev/) + [TypeScript 6](https://www.typescriptlang.org/) |
-| Build tool | [Vite 5](https://vitejs.dev/) |
+| Build tool | [Vite 8](https://vite.dev/) |
 | UI | [MUI 9](https://mui.com/) + [Emotion](https://emotion.sh/) |
 | Routing | [React Router 6](https://reactrouter.com/) |
 | State | [Zustand](https://github.com/pmndrs/zustand) (with `persist`) |
@@ -215,3 +215,14 @@ There are two deployment paths:
 ## Contributing
 
 Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request — it covers branch naming, commit conventions, code style, and how to add tests. In short: branch off `staging`, keep the suite green (`npm run test:run`) and lint clean (`npm run lint`), and open a PR against `staging`.
+
+---
+
+## Application Preview
+
+### Home Page
+![Home Page](./new_assets/homepage.png)
+
+### About Page (with Grey Theme and Rain Animation backdrop)
+![About Page](./new_assets/aboutpage.png)
+

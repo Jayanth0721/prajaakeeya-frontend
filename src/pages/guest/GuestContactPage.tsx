@@ -39,7 +39,7 @@ const GuestContactPage: React.FC = () => {
 
         <Paper sx={{ p: 4, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', mb: 4 }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ p: 1.5, bgcolor: `${BRAND.red}10`, borderRadius: 2 }}>
                   <LocationOnIcon sx={{ color: BRAND.red }} />
@@ -56,7 +56,7 @@ const GuestContactPage: React.FC = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ p: 1.5, bgcolor: `${BRAND.red}10`, borderRadius: 2 }}>
                   <EmailIcon sx={{ color: BRAND.red }} />
@@ -72,7 +72,7 @@ const GuestContactPage: React.FC = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ p: 1.5, bgcolor: `${BRAND.red}10`, borderRadius: 2 }}>
                   <PhoneIcon sx={{ color: BRAND.red }} />
@@ -88,7 +88,7 @@ const GuestContactPage: React.FC = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ p: 1.5, bgcolor: `${BRAND.red}10`, borderRadius: 2 }}>
                   <ScheduleIcon sx={{ color: BRAND.red }} />
@@ -104,7 +104,7 @@ const GuestContactPage: React.FC = () => {
               </Box>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 <Box sx={{ p: 1.5, bgcolor: `${BRAND.red}10`, borderRadius: 2 }}>
                   <LanguageIcon sx={{ color: BRAND.red }} />

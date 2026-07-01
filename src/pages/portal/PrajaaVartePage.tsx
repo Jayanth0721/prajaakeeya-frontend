@@ -123,7 +123,7 @@ const PrajaaVartePage: React.FC = () => {
       case 'facebook': return <FacebookIcon sx={{ fontSize: 20 }} />;
       case 'youtube': return <YouTubeIcon sx={{ fontSize: 20 }} />;
       case 'twitter': return <TwitterIcon sx={{ fontSize: 20 }} />;
-      default: return null;
+      default: return undefined;
     }
   };
 
@@ -472,16 +472,7 @@ const PrajaaVartePage: React.FC = () => {
         }}>
           <Grid container>
             {/* Left Side - Projector */}
-            <Grid item xs={12} md={5} sx={{
-              bgcolor: '#1a1a1a',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              p: 4,
-              position: 'relative',
-              minHeight: { xs: 300, md: 450 }
-            }}>
+            <Grid size={{ xs: 12, md: 5 }} sx={{ bgcolor: '#1a1a1a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', p: 4, position: 'relative', minHeight: { xs: 300, md: 450 } }}>
               {/* Projector Body */}
               <Box sx={{
                 position: 'relative',
@@ -637,7 +628,7 @@ const PrajaaVartePage: React.FC = () => {
             </Grid>
 
             {/* Right Side - News Content */}
-            <Grid item xs={12} md={7} sx={{ p: 4 }}>
+            <Grid size={{ xs: 12, md: 7 }} sx={{ p: 4 }}>
               {currentNews ? (
                 <Box>
                   {/* Source Badge */}
@@ -746,7 +737,7 @@ const PrajaaVartePage: React.FC = () => {
         </Typography>
         <Grid container spacing={2}>
           {filteredNews.map((news, idx) => (
-            <Grid item xs={12} sm={6} md={4} key={news.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={news.id}>
               <Paper
                 sx={{
                   p: 2.5,

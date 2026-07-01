@@ -138,7 +138,7 @@ const GuestKaryakartasPage: React.FC = () => {
         )}
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <PollIcon sx={{ fontSize: 40, color: BRAND.red, mb: 1 }} />
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: '#111827' }}>
@@ -149,7 +149,7 @@ const GuestKaryakartasPage: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <VideoCallIcon sx={{ fontSize: 40, color: BRAND.yellow, mb: 1 }} />
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: '#111827' }}>
@@ -160,7 +160,7 @@ const GuestKaryakartasPage: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <FeedbackIcon sx={{ fontSize: 40, color: BRAND.blue, mb: 1 }} />
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: '#111827' }}>
@@ -174,7 +174,7 @@ const GuestKaryakartasPage: React.FC = () => {
         </Grid>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                 <VideoCallIcon sx={{ color: BRAND.red }} />
@@ -228,7 +228,7 @@ const GuestKaryakartasPage: React.FC = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                 <PollIcon sx={{ color: BRAND.red }} />
@@ -357,7 +357,7 @@ const GuestKaryakartasPage: React.FC = () => {
               { title: 'Priority Updates', desc: 'Receive early access to party announcements and events', icon: '📢' },
               { title: 'Network Locally', desc: 'Connect with fellow karyakartas in your ward and constituency', icon: '🤝' },
             ].map((benefit, idx) => (
-              <Grid item xs={12} sm={6} md={4} key={idx}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={idx}>
                 <Box sx={{ p: 2, bgcolor: '#F9FAFB', borderRadius: 2, height: '100%' }}>
                   <Typography sx={{ fontSize: '24px', mb: 1 }}>{benefit.icon}</Typography>
                   <Typography variant="subtitle2" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 0.5 }}>

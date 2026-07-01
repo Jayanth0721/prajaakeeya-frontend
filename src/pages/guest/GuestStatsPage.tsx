@@ -34,28 +34,28 @@ const GuestStatsPage: React.FC = () => {
         </Box>
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Karnataka</Typography>
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.red, my: 1 }}>₹2,85,000 Cr</Typography>
               <Typography variant="body2" sx={{ fontFamily: FF_HEADING, fontWeight: 600, color: '#111827' }}>State Budget 2024-25</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Union of India</Typography>
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.blue, my: 1 }}>₹4,87,000 Cr</Typography>
               <Typography variant="body2" sx={{ fontFamily: FF_HEADING, fontWeight: 600, color: '#111827' }}>Central Budget 2024-25</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>BBMP + Rural</Typography>
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.yellow, my: 1 }}>₹18,500 Cr</Typography>
               <Typography variant="body2" sx={{ fontFamily: FF_HEADING, fontWeight: 600, color: '#111827' }}>District Planning 2024-25</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px', textAlign: 'center' }}>
               <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase' }}>Combined</Typography>
               <Typography variant="h4" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.green, my: 1 }}>₹72,000 Cr</Typography>
@@ -75,28 +75,28 @@ const GuestStatsPage: React.FC = () => {
             How government funds flow from central allocation to grassroots projects
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ p: 2, bgcolor: `${BRAND.red}05`, borderRadius: 2, border: `1px solid ${BRAND.red}15` }}>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280' }}>Union Government → State</Typography>
                 <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: BRAND.red, my: 1 }}>₹85,000 Cr</Typography>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING }}>Finance Commission Transfer</Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ p: 2, bgcolor: `${BRAND.blue}05`, borderRadius: 2, border: `1px solid ${BRAND.blue}15` }}>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280' }}>State → District</Typography>
                 <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: BRAND.blue, my: 1 }}>₹32,000 Cr</Typography>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING }}>State Share & Grants</Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ p: 2, bgcolor: `${BRAND.yellow}05`, borderRadius: 2, border: `1px solid ${BRAND.yellow}15` }}>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280' }}>District → ULBs & GPs</Typography>
                 <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: BRAND.yellow, my: 1 }}>₹18,500 Cr</Typography>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING }}>Local Body Share</Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ p: 2, bgcolor: `${BRAND.green}05`, borderRadius: 2, border: `1px solid ${BRAND.green}15` }}>
                 <Typography variant="caption" sx={{ fontFamily: FF_HEADING, fontWeight: 700, color: '#6B7280' }}>ULBs → Ward Projects</Typography>
                 <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: BRAND.green, my: 1 }}>₹5,200 Cr</Typography>
@@ -107,7 +107,7 @@ const GuestStatsPage: React.FC = () => {
         </Paper>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <BarChartIcon sx={{ color: BRAND.red }} />
@@ -150,7 +150,7 @@ const GuestStatsPage: React.FC = () => {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <PieChartIcon sx={{ color: BRAND.red }} />

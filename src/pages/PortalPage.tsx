@@ -549,7 +549,7 @@ return (
             </Box>
             
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper
                   sx={{
                     bgcolor: 'rgba(255,255,255,0.5)',
@@ -584,7 +584,7 @@ return (
                 </Paper>
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper
                   sx={{
                     bgcolor: 'rgba(255,255,255,0.5)',
@@ -664,7 +664,7 @@ return (
           <Box sx={{ mb: 4 }}>
             <Grid container spacing={2}>
               {/* Aspirants */}
-              <Grid item xs={6} md={3}>
+              <Grid size={{ xs: 6, md: 3 }}>
                 <Paper
                   onClick={() => navigate('/guest/aspirants')}
                   sx={{
@@ -696,7 +696,7 @@ return (
               </Grid>
 
               {/* Public Issues */}
-              <Grid item xs={6} md={3}>
+              <Grid size={{ xs: 6, md: 3 }}>
                 <Paper
                   onClick={() => navigate('/guest/civic-issues')}
                   sx={{
@@ -728,7 +728,7 @@ return (
               </Grid>
 
               {/* SOP */}
-              <Grid item xs={6} md={3}>
+              <Grid size={{ xs: 6, md: 3 }}>
                 <Paper
                   onClick={() => navigate('/guest/sop')}
                   sx={{
@@ -760,7 +760,7 @@ return (
               </Grid>
 
               {/* Registered Aspirants */}
-              <Grid item xs={6} md={3}>
+              <Grid size={{ xs: 6, md: 3 }}>
                 <Paper
                   onClick={() => navigate('/guest/registered-aspirants')}
                   sx={{
@@ -796,7 +796,7 @@ return (
           {/* Aspirant Grid */}
           <Grid container spacing={2.5}>
             {filteredAspirants.map((aspirant) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={aspirant.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={aspirant.id}>
                 <Card
                   onClick={() => handleAspirantClick(aspirant)}
                   sx={{
@@ -1177,7 +1177,7 @@ return (
                 </Typography>
 
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid size={{ xs: 4 }}>
                     <Paper
                       sx={{
                         bgcolor: 'rgba(200, 24, 10, 0.1)',
@@ -1196,7 +1196,7 @@ return (
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={4}>
+                  <Grid size={{ xs: 4 }}>
                     <Paper
                       sx={{
                         bgcolor: 'rgba(245, 168, 0, 0.1)',
@@ -1215,7 +1215,7 @@ return (
                     </Paper>
                   </Grid>
 
-                  <Grid item xs={4}>
+                  <Grid size={{ xs: 4 }}>
                     <Paper
                       sx={{
                         bgcolor: 'rgba(34, 197, 94, 0.1)',

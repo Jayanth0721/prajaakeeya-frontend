@@ -348,7 +348,7 @@ const PrajaalyticsPage: React.FC = () => {
 
         {/* KPI Cards */}
         <Grid container spacing={2.5} sx={{ mb: 3 }}>
-          <Grid item xs={6} md={3}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <Paper sx={{ p: 2.5, textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
               <Typography variant="h3" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.red }}>
                 132
@@ -362,7 +362,7 @@ const PrajaalyticsPage: React.FC = () => {
               </Box>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <Paper sx={{ p: 2.5, textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
               <Typography variant="h3" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: BRAND.yellow }}>
                 260
@@ -376,7 +376,7 @@ const PrajaalyticsPage: React.FC = () => {
               </Box>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <Paper sx={{ p: 2.5, textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
               <Typography variant="h3" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: '#22c55e' }}>
                 4.3
@@ -390,7 +390,7 @@ const PrajaalyticsPage: React.FC = () => {
               </Box>
             </Paper>
           </Grid>
-          <Grid item xs={6} md={3}>
+          <Grid size={{ xs: 6, md: 3 }}>
             <Paper sx={{ p: 2.5, textAlign: 'center', border: '1px solid rgba(0,0,0,0.06)' }}>
               <Typography variant="h3" sx={{ fontFamily: FF_HEADING, fontWeight: 900, color: '#253A9A' }}>
                 78%
@@ -408,7 +408,7 @@ const PrajaalyticsPage: React.FC = () => {
 
         <Grid container spacing={3}>
           {/* Performance Chart */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Performance Trends
@@ -489,7 +489,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Citizen Rating Trend */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Citizen Rating Trend
@@ -580,7 +580,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Voter Sentiment - Word Cloud */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Voter Sentiment - Topic Analysis
@@ -627,7 +627,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Attendance Heatmap */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Response Time Heatmap (Days)
@@ -680,7 +680,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Progress Milestones */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Progress Milestones
@@ -755,7 +755,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Citizen Feedback Aggregator */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827', mb: 3 }}>
                 Citizen Feedback Aggregator
@@ -802,7 +802,7 @@ const PrajaalyticsPage: React.FC = () => {
           </Grid>
 
           {/* Aspirant Comparison Table */}
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Paper sx={{ p: 3, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '12px' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h6" sx={{ fontFamily: FF_HEADING, fontWeight: 800, color: '#111827' }}>
