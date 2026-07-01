@@ -223,6 +223,9 @@ Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request â
 ### Home Page
 ![Home Page](./new_assets/homepage.png)
 
+### Guest Governance Dashboard
+![Guest Governance Dashboard](./new_assets/guest_dashboard.png)
+
 ### About Page (with Grey Theme and Rain Animation backdrop)
 ![About Page](./new_assets/aboutpage.png)
 
